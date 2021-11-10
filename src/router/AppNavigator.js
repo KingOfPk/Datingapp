@@ -16,6 +16,7 @@ import LoginScreen from '../screens/LoginScreen';
 import OtpScreen from '../screens/OtpScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import OnBoarding from '../screens/OnBoarding';
+import HomeScreen from '../screens/HomeScreen';
 const Stack = createStackNavigator();
 // const navigationRef = React.createRef();
 export default class Appnavigator extends Component {
@@ -23,7 +24,7 @@ export default class Appnavigator extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="OnBoarding"
+          initialRouteName="HomeScreen"
           screenOptions={{headerMode: false}}>
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="AllowLocation" component={AllowLocation} />
@@ -31,6 +32,7 @@ export default class Appnavigator extends Component {
           <Stack.Screen name="OtpScreen" component={OtpScreen} />
           <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
           <Stack.Screen name="OnBoarding" component={OnBoarding} />
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );

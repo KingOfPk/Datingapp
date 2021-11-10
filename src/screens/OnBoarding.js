@@ -13,7 +13,7 @@ import {
   Dimensions,
 } from 'react-native';
 import LottieView from 'lottie-react-native';
-import Button from '../components/Button';
+import Button from '../components/Button2';
 import color from 'color';
 import {font} from '../components/fonts';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -48,16 +48,75 @@ class OnBoarding extends Component {
         <View
           style={{
             width: '100%',
-            height: '30%',
-            backgroundColor: '#f00',
-          }}></View>
+            height: '25%',
+            // backgroundColor: '#f00',
+            padding: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <View style={{flex: 1}}>
+              <Text style={{fontSize: 24, fontFamily: font.Bold}}>
+                Hi Steven
+              </Text>
+              <Text
+                style={{fontSize: 16, fontFamily: font.Bold, marginTop: 10}}>
+                Nice to meet you : )
+              </Text>
+            </View>
+            <Image
+              source={require('../../assets/images/Rectangle.png')}
+              style={{width: 80, height: 80}}
+            />
+          </View>
+        </View>
         <View
           style={{
             width: '100%',
-            height: '70%',
-            backgroundColor: '#ff0',
+            height: '75%',
+            backgroundColor: '#5FAEB6',
             borderTopRightRadius: width * 0.6,
-          }}></View>
+            // alignItems: 'center',
+            justifyContent: 'center',
+            padding: 15,
+          }}>
+          <Text style={{fontSize: 34, fontFamily: font.Bold, color: '#fff'}}>
+            Please help us to build up a profile of what you are looking for.
+          </Text>
+
+          <View style={{width: '100%', marginTop: 60}}>
+            <View
+              style={{
+                width: 230,
+                height: 5,
+                backgroundColor: '#406284',
+              }}></View>
+          </View>
+          <View
+            style={{
+              width: '100%',
+              height: 60,
+              marginTop: 50,
+              //   backgroundColor: '#f00',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: 60,
+            }}>
+            <View style={{width: '75%'}}>
+              <Button
+                icon={''}
+                text="CONTINUE"
+                Pressed={() => this.props.navigation.navigate('OtpScreen')}
+              />
+            </View>
+          </View>
+        </View>
       </View>
     );
   }
