@@ -207,7 +207,7 @@ class RegisterScreen extends Component {
                 <Button
                   icon={''}
                   text="CONTINUE"
-                  Pressed={() => this.props.navigation.navigate('OtpScreen')}
+                  Pressed={() => this.props.navigation.navigate('OnBoarding')}
                 />
               </View>
             </View>

@@ -16,7 +16,14 @@ import LoginScreen from '../screens/LoginScreen';
 import OtpScreen from '../screens/OtpScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import OnBoarding from '../screens/OnBoarding';
+import RecordBio from '../screens/RecordBio';
+import ChooseConnections from '../screens/ChooseConnections';
+import ChooseInterest from '../screens/ChooseInterest';
+import ChooseHobby from '../screens/ChooseHobby';
+import ChooseLookingFor from '../screens/ChooseLookingFor';
+import ChooseAgeOrDistance from '../screens/ChooseAgeOrDistance';
 import HomeScreen from '../screens/HomeScreen';
+import UserProfile from '../screens/UserProfile';
 const Stack = createStackNavigator();
 // const navigationRef = React.createRef();
 export default class Appnavigator extends Component {
@@ -24,7 +31,7 @@ export default class Appnavigator extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="HomeScreen"
+          initialRouteName="SplashScreen"
           screenOptions={{headerMode: false}}>
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="AllowLocation" component={AllowLocation} />
@@ -33,6 +40,19 @@ export default class Appnavigator extends Component {
           <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
           <Stack.Screen name="OnBoarding" component={OnBoarding} />
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="UserProfile" component={UserProfile} />
+          <Stack.Screen name="RecordBio" component={RecordBio} />
+          <Stack.Screen
+            name="ChooseConnections"
+            component={ChooseConnections}
+          />
+          <Stack.Screen name="ChooseInterest" component={ChooseInterest} />
+          <Stack.Screen name="ChooseHobby" component={ChooseHobby} />
+          <Stack.Screen name="ChooseLookingFor" component={ChooseLookingFor} />
+          <Stack.Screen
+            name="ChooseAgeOrDistance"
+            component={ChooseAgeOrDistance}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     );

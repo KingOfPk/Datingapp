@@ -19,6 +19,7 @@ import color from 'color';
 import {font} from '../components/fonts';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from 'react-native-ui-lib';
+import Footer from '../components/Footer';
 const {width, height} = Dimensions.get('window');
 class HomeScreen extends Component {
   constructor(props) {
@@ -104,25 +105,28 @@ class HomeScreen extends Component {
           <View
             style={{
               width: '100%',
-              height: 110,
-              backgroundColor: '#5FAEB6',
+              height: 80,
+              // backgroundColor: '#5FAEB6',
               padding: 20,
               alignItems: 'center',
               justifyContent: 'center',
-              borderBottomLeftRadius: 50,
             }}>
             <View
               style={{
                 width: '100%',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                alignItems: 'flex-end',
+                alignItems: 'center',
                 height: '100%',
               }}>
               <Image
                 source={require('../../assets/images/Rectangle.png')}
                 style={{width: 50, height: 50}}
               />
+              <Text
+                style={{fontFamily: font.Bold, fontSize: 24, color: '#416181'}}>
+                <Text style={{color: '#5FAEB6'}}>Together</Text> Again
+              </Text>
               <Image
                 source={require('../../assets/icons/Chat.png')}
                 style={{width: 50, height: 50}}
@@ -148,7 +152,13 @@ class HomeScreen extends Component {
             // backgroundColor: '#f00',
             // marginBottom: 10,
           }}>
-          <ScrollView>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{width: '100%'}}>
+              <Text style={{fontSize: 16, fontFamily: font.Regular}}>
+                <Text style={{fontFamily: font.Bold}}>We found 1,247</Text>{' '}
+                persons as per your preference!
+              </Text>
+            </View>
             <FlatList
               data={this.state.Post}
               style={{flex: 1}}
@@ -164,7 +174,10 @@ class HomeScreen extends Component {
                     borderRadius: 20,
                     overflow: 'hidden',
                   }}>
-                  <View
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.props.navigation.navigate('UserProfile')
+                    }
                     style={{
                       width: '100%',
                       height: '100%',
@@ -207,12 +220,13 @@ class HomeScreen extends Component {
                         10 Miles
                       </Text>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 </ImageBackground>
               )}
             />
           </ScrollView>
         </View>
+        <Footer />
       </View>
     );
   }
