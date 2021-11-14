@@ -177,7 +177,7 @@ class HomeScreen extends Component {
                   style={{
                     width: "100%",
                     height: 240,
-                    backgroundColor: "#f00",
+                    // backgroundColor: "#f00",
                     marginTop: 10,
                     borderRadius: 20,
                     overflow: "hidden",

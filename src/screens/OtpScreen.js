@@ -9,6 +9,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   TextInput,
+  ScrollView,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import Button from "../components/Button";
@@ -16,6 +17,7 @@ import color from "color";
 import { font } from "../components/fonts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import OtpInputs from "react-native-otp-inputs";
+
 class OtpScreen extends Component {
   componentDidMount = () => {};
 
@@ -39,87 +41,88 @@ class OtpScreen extends Component {
             </TouchableOpacity>
           </View>
         </SafeAreaView>
-        <View style={{ width: "100%", padding: 15 }}>
-          <View style={{ width: "100%", marginTop: 10 }}>
-            <Text
+        <ScrollView style={{ width: "100%", height: "100%" }}>
+          <View style={{ width: "100%", padding: 15 }}>
+            <View style={{ width: "100%", marginTop: 10 }}>
+              <Text
+                style={{
+                  color: "#ACABB4",
+                  fontFamily: font.SemiBold,
+                  textAlign: "center",
+                  fontSize: 16,
+                }}
+              >
+                Please enter 4-Digit OTP Sent to +44 9999290377
+              </Text>
+            </View>
+            <View style={{ width: "100%", marginTop: 30 }}>
+              <Text
+                style={{
+                  color: "#ACABB4",
+                  fontFamily: font.SemiBold,
+                  textAlign: "center",
+                  fontSize: 16,
+                }}
+              >
+                Resend OTP
+              </Text>
+            </View>
+            <View
               style={{
-                color: "#ACABB4",
-                fontFamily: font.SemiBold,
-                textAlign: "center",
-                fontSize: 16,
+                width: "90%",
+                height: 100,
+                marginTop: 50,
+                alignSelf: "center",
               }}
             >
-              Please enter 4-Digit OTP Sent to +44 9999290377
-            </Text>
+              <OtpInputs
+                inputStyles={[
+                  {
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#FE3760",
+                    fontSize: 20,
+                    color: "#000",
+                    fontFamily: font.Bold,
+                  },
+                ]}
+                unfocusedBorderColor="transparent"
+                inputContainerStyles={[
+                  {
+                    // backgroundColor: '#F0F1F2',
+                    borderWidth: 0.8,
+                    borderColor: "#ACABB4",
+                    height: 60,
+                    width: 60,
+                    borderRadius: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  },
+                ]}
+                handleChange={(code) => this.setState({ code: code })}
+                numberOfInputs={4}
+              />
+            </View>
           </View>
-          <View style={{ width: "100%", marginTop: 30 }}>
-            <Text
-              style={{
-                color: "#ACABB4",
-                fontFamily: font.SemiBold,
-                textAlign: "center",
-                fontSize: 16,
-              }}
-            >
-              Resend OTP
-            </Text>
-          </View>
+
           <View
             style={{
-              width: "90%",
-              height: 100,
+              width: "100%",
+              height: 120,
               marginTop: 50,
-              alignSelf: "center",
+              //   backgroundColor: '#f00',
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <OtpInputs
-              inputStyles={[
-                {
-                  width: "100%",
-                  textAlign: "center",
-                  color: "#FE3760",
-                  fontSize: 20,
-                  color: "#000",
-                  fontFamily: font.Bold,
-                },
-              ]}
-              unfocusedBorderColor="transparent"
-              inputContainerStyles={[
-                {
-                  // backgroundColor: '#F0F1F2',
-                  borderWidth: 0.8,
-                  borderColor: "#ACABB4",
-                  height: 60,
-                  width: 60,
-                  borderRadius: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                },
-              ]}
-              handleChange={(code) => this.setState({ code: code })}
-              numberOfInputs={4}
-            />
+            <View style={{ width: "75%" }}>
+              <Button
+                text="ACCEPT"
+                Pressed={() => this.props.navigation.navigate("RegisterScreen")}
+              />
+            </View>
           </View>
-        </View>
-
-        <View
-          style={{
-            width: "100%",
-            height: 60,
-            marginTop: 50,
-            //   backgroundColor: '#f00',
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <View style={{ width: "75%" }}>
-            <Button
-              icon={""}
-              text="ACCEPT"
-              Pressed={() => this.props.navigation.navigate("RegisterScreen")}
-            />
-          </View>
-        </View>
+        </ScrollView>
       </View>
     );
   }

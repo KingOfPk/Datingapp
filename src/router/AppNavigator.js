@@ -38,7 +38,7 @@ export default class Appnavigator extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Setting"
+          initialRouteName="SplashScreen"
           screenOptions={{ headerMode: false }}
         >
           <Stack.Screen name="SplashScreen" component={SplashScreen} />

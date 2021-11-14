@@ -13,6 +13,7 @@ import Styles from "../components/CommanStyle";
 import { font } from "../components/fonts";
 import Footer from "../components/Footer";
 import SettingHeader from "../components/SettingHeader";
+import LikeTabs from "./TabPages/LikeTab";
 
 class LikeScreen extends Component {
   state = {};
@@ -85,7 +86,9 @@ class LikeScreen extends Component {
             </View>
           </View>
 
-          <View style={{ flex: 1, backgroundColor: "red" }}></View>
+          <View style={{ flex: 1, backgroundColor: "red" }}>
+            <LikeTabs />
+          </View>
           <Footer
             selectedIcon="Like"
             homePress={() => this.props.navigation.navigate("HomeScreen")}

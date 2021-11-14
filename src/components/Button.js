@@ -11,7 +11,7 @@ import { font } from "../components/fonts";
 import { Icon } from "react-native-elements";
 // https://youtu.be/6-r9PVI94hE?list=RDB8G3zCnZvMU
 // https://youtu.be/6-r9PVI94hE
-const Button = ({ text, icon, Pressed, backgroundColor }) => {
+const Button = ({ text, icon, Pressed, backgroundColor, textColor }) => {
   return (
     <TouchableOpacity
       onPress={Pressed}
@@ -25,7 +25,7 @@ const Button = ({ text, icon, Pressed, backgroundColor }) => {
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text
           style={{
-            color: "#fff",
+            color: textColor ? textColor : "#fff",
             fontSize: 18,
             fontFamily: font.Bold,
             marginRight: 30,

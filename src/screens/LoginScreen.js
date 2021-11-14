@@ -16,6 +16,7 @@ import color from "color";
 import { font } from "../components/fonts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "react-native-ui-lib";
+import { ScrollView } from "react-native-gesture-handler";
 class LoginScreen extends Component {
   constructor(props) {
     super(props);
@@ -59,113 +60,114 @@ class LoginScreen extends Component {
             </TouchableOpacity>
           </View>
         </SafeAreaView>
-        <View style={{ width: "100%", padding: 15 }}>
-          <View style={styles.inputContainer}>
-            <Text style={{ fontSize: 16, fontFamily: font.Light }}>
-              Country
-            </Text>
-            <View
-              style={{
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Picker
-                showSearch={true}
-                // placeholderTextColor={numberVarified ? "#666" : "#ddd"}
-
+        <ScrollView style={{ width: "100%", height: "100%" }}>
+          <View style={{ width: "100%", padding: 15 }}>
+            <View style={styles.inputContainer}>
+              <Text style={{ fontSize: 16, fontFamily: font.Light }}>
+                Country
+              </Text>
+              <View
                 style={{
-                  height: 40,
-                  paddingLeft: 5,
-                  color: "#000",
-                  fontFamily: font.Bold,
-                  fontSize: 18,
-                  width: "90%",
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
-                topBarProps={{ title: "Languages" }}
-                listProps={{ keyboardShouldPersistTaps: "always" }}
-                hideUnderline
-                placeholderTextColor="#000"
-                placeholder={"COUNTRY"}
-                // value={CatList}
-                onChange={(items) => this.SelectedCategory(items, index)}
-                // mode={Picker.modes.MULTI}
-                topBarProps={"COUNTRY"}
-                // rightIconSource={require('../../assets/icons/chevron-down.png')}
               >
-                {this.state.allCategory.map((item, index) => (
-                  <Picker.Item
-                    isSelected={true}
-                    selectedIconColor="#000"
-                    // disabled={CatList.some((itm) => itm == item.label)}
-                    // key={index}
-                    value={{
-                      label: item.label,
-                      value: item.value,
-                    }}
-                  />
-                ))}
-              </Picker>
-              <Image
-                source={require("../../assets/icons/chevron-down.png")}
-                style={{ width: 30, height: 30 }}
-              />
+                <Picker
+                  showSearch={true}
+                  // placeholderTextColor={numberVarified ? "#666" : "#ddd"}
+
+                  style={{
+                    height: 40,
+                    paddingLeft: 5,
+                    color: "#000",
+                    fontFamily: font.Bold,
+                    fontSize: 18,
+                    width: "90%",
+                  }}
+                  topBarProps={{ title: "Languages" }}
+                  listProps={{ keyboardShouldPersistTaps: "always" }}
+                  hideUnderline
+                  placeholderTextColor="#000"
+                  placeholder={"COUNTRY"}
+                  // value={CatList}
+                  onChange={(items) => this.SelectedCategory(items, index)}
+                  // mode={Picker.modes.MULTI}
+                  topBarProps={"COUNTRY"}
+                  // rightIconSource={require('../../assets/icons/chevron-down.png')}
+                >
+                  {this.state.allCategory.map((item, index) => (
+                    <Picker.Item
+                      isSelected={true}
+                      selectedIconColor="#000"
+                      // disabled={CatList.some((itm) => itm == item.label)}
+                      // key={index}
+                      value={{
+                        label: item.label,
+                        value: item.value,
+                      }}
+                    />
+                  ))}
+                </Picker>
+                <Image
+                  source={require("../../assets/icons/chevron-down.png")}
+                  style={{ width: 30, height: 30 }}
+                />
+              </View>
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={{ fontSize: 16, fontFamily: font.Light }}>
+                Mobile Number
+              </Text>
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <TextInput
+                  placeholder="9999290377"
+                  placeholderTextColor="#000"
+                  style={styles.inputTextStyle}
+                />
+                <Image
+                  source={require("../../assets/icons/Mobile2.png")}
+                  style={{ width: 30, height: 30 }}
+                />
+              </View>
             </View>
           </View>
-          <View style={styles.inputContainer}>
-            <Text style={{ fontSize: 16, fontFamily: font.Light }}>
-              Mobile Number
-            </Text>
-            <View
+          <View style={{ width: "100%", marginTop: 30, padding: 15 }}>
+            <Text
               style={{
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "space-between",
+                color: "#ACABB4",
+                fontFamily: font.SemiBold,
+                textAlign: "center",
+                fontSize: 16,
               }}
             >
-              <TextInput
-                placeholder="9999290377"
-                placeholderTextColor="#000"
-                style={styles.inputTextStyle}
-              />
-              <Image
-                source={require("../../assets/icons/Mobile2.png")}
-                style={{ width: 30, height: 30 }}
-              />
-            </View>
+              We need your mobile number to get you register or signin
+            </Text>
           </View>
-        </View>
-        <View style={{ width: "100%", marginTop: 30, padding: 15 }}>
-          <Text
+          <View
             style={{
-              color: "#ACABB4",
-              fontFamily: font.SemiBold,
-              textAlign: "center",
-              fontSize: 16,
+              width: "100%",
+              height: 60,
+              marginTop: 50,
+              //   backgroundColor: '#f00',
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            We need your mobile number to get you register or signin
-          </Text>
-        </View>
-        <View
-          style={{
-            width: "100%",
-            height: 60,
-            marginTop: 50,
-            //   backgroundColor: '#f00',
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <View style={{ width: "75%" }}>
-            <Button
-              icon={""}
-              text="CONTINUE"
-              Pressed={() => this.props.navigation.navigate("OtpScreen")}
-            />
+            <View style={{ width: "75%", height: 120 }}>
+              <Button
+                text="CONTINUE"
+                Pressed={() => this.props.navigation.navigate("OtpScreen")}
+              />
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </View>
     );
   }

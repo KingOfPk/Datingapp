@@ -40,6 +40,19 @@ const Styles = StyleSheet.create({
     padding: 10,
     fontWeight: "600",
   },
+  arrowView: {
+    width: 0,
+    height: 0,
+    backgroundColor: "#transparent",
+    borderStyle: "solid",
+    borderLeftWidth: 15,
+    borderRightWidth: 15,
+    borderTopWidth: 20,
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+    borderBottomColor: "#416181",
+    borderTopColor: "#416181",
+  },
 });
 
 export default Styles;
