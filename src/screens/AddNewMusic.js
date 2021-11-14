@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, { useState, useRef } from "react";
 import {
   Button,
   View,
@@ -7,7 +7,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-} from 'react-native';
+} from "react-native";
 
 export default App = () => {
   return <View style={styles.container}></View>;
@@ -15,10 +15,10 @@ export default App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   controlContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
 });

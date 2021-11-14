@@ -21,6 +21,8 @@ import RailSelected from "./RangeSlider/RailSelected";
 import Thumb from "./RangeSlider/Thumb";
 import RangeSlider from "./RangeSlider";
 import Button from "../components/Button";
+import SettingHeader from "../components/SettingHeader";
+import Styles from "../components/CommanStyle";
 
 const renderThumb = () => <Thumb />;
 const renderRail = () => <Rail />;
@@ -47,105 +49,79 @@ class Preference extends Component {
     const DistRight = (this.state.maxDistance * (width - 60)) / 100 - 15;
     return (
       <SafeAreaView>
-        <View style={styles.container}>
-          <View
-            style={{
-              width: "100%",
-              height: 100,
-              backgroundColor: "#5FAEB6",
-              padding: 20,
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => this.props.navigation.goBack()}
-              style={styles.backButtonContainer}
-            >
-              <Image
-                source={require("../../assets/icons/Left.png")}
-                style={{ width: 20, height: 20 }}
-              />
-            </TouchableOpacity>
+        <View style={[Styles.container, { backgroundColor: "#E5E5E5" }]}>
+          <SettingHeader title="PREFERENCES" />
 
-            <View style={{ width: "100%", alignItems: "center", marginTop: 5 }}>
-              <Text
-                style={{
-                  color: "#fff",
-                  fontFamily: font.SemiBold,
-                  fontSize: 20,
-                }}
-              >
-                PREFERENCES
-              </Text>
-            </View>
-          </View>
           <View style={{ flex: 1 }}>
             <ScrollView style={{ flex: 1 }}>
-              <Text style={styles.headingText}>Intrested connections</Text>
-              <View style={styles.mainWhiteContainer}>
-                <View style={styles.rowContainer}>
+              <Text style={Styles.settingHeadingText}>
+                Intrested connections
+              </Text>
+              <View style={Styles.mainWhiteContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Online Dating</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>New Friends</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Dating</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Meetups</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
               </View>
-              <Text style={styles.headingText}>Intrested in</Text>
-              <View style={styles.mainWhiteContainer}>
-                <View style={styles.rowContainer}>
+              <Text style={Styles.settingHeadingText}>Intrested in</Text>
+              <View style={Styles.mainWhiteContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Men</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Women</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Both</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
               </View>
-              <Text style={styles.headingText}>Intrested in</Text>
-              <View style={styles.mainWhiteContainer}>
-                <View style={styles.rowContainer}>
+              <Text style={Styles.settingHeadingText}>Intrested in</Text>
+              <View style={Styles.mainWhiteContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>
                     Meet up with new friends{" "}
                   </Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Romantic relationships</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Both</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>
                     Meet up with new friends
                   </Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Romantic relationships</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
-                <View style={styles.rowContainer}>
+                <View style={Styles.rowContainer}>
                   <Text style={styles.normalText}>Both</Text>
                   <TouchableOpacity style={styles.rightSideCircleView} />
                 </View>
               </View>
-              <Text style={styles.headingText}>Age and Distance</Text>
+              <Text style={Styles.settingHeadingText}>Age and Distance</Text>
               <View
                 style={{ width: "100%", backgroundColor: "#fff", padding: 10 }}
               >
@@ -187,20 +163,23 @@ class Preference extends Component {
                 >
                   <Text
                     style={[
-                      styles.headingText,
+                      Styles.settingHeadingText,
                       { marginLeft: LowAge == 20 ? 0 : left },
                     ]}
                   >
                     {this.state.LowAge}
                   </Text>
                   <Text
-                    style={[styles.headingText, { marginLeft: right - left }]}
+                    style={[
+                      Styles.settingHeadingText,
+                      { marginLeft: right - left },
+                    ]}
                   >
                     {this.state.heighAge}
                   </Text>
                 </View>
                 <Text style={[styles.normalText, { paddingVertical: 10 }]}>
-                  Age
+                  Distance
                 </Text>
                 <RangeSliderRN
                   style={{ width: "100%", height: 70 }}
@@ -231,13 +210,15 @@ class Preference extends Component {
                 >
                   <Text
                     style={[
-                      styles.headingText,
+                      Styles.settingHeadingText,
                       { marginLeft: minDistance == 20 ? 0 : DistLeft },
                     ]}
                   >
                     {this.state.minDistance}
                   </Text>
-                  <Text style={[styles.headingText, { marginRight: 10 }]}>
+                  <Text
+                    style={[Styles.settingHeadingText, { marginRight: 10 }]}
+                  >
                     {this.state.maxDistance}
                   </Text>
                 </View>
@@ -253,7 +234,13 @@ class Preference extends Component {
               </View>
             </ScrollView>
           </View>
-          <Footer />
+          <Footer
+            selectedIcon="Preference"
+            homePress={() => this.props.navigation.navigate("HomeScreen")}
+            likePress={() => this.props.navigation.navigate("LikeScreen")}
+            preferencePress={() => this.props.navigation.navigate("Preference")}
+            settingPress={() => this.props.navigation.navigate("Setting")}
+          />
         </View>
       </SafeAreaView>
     );
@@ -261,48 +248,13 @@ class Preference extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#E5E5E5",
-  },
-  backButtonContainer: {
-    height: 30,
-    width: 30,
-    backgroundColor: "#C4C4C48F",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#fff",
-  },
   headingText: {
     fontFamily: font.SemiBold,
     fontSize: 20,
     color: "#000",
     padding: 10,
   },
-  mainWhiteContainer: {
-    width: "100%",
-    backgroundColor: "#fff",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    // padding: 10,
-    // shadowColor: "#000",
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 1,
-    // },
-    // shadowOpacity: 0.22,
-    // shadowRadius: 2.22,
 
-    // elevation: 3,
-  },
-  rowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-  },
   normalText: {
     fontFamily: font.Regular,
     color: "#000000CF",

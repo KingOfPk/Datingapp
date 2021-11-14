@@ -26,6 +26,11 @@ import HomeScreen from "../screens/HomeScreen";
 import UserProfile from "../screens/UserProfile";
 import ChatUserList from "../screens/ChatUserList";
 import Preference from "../screens/Preference";
+import Setting from "../screens/Setting";
+import EditProfile from "../screens/EditProfile";
+import ActivePlans from "../screens/ActivePlans";
+import LikeScreen from "../screens/LikeScreen";
+
 const Stack = createStackNavigator();
 // const navigationRef = React.createRef();
 export default class Appnavigator extends Component {
@@ -33,7 +38,7 @@ export default class Appnavigator extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Preference"
+          initialRouteName="Setting"
           screenOptions={{ headerMode: false }}
         >
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
@@ -58,6 +63,10 @@ export default class Appnavigator extends Component {
           />
           <Stack.Screen name="ChatUserList" component={ChatUserList} />
           <Stack.Screen name="Preference" component={Preference} />
+          <Stack.Screen name="Setting" component={Setting} />
+          <Stack.Screen name="EditProfile" component={EditProfile} />
+          <Stack.Screen name="ActivePlans" component={ActivePlans} />
+          <Stack.Screen name="LikeScreen" component={LikeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );

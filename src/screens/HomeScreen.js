@@ -240,7 +240,13 @@ class HomeScreen extends Component {
             />
           </ScrollView>
         </View>
-        <Footer />
+        <Footer
+          selectedIcon="Home"
+          homePress={() => this.props.navigation.navigate("HomeScreen")}
+          likePress={() => this.props.navigation.navigate("LikeScreen")}
+          preferencePress={() => this.props.navigation.navigate("Preference")}
+          settingPress={() => this.props.navigation.navigate("Setting")}
+        />
       </View>
     );
   }
