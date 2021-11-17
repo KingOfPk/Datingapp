@@ -89,7 +89,7 @@ class LoginScreen extends Component {
                   listProps={{ keyboardShouldPersistTaps: "always" }}
                   hideUnderline
                   placeholderTextColor="#000"
-                  placeholder={"COUNTRY"}
+                  placeholder={"United Kingdom"}
                   // value={CatList}
                   onChange={(items) => this.SelectedCategory(items, index)}
                   // mode={Picker.modes.MULTI}
@@ -127,6 +127,7 @@ class LoginScreen extends Component {
                 }}
               >
                 <TextInput
+                  keyboardType="number-pad"
                   placeholder="9999290377"
                   placeholderTextColor="#000"
                   style={styles.inputTextStyle}

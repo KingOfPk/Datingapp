@@ -27,6 +27,7 @@ MERGED from [:rn-range-slider] D:\react-native\Pawan sir\testprojects\dating\nod
 MERGED from [com.facebook.react:react-native:0.66.1] C:\Users\KAMAL\.gradle\caches\transforms-3\17983b27092628c498529e8f14a21a1e\transformed\jetified-react-native-0.66.1\AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\KAMAL\.gradle\caches\transforms-3\9341f36f0ce470d4b55127e33c2ce075\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [org.webkit:android-jsc:r250230] C:\Users\KAMAL\.gradle\caches\transforms-3\7873a5158addb5bf75ec8bc5226b9f2a\transformed\jetified-android-jsc-r250230\AndroidManifest.xml:2:1-11:12
+MERGED from [:react-native-linear-gradient] D:\react-native\Pawan sir\testprojects\dating\node_modules\react-native-linear-gradient\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-reanimated] D:\react-native\Pawan sir\testprojects\dating\node_modules\react-native-reanimated\android\build\.transforms\25aaf5628957c5429ccbb0a9266f5ba7\transformed\jetified-react-native-reanimated-66-jsc\AndroidManifest.xml:2:1-9:12
 MERGED from [com.facebook.fresco:flipper:2.5.0] C:\Users\KAMAL\.gradle\caches\transforms-3\5880c3ffcd9f3ffb65016eb160ab2121\transformed\jetified-flipper-2.5.0\AndroidManifest.xml:2:1-9:12
 MERGED from [com.facebook.fresco:stetho:2.5.0] C:\Users\KAMAL\.gradle\caches\transforms-3\247a35ea3454e43292f80ed4e869afa6\transformed\jetified-stetho-2.5.0\AndroidManifest.xml:2:1-9:12
@@ -224,6 +225,8 @@ MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\KAMA
 MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\KAMAL\.gradle\caches\transforms-3\9341f36f0ce470d4b55127e33c2ce075\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [org.webkit:android-jsc:r250230] C:\Users\KAMAL\.gradle\caches\transforms-3\7873a5158addb5bf75ec8bc5226b9f2a\transformed\jetified-android-jsc-r250230\AndroidManifest.xml:7:5-9:41
 MERGED from [org.webkit:android-jsc:r250230] C:\Users\KAMAL\.gradle\caches\transforms-3\7873a5158addb5bf75ec8bc5226b9f2a\transformed\jetified-android-jsc-r250230\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-linear-gradient] D:\react-native\Pawan sir\testprojects\dating\node_modules\react-native-linear-gradient\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
+MERGED from [:react-native-linear-gradient] D:\react-native\Pawan sir\testprojects\dating\node_modules\react-native-linear-gradient\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-reanimated] D:\react-native\Pawan sir\testprojects\dating\node_modules\react-native-reanimated\android\build\.transforms\25aaf5628957c5429ccbb0a9266f5ba7\transformed\jetified-react-native-reanimated-66-jsc\AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-reanimated] D:\react-native\Pawan sir\testprojects\dating\node_modules\react-native-reanimated\android\build\.transforms\25aaf5628957c5429ccbb0a9266f5ba7\transformed\jetified-react-native-reanimated-66-jsc\AndroidManifest.xml:5:5-7:41
 MERGED from [com.facebook.fresco:flipper:2.5.0] C:\Users\KAMAL\.gradle\caches\transforms-3\5880c3ffcd9f3ffb65016eb160ab2121\transformed\jetified-flipper-2.5.0\AndroidManifest.xml:5:5-7:41

@@ -71,7 +71,7 @@ class ChooseConnections extends Component {
             <Text
               style={[
                 styles.headingText,
-                { color: "#ACABB4", left: 5, fontStyle: "italic" },
+                { color: "#5FAEB6", left: 5, fontStyle: "italic" },
               ]}
             >
               connections

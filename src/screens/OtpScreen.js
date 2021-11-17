@@ -46,7 +46,7 @@ class OtpScreen extends Component {
             <View style={{ width: "100%", marginTop: 10 }}>
               <Text
                 style={{
-                  color: "#ACABB4",
+                  color: "rgba(0, 0, 0, 0.82);",
                   fontFamily: font.SemiBold,
                   textAlign: "center",
                   fontSize: 16,
@@ -58,10 +58,11 @@ class OtpScreen extends Component {
             <View style={{ width: "100%", marginTop: 30 }}>
               <Text
                 style={{
-                  color: "#ACABB4",
+                  color: "#406284",
                   fontFamily: font.SemiBold,
                   textAlign: "center",
                   fontSize: 16,
+                  fontWeight: "500",
                 }}
               >
                 Resend OTP

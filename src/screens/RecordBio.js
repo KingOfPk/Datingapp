@@ -62,7 +62,7 @@ class RecordBio extends Component {
             <Text
               style={{
                 paddingVertical: "5%",
-                fontFamily: font.Regular,
+                fontFamily: font.SemiBold,
                 color: "#ACABB4",
               }}
             >
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: " rgba(196, 196, 196, 0.27)",
+    backgroundColor: "#ACABB4;",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#C4C4C445",
@@ -143,12 +143,19 @@ const styles = StyleSheet.create({
     width: "85%",
     padding: 10,
     height: 130,
-    backgroundColor: "#C4C4C445",
+    backgroundColor: "#ACABB4;",
     borderRadius: 10,
     textAlign: "center",
     textAlignVertical: "top",
     marginTop: 10,
     fontFamily: font.Regular,
+    shadowOffset: {
+      width: 0,
+      height: 0.5,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
   },
 });
 

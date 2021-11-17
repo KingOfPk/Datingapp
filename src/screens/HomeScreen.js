@@ -134,10 +134,16 @@ class HomeScreen extends Component {
               >
                 <Text style={{ color: "#5FAEB6" }}>Together</Text> Again
               </Text>
-              <Image
-                source={require("../../assets/icons/Chat.png")}
-                style={{ width: 50, height: 50 }}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.navigation.navigate("ChatUserList");
+                }}
+              >
+                <Image
+                  source={require("../../assets/icons/Chat.png")}
+                  style={{ width: 50, height: 50 }}
+                />
+              </TouchableOpacity>
               {/* <View style={{flex: 1}}>
                 <Text style={{fontSize: 24, fontFamily: font.Bold}}>
                   Hi Steven

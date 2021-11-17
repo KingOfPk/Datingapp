@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import Styles from "../components/CommanStyle";
 import { font } from "../components/fonts";
 import Footer from "../components/Footer";
 
@@ -53,11 +54,11 @@ class ChatUserList extends Component {
     const { userList } = this.state;
     return (
       <SafeAreaView>
-        <View style={styles.container}>
+        <View style={Styles.container}>
           <View style={styles.headerContainer}>
             <TouchableOpacity
               onPress={() => this.props.navigation.goBack()}
-              style={styles.backButtonContainer}
+              style={Styles.backButtonContainer}
             >
               <Image
                 source={require("../../assets/icons/Left.png")}
@@ -71,7 +72,7 @@ class ChatUserList extends Component {
                 marginTop: 20,
               }}
             >
-              <View style={styles.userProfileContainer}>
+              <View style={Styles.userProfileContainer}>
                 <Image
                   source={require("../../assets/images/dummyUser.png")}
                   style={{
@@ -98,7 +99,12 @@ class ChatUserList extends Component {
               data={userList}
               renderItem={({ item }) => {
                 return (
-                  <TouchableOpacity style={styles.userContainer}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.props.navigation.navigate("ChatScreen");
+                    }}
+                    style={styles.userContainer}
+                  >
                     <View style={{ flexDirection: "row" }}>
                       <View style={styles.userActive} />
                       <Image
@@ -156,15 +162,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#fff",
-  },
-  userProfileContainer: {
-    borderWidth: 4,
-    borderColor: "#406284",
-    borderRadius: 30,
-    width: 60,
-    height: 60,
-    alignItems: "center",
-    justifyContent: "center",
   },
   userContainer: {
     width: "95%",

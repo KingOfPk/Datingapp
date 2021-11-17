@@ -30,6 +30,8 @@ import Setting from "../screens/Setting";
 import EditProfile from "../screens/EditProfile";
 import ActivePlans from "../screens/ActivePlans";
 import LikeScreen from "../screens/LikeScreen";
+import ChatScreen from "../screens/ChatScreen";
+import UserMatchScreen from "../screens/UserMatchScreen";
 
 const Stack = createStackNavigator();
 // const navigationRef = React.createRef();
@@ -67,6 +69,8 @@ export default class Appnavigator extends Component {
           <Stack.Screen name="EditProfile" component={EditProfile} />
           <Stack.Screen name="ActivePlans" component={ActivePlans} />
           <Stack.Screen name="LikeScreen" component={LikeScreen} />
+          <Stack.Screen name="ChatScreen" component={ChatScreen} />
+          <Stack.Screen name="UserMatchScreen" component={UserMatchScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );

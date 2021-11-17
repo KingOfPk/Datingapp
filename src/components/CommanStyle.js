@@ -1,5 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { font } from "./fonts";
+const { height, width } = Dimensions.get("window");
 
 const Styles = StyleSheet.create({
   whiteContainer: {
@@ -52,6 +53,23 @@ const Styles = StyleSheet.create({
     borderRightColor: "transparent",
     borderBottomColor: "#416181",
     borderTopColor: "#416181",
+  },
+  userProfileContainer: {
+    borderWidth: 4,
+    borderColor: "#406284",
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalContainer: {
+    marginHorizontal: "30%",
+    height: height / 1.5,
+    width: "90%",
+    backgroundColor: "#E5E5E5",
+    borderRadius: 10,
+    padding: 10,
   },
 });
 

@@ -82,7 +82,7 @@ class RegisterScreen extends Component {
               </TouchableOpacity>
               <Text
                 style={{
-                  color: "#ACABB4",
+                  color: "#ACABB4;",
                   fontFamily: font.SemiBold,
                   textAlign: "center",
                   fontSize: 16,

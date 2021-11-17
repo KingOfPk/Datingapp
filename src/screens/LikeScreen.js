@@ -79,10 +79,16 @@ class LikeScreen extends Component {
                   Reconnecting Loved Ones
                 </Text>
               </View> */}
-              <Image
-                source={require("../../assets/icons/Chat.png")}
-                style={{ width: 50, height: 50 }}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.navigation.navigate("ChatUserList");
+                }}
+              >
+                <Image
+                  source={require("../../assets/icons/Chat.png")}
+                  style={{ width: 50, height: 50 }}
+                />
+              </TouchableOpacity>
             </View>
           </View>
 
