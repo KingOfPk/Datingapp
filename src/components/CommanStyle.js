@@ -35,11 +35,10 @@ const Styles = StyleSheet.create({
     paddingVertical: 10,
   },
   settingHeadingText: {
-    fontFamily: font.SemiBold,
+    fontFamily: font.Medium,
     fontSize: 20,
     color: "#000",
     padding: 10,
-    fontWeight: "600",
   },
   arrowView: {
     width: 0,

@@ -42,22 +42,15 @@ class LikeScreen extends Component {
                 source={require("../../assets/images/Rectangle.png")}
                 style={{ width: 50, height: 50 }}
               />
-              <View
+              <Text
                 style={{
-                  height: "100%",
-                  width: "70%",
-                  //   backgroundColor: "green",
+                  fontFamily: font.Bold,
+                  fontSize: 24,
+                  color: "#416181",
                 }}
               >
-                <Image
-                  source={require("../../assets/icons/togatherMainLogo.png")}
-                  style={{
-                    width: "100%",
-                    height: 60,
-                    resizeMode: "contain",
-                  }}
-                />
-              </View>
+                <Text style={{ color: "#5FAEB6" }}>Together</Text> Again
+              </Text>
               {/* <View>
                 <Text
                   style={{

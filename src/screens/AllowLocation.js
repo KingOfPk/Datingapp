@@ -8,16 +8,144 @@ import {
   ActivityIndicator,
   ImageBackground,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import Button from "../components/Button";
 import color from "color";
 import { font } from "../components/fonts";
+import { SetAddress } from "../Store/Action/Data.action";
+import { check, PERMISSIONS, RESULTS, request } from "react-native-permissions";
+import Geolocation from "@react-native-community/geolocation";
+import Geocoder from "react-native-geocoder";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { Loader } from "../components/Loader";
 class AllowLocation extends Component {
-  componentDidMount = () => {};
+  constructor(props) {
+    super(props);
+    this.state = {
+      number: "",
+      isloading: true,
+    };
+    this.timeout = null;
+  }
+
+  componentDidMount = () => {
+    this.CheckLocation();
+  };
+
+  CheckLocation = () => {
+    if (Platform.OS == "ios") {
+      check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE)
+        .then((result) => {
+          switch (result) {
+            case RESULTS.UNAVAILABLE:
+              console.log("UNAVAILABLE");
+              this.setState({
+                isloading: false,
+              });
+              break;
+            case RESULTS.DENIED:
+              console.log("DENIED");
+              this.setState({
+                isloading: false,
+              });
+              break;
+            case RESULTS.GRANTED:
+              console.log("GRANTED");
+              this.SetLocation();
+              break;
+            case RESULTS.BLOCKED:
+              console.log("BLOCKED");
+              this.setState({
+                isloading: false,
+              });
+              break;
+          }
+        })
+        .catch((error) => {
+          // …
+        });
+    } else {
+      check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+        .then((result) => {
+          switch (result) {
+            case RESULTS.UNAVAILABLE:
+              console.log("UNAVAILABLE");
+              this.setState({
+                isloading: false,
+              });
+              break;
+            case RESULTS.DENIED:
+              console.log("DENIED");
+              this.setState({
+                isloading: false,
+              });
+              break;
+            case RESULTS.GRANTED:
+              console.log("GRANTED");
+              this.SetLocation();
+              break;
+            case RESULTS.BLOCKED:
+              console.log("BLOCKED");
+              this.setState({
+                isloading: false,
+              });
+              break;
+          }
+        })
+        .catch((error) => {
+          // …
+        });
+    }
+  };
+
+  AllowLocation = () => {
+    if (Platform.OS == "ios") {
+      request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((result) => {
+        console.log(result);
+        this.SetLocation();
+      });
+    } else {
+      request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION).then((result) => {
+        console.log(result);
+        this.SetLocation();
+      });
+    }
+  };
+
+  SetLocation = () => {
+    Geolocation.getCurrentPosition((info) => {
+      var cords = info.coords;
+      var NY = {
+        lat: cords.latitude,
+        lng: cords.longitude,
+      };
+
+      console.log(NY);
+
+      Geocoder.geocodePosition(NY).then((res) => {
+        // res is an Array of geocoding object (see below)
+
+        var value = res[0];
+        console.log(value);
+        this.props.SetAddress(value);
+        this.setState({
+          isloading: false,
+        });
+        this.props.navigation.navigate("LoginScreen");
+        var position = value.position;
+        var blankArray = [];
+      });
+      // });
+    });
+  };
 
   render() {
-    return (
+    return this.state.isloading ? (
+      <Loader />
+    ) : (
       <View style={styles.container}>
         <View
           style={{
@@ -61,7 +189,7 @@ class AllowLocation extends Component {
             <Button
               icon={""}
               text="ALLOW LOCATION"
-              Pressed={() => this.props.navigation.navigate("LoginScreen")}
+              Pressed={() => this.AllowLocation()}
             />
           </View>
         </View>
@@ -69,7 +197,7 @@ class AllowLocation extends Component {
           <Text
             style={{
               color: "#ACABB4",
-              fontFamily: font.SemiBold,
+              fontFamily: font.Medium,
               textAlign: "center",
               fontSize: 16,
             }}
@@ -94,7 +222,6 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     color: "white",
-    fontWeight: "bold",
   },
   headerdescription: {
     marginTop: 20,
@@ -109,4 +236,21 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AllowLocation;
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    // user: state.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      SetAddress,
+    },
+    dispatch
+  );
+}
+export default connect(mapStateToProps, mapDispatchToProps)(AllowLocation);
+// export default AllowLocation;

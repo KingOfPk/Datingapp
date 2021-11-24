@@ -68,7 +68,6 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     color: "white",
-    fontWeight: "bold",
   },
   headerdescription: {
     marginTop: 20,

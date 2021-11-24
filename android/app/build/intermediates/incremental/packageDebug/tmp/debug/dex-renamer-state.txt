@@ -1,16 +1,19 @@
-#Tue Nov 16 23:01:09 IST 2021
-path.3=14/classes.dex
-path.2=0/classes.dex
+#Wed Nov 24 12:34:47 IST 2021
 path.1=0/classes.dex
-renamed.4=classes5.dex
 path.0=classes.dex
+renamed.5=classes6.dex
+renamed.4=classes5.dex
 renamed.3=classes4.dex
 renamed.2=classes3.dex
 renamed.1=classes2.dex
-base.4=D\:\\react-native\\Pawan sir\\testprojects\\dating\\android\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
 renamed.0=classes.dex
-base.3=D\:\\react-native\\Pawan sir\\testprojects\\dating\\android\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
-base.2=D\:\\react-native\\Pawan sir\\testprojects\\dating\\android\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.1=D\:\\react-native\\Pawan sir\\testprojects\\dating\\android\\app\\build\\intermediates\\dex\\debug\\mergeLibDexDebug\\0\\classes.dex
-base.0=D\:\\react-native\\Pawan sir\\testprojects\\dating\\android\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.5=/Users/gauravjain/Desktop/NODE/Dating2/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes2.dex
+base.4=/Users/gauravjain/Desktop/NODE/Dating2/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/8/classes.dex
+base.3=/Users/gauravjain/Desktop/NODE/Dating2/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/14/classes.dex
+base.2=/Users/gauravjain/Desktop/NODE/Dating2/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.1=/Users/gauravjain/Desktop/NODE/Dating2/android/app/build/intermediates/dex/debug/mergeLibDexDebug/0/classes.dex
+base.0=/Users/gauravjain/Desktop/NODE/Dating2/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+path.5=0/classes2.dex
 path.4=8/classes.dex
+path.3=14/classes.dex
+path.2=0/classes.dex

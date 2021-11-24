@@ -64,7 +64,7 @@ class ActivePlans extends Component {
                   <Text
                     style={{
                       fontFamily: font.Regular,
-                      fontWeight: "400",
+
                       color: "rgba(0, 0, 0, 0.81)",
                       left: 10,
                       paddingVertical: 5,
@@ -88,7 +88,7 @@ class ActivePlans extends Component {
                 <View style={[Styles.rowContainer, { width: "100%" }]}>
                   <Text
                     style={{
-                      fontFamily: font.SemiBold,
+                      fontFamily: font.Medium,
                       color: "#fff",
                       fontSize: 18,
                       left: 10,

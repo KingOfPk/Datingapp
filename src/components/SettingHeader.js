@@ -23,7 +23,7 @@ const SettingHeader = ({ title, onPress }) => {
         <Text
           style={{
             color: "#fff",
-            fontFamily: font.SemiBold,
+            fontFamily: font.Medium,
             fontSize: 20,
           }}
         >

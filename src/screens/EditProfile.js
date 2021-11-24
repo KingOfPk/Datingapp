@@ -247,10 +247,9 @@ class EditProfile extends Component {
 }
 const styles = StyleSheet.create({
   headingText: {
-    fontFamily: font.SemiBold,
+    fontFamily: font.Medium,
     fontSize: 20,
     color: "#000",
-    fontWeight: "600",
   },
   updateText: {
     fontFamily: font.Regular,

@@ -84,7 +84,7 @@ class ChatUserList extends Component {
               </View>
               <Text
                 style={{
-                  fontFamily: font.SemiBold,
+                  fontFamily: font.Medium,
                   fontSize: 18,
                   color: "#fff",
                   marginLeft: 10,
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   lastMessage: {
-    fontFamily: font.SemiBold,
+    fontFamily: font.Medium,
     color: "#000",
     fontSize: 16,
   },

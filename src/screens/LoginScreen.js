@@ -17,6 +17,13 @@ import { font } from "../components/fonts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "react-native-ui-lib";
 import { ScrollView } from "react-native-gesture-handler";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import Toast from "react-native-simple-toast";
+import { Loader } from "../components/Loader";
 class LoginScreen extends Component {
   constructor(props) {
     super(props);
@@ -34,14 +41,58 @@ class LoginScreen extends Component {
         { label: "90", value: 90 },
         { label: "100", value: 100 },
       ],
+      number: "",
+      isloading: false,
     };
     this.timeout = null;
   }
 
-  componentDidMount = () => {};
+  componentDidMount = () => {
+    console.log(baseurl);
+  };
+
+  Login = () => {
+    if (this.state.number == "") {
+      Toast.show("Enter your phone number", Toast.LONG);
+    } else {
+      this.setState({
+        isloading: true,
+      });
+      var data = JSON.stringify({
+        phone: this.state.number,
+      });
+
+      var config = {
+        method: "post",
+        url: `${baseurl}/api/v1/sessions/login`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
+
+      axios(config)
+        .then((response) => {
+          console.log(JSON.stringify(response.data));
+          this.setState({
+            isloading: false,
+          });
+          this.props.navigation.navigate("OtpScreen", {
+            data: this.state.number,
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+      // this.props.navigation.navigate("OtpScreen");
+    }
+  };
 
   render() {
-    return (
+    return this.state.isloading ? (
+      <Loader />
+    ) : (
       <View style={styles.container}>
         <SafeAreaView style={{ width: "100%" }}>
           <View
@@ -60,7 +111,7 @@ class LoginScreen extends Component {
             </TouchableOpacity>
           </View>
         </SafeAreaView>
-        <ScrollView style={{ width: "100%", height: "100%" }}>
+        <KeyboardAwareScrollView style={{ width: "100%", height: "100%" }}>
           <View style={{ width: "100%", padding: 15 }}>
             <View style={styles.inputContainer}>
               <Text style={{ fontSize: 16, fontFamily: font.Light }}>
@@ -73,42 +124,19 @@ class LoginScreen extends Component {
                   justifyContent: "space-between",
                 }}
               >
-                <Picker
-                  showSearch={true}
-                  // placeholderTextColor={numberVarified ? "#666" : "#ddd"}
-
-                  style={{
-                    height: 40,
-                    paddingLeft: 5,
-                    color: "#000",
-                    fontFamily: font.Bold,
-                    fontSize: 18,
-                    width: "90%",
-                  }}
-                  topBarProps={{ title: "Languages" }}
-                  listProps={{ keyboardShouldPersistTaps: "always" }}
-                  hideUnderline
-                  placeholderTextColor="#000"
-                  placeholder={"United Kingdom"}
-                  // value={CatList}
-                  onChange={(items) => this.SelectedCategory(items, index)}
-                  // mode={Picker.modes.MULTI}
-                  topBarProps={"COUNTRY"}
-                  // rightIconSource={require('../../assets/icons/chevron-down.png')}
+                <View
+                  style={[styles.inputTextStyle, { justifyContent: "center" }]}
                 >
-                  {this.state.allCategory.map((item, index) => (
-                    <Picker.Item
-                      isSelected={true}
-                      selectedIconColor="#000"
-                      // disabled={CatList.some((itm) => itm == item.label)}
-                      // key={index}
-                      value={{
-                        label: item.label,
-                        value: item.value,
-                      }}
-                    />
-                  ))}
-                </Picker>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontFamily: font.Bold,
+                      color: "#000",
+                    }}
+                  >
+                    {this.props.Address.country}
+                  </Text>
+                </View>
                 <Image
                   source={require("../../assets/icons/chevron-down.png")}
                   style={{ width: 30, height: 30 }}
@@ -128,8 +156,14 @@ class LoginScreen extends Component {
               >
                 <TextInput
                   keyboardType="number-pad"
-                  placeholder="9999290377"
+                  placeholder=""
                   placeholderTextColor="#000"
+                  maxLength={11}
+                  onChangeText={(text) =>
+                    this.setState({
+                      number: text,
+                    })
+                  }
                   style={styles.inputTextStyle}
                 />
                 <Image
@@ -143,7 +177,7 @@ class LoginScreen extends Component {
             <Text
               style={{
                 color: "#ACABB4",
-                fontFamily: font.SemiBold,
+                fontFamily: font.Medium,
                 textAlign: "center",
                 fontSize: 16,
               }}
@@ -162,13 +196,10 @@ class LoginScreen extends Component {
             }}
           >
             <View style={{ width: "75%", height: 120 }}>
-              <Button
-                text="CONTINUE"
-                Pressed={() => this.props.navigation.navigate("OtpScreen")}
-              />
+              <Button text="CONTINUE" Pressed={() => this.Login()} />
             </View>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
     );
   }
@@ -186,7 +217,6 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     color: "white",
-    fontWeight: "bold",
   },
   headerdescription: {
     marginTop: 20,
@@ -212,9 +242,19 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     fontSize: 18,
-    fontWeight: "600",
+
     fontFamily: font.Bold,
   },
 });
 
-export default LoginScreen;
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    // user: state.user,
+  };
+}
+
+export default connect(mapStateToProps)(LoginScreen);
+
+// export default LoginScreen;

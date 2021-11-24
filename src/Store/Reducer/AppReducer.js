@@ -1,12 +1,13 @@
 const initialState = {
   user: {},
+  address: {},
 };
 
 export default function (state = initialState, action) {
   // console.log(action.payload)
   switch (action.type) {
-    case 'GET_USER_DETAIL':
-      return {...state, user: action.payload};
+    case "SETADDRESS":
+      return { ...state, address: action.payload };
 
     default:
       return state;

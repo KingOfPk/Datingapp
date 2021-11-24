@@ -8,10 +8,17 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  AsyncStorage,
 } from "react-native";
 import Button from "../components/Button";
 import { font } from "../components/fonts";
 import RangeSliderRN from "rn-range-slider";
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { getUserDetail } from "../Store/Action/User.action";
+import { Loader } from "../components/Loader";
 const { height, width } = Dimensions.get("window");
 
 import Label from "./RangeSlider/Label";
@@ -35,16 +42,83 @@ class ChooseAgeOrDistance extends Component {
       heighAge: 60,
       minDistance: 20,
       maxDistance: 60,
+      isloading: false,
     };
   }
+
+  SetConnections = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    this.setState({
+      isloading: true,
+    });
+    var data = JSON.stringify({
+      min_age: this.state.LowAge,
+      max_age: this.state.heighAge,
+    });
+
+    var config = {
+      method: "put",
+      url: `${baseurl}/api/v1/preferences/update_user_age`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+
+        var data1 = JSON.stringify({
+          min_distance: this.state.minDistance,
+          max_distance: this.state.maxDistance,
+        });
+
+        var config = {
+          method: "put",
+          url: `${baseurl}/api/v1/preferences/update_user_distance`,
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+          data: data1,
+        };
+        console.log(config);
+
+        axios(config)
+          .then((response) => {
+            console.log(JSON.stringify(response.data));
+            var res = response.data;
+            this.setState({
+              isloading: false,
+            });
+            this.props.navigation.navigate("HomeScreen");
+            // this.props.navigation.navigate("ChooseInterest");
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        // this.props.navigation.navigate("ChooseInterest");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   render() {
-    const { LowAge, heighAge, minDistance, maxDistance } = this.state;
+    const { LowAge, heighAge, minDistance, maxDistance, isloading } =
+      this.state;
 
     const left = (this.state.LowAge * (width - 60)) / 100 - 15;
     const right = (this.state.heighAge * (width - 60)) / 100 - 15;
     const DistLeft = (this.state.minDistance * (width - 60)) / 100 - 15;
     const DistRight = (this.state.maxDistance * (width - 60)) / 100 - 15;
-    return (
+    return isloading ? (
+      <Loader />
+    ) : (
       <View style={styles.container}>
         {/* <ScrollView style={{ width: "100%", height: "100%" }}> */}
         <View
@@ -56,9 +130,13 @@ class ChooseAgeOrDistance extends Component {
           }}
         >
           <View style={styles.rowContainer}>
-            <Text style={styles.userNameText}>Steven,</Text>
+            <Text style={styles.userNameText}>{this.props.user.name},</Text>
             <Image
-              source={require("../../assets/images/dummyUser.png")}
+              source={
+                this.props.user.profile_pic.url
+                  ? { uri: baseurl + this.props.user.profile_pic.url }
+                  : require("../../assets/images/dummyUser.png")
+              }
               style={styles.userImage}
             />
           </View>
@@ -67,7 +145,7 @@ class ChooseAgeOrDistance extends Component {
             <Text
               style={[
                 styles.headingText,
-                { color: "#ACABB4", left: 5, fontStyle: "italic" },
+                { color: "#5FAEB6", left: 5, fontStyle: "italic" },
               ]}
             >
               age
@@ -78,7 +156,7 @@ class ChooseAgeOrDistance extends Component {
             <Text
               style={[
                 styles.headingText,
-                { color: "#ACABB4", left: 5, fontStyle: "italic" },
+                { color: "#5FAEB6", left: 5, fontStyle: "italic" },
               ]}
             >
               distance
@@ -115,7 +193,7 @@ class ChooseAgeOrDistance extends Component {
             renderThumb={renderThumb()}
             renderRail={renderRail}
             renderRailSelected={renderRailSelected}
-            renderLabel={renderLabel}
+            renderLabel={null}
             renderNotch={renderNotch}
             onValueChanged={(low, high, fromUser) => {
               this.setState({ LowAge: low, heighAge: high });
@@ -130,17 +208,8 @@ class ChooseAgeOrDistance extends Component {
               justifyContent: "space-between",
             }}
           >
-            <Text
-              style={[
-                styles.headingText,
-                { marginLeft: LowAge == 20 ? 0 : left },
-              ]}
-            >
-              {this.state.LowAge}
-            </Text>
-            <Text style={[styles.headingText, { marginLeft: right - left }]}>
-              {this.state.heighAge}
-            </Text>
+            <Text style={[styles.headingText]}>{this.state.LowAge}</Text>
+            <Text style={[styles.headingText]}>{this.state.heighAge}</Text>
           </View>
           <View
             style={{
@@ -188,22 +257,8 @@ class ChooseAgeOrDistance extends Component {
               justifyContent: "space-between",
             }}
           >
-            <Text
-              style={[
-                styles.headingText,
-                { marginLeft: minDistance == 20 ? 0 : DistLeft },
-              ]}
-            >
-              {this.state.minDistance}
-            </Text>
-            <Text
-              style={[
-                styles.headingText,
-                { marginRight: DistRight - DistLeft },
-              ]}
-            >
-              {this.state.maxDistance}
-            </Text>
+            <Text style={[styles.headingText]}>{this.state.minDistance}</Text>
+            <Text style={[styles.headingText]}>{this.state.maxDistance}</Text>
           </View>
           <View
             style={{ width: "85%", paddingTop: "15%", alignSelf: "center" }}
@@ -211,7 +266,7 @@ class ChooseAgeOrDistance extends Component {
             <Button
               text="Save"
               backgroundColor="#5FAEB6"
-              Pressed={() => this.props.navigation.navigate("HomeScreen")}
+              Pressed={() => this.SetConnections()}
             />
           </View>
         </View>
@@ -233,7 +288,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   headingText: {
-    fontFamily: font.SemiBold,
+    fontFamily: font.Medium,
     fontSize: 25,
     color: "#000",
   },
@@ -247,7 +302,30 @@ const styles = StyleSheet.create({
   userImage: {
     width: 80,
     height: 80,
-    resizeMode: "contain",
+    // resizeMode: "contain",
+    borderRadius: 40,
   },
 });
-export default ChooseAgeOrDistance;
+
+function mapStateToProps(state) {
+  console.log(state.User.user.bio);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ChooseAgeOrDistance);
+// export default ChooseAgeOrDistance;

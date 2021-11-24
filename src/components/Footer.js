@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { SafeAreaView } from "react-native";
 import {
   Button,
   View,
@@ -17,68 +18,70 @@ export default Footer = ({
   homePress,
 }) => {
   return (
-    <View
-      style={{
-        width: "100%",
-        height: 60,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingHorizontal: 10,
-        backgroundColor: "#fff",
-      }}
-    >
+    <SafeAreaView style={{ width: "100%" }}>
       <View
-        style={
-          selectedIcon == "Home" ? styles.selectedBtn : styles.btnContainer
-        }
+        style={{
+          width: "100%",
+          height: 60,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingHorizontal: 10,
+          backgroundColor: "#fff",
+        }}
       >
-        <TouchableOpacity onPress={homePress} style={styles.btn}>
-          <Image
-            source={require("../../assets/icons/Compass.png")}
-            style={{ width: 30, height: 30 }}
-          />
-        </TouchableOpacity>
+        <View
+          style={
+            selectedIcon == "Home" ? styles.selectedBtn : styles.btnContainer
+          }
+        >
+          <TouchableOpacity onPress={homePress} style={styles.btn}>
+            <Image
+              source={require("../../assets/icons/Compass.png")}
+              style={{ width: 30, height: 30 }}
+            />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={
+            selectedIcon == "Like" ? styles.selectedBtn : styles.btnContainer
+          }
+        >
+          <TouchableOpacity onPress={likePress} style={styles.btn}>
+            <Image
+              source={require("../../assets/icons/Hand.png")}
+              style={{ width: 30, height: 30 }}
+            />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={
+            selectedIcon == "Preference"
+              ? styles.selectedBtn
+              : styles.btnContainer
+          }
+        >
+          <TouchableOpacity onPress={preferencePress} style={styles.btn}>
+            <Image
+              source={require("../../assets/icons/Slider.png")}
+              style={{ width: 30, height: 30 }}
+            />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={
+            selectedIcon == "Setting" ? styles.selectedBtn : styles.btnContainer
+          }
+        >
+          <TouchableOpacity onPress={settingPress} style={styles.btn}>
+            <Image
+              source={require("../../assets/icons/Settings.png")}
+              style={{ width: 30, height: 30 }}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-      <View
-        style={
-          selectedIcon == "Like" ? styles.selectedBtn : styles.btnContainer
-        }
-      >
-        <TouchableOpacity onPress={likePress} style={styles.btn}>
-          <Image
-            source={require("../../assets/icons/Hand.png")}
-            style={{ width: 30, height: 30 }}
-          />
-        </TouchableOpacity>
-      </View>
-      <View
-        style={
-          selectedIcon == "Preference"
-            ? styles.selectedBtn
-            : styles.btnContainer
-        }
-      >
-        <TouchableOpacity onPress={preferencePress} style={styles.btn}>
-          <Image
-            source={require("../../assets/icons/Slider.png")}
-            style={{ width: 30, height: 30 }}
-          />
-        </TouchableOpacity>
-      </View>
-      <View
-        style={
-          selectedIcon == "Setting" ? styles.selectedBtn : styles.btnContainer
-        }
-      >
-        <TouchableOpacity onPress={settingPress} style={styles.btn}>
-          <Image
-            source={require("../../assets/icons/Settings.png")}
-            style={{ width: 30, height: 30 }}
-          />
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({

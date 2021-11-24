@@ -7,9 +7,16 @@ import {
   Dimensions,
   TouchableOpacity,
   FlatList,
+  AsyncStorage,
 } from "react-native";
 import Button from "../components/Button";
 import { font } from "../components/fonts";
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { getUserDetail } from "../Store/Action/User.action";
+import { Loader } from "../components/Loader";
 const { height, width } = Dimensions.get("window");
 
 class ChooseInterest extends Component {
@@ -17,13 +24,51 @@ class ChooseInterest extends Component {
     super(props);
     this.state = {
       selectedInterestType: "",
+      isloading: false,
     };
   }
 
-  render() {
-    const { selectedInterestType } = this.state;
+  SetConnections = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    this.setState({
+      isloading: true,
+    });
+    var data = JSON.stringify({
+      interest_ids: this.state.selectedInterestType,
+    });
 
-    return (
+    var config = {
+      method: "put",
+      url: `${baseurl}/api/v1/preferences/interest_update`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+        this.setState({
+          isloading: false,
+        });
+        // this.props.navigation.navigate("ChooseConnections");
+        this.props.navigation.navigate("ChooseLookingFor");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  render() {
+    const { selectedInterestType, isloading } = this.state;
+
+    return isloading ? (
+      <Loader />
+    ) : (
       <View style={styles.container}>
         <View
           style={{
@@ -34,9 +79,13 @@ class ChooseInterest extends Component {
           }}
         >
           <View style={styles.rowContainer}>
-            <Text style={styles.userNameText}>Steven,</Text>
+            <Text style={styles.userNameText}>{this.props.user.name},</Text>
             <Image
-              source={require("../../assets/images/dummyUser.png")}
+              source={
+                this.props.user.profile_pic.url
+                  ? { uri: baseurl + this.props.user.profile_pic.url }
+                  : require("../../assets/images/dummyUser.png")
+              }
               style={styles.userImage}
             />
           </View>
@@ -45,7 +94,7 @@ class ChooseInterest extends Component {
             <Text
               style={[
                 styles.headingText,
-                { color: "#ACABB4", left: 5, fontStyle: "italic" },
+                { color: "#5FAEB6", left: 5, fontStyle: "italic" },
               ]}
             >
               interested
@@ -72,42 +121,42 @@ class ChooseInterest extends Component {
               <TouchableOpacity
                 onPress={() => {
                   this.setState({
-                    selectedInterestType: "Men",
+                    selectedInterestType: "1",
                   });
                 }}
                 style={[
                   styles.connectionTypeContainer,
 
-                  selectedInterestType == "Men"
+                  selectedInterestType == "1"
                     ? { borderWidth: 3 }
                     : { borderWidth: 0 },
-                  selectedInterestType == "Men"
+                  selectedInterestType == "1"
                     ? { borderColor: "#5FAEB6" }
                     : { borderColor: "none" },
                 ]}
               >
-                <Text style={{ fontFamily: font.SemiBold, color: "#fff" }}>
+                <Text style={{ fontFamily: font.Medium, color: "#fff" }}>
                   {"Men"}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
                   this.setState({
-                    selectedInterestType: "Women",
+                    selectedInterestType: "2",
                   });
                 }}
                 style={[
                   styles.connectionTypeContainer,
 
-                  selectedInterestType == "Women"
+                  selectedInterestType == "2"
                     ? { borderWidth: 3 }
                     : { borderWidth: 0 },
-                  selectedInterestType == "Women"
+                  selectedInterestType == "2"
                     ? { borderColor: "#5FAEB6" }
                     : { borderColor: "none" },
                 ]}
               >
-                <Text style={{ fontFamily: font.SemiBold, color: "#fff" }}>
+                <Text style={{ fontFamily: font.Medium, color: "#fff" }}>
                   {"Women"}
                 </Text>
               </TouchableOpacity>
@@ -115,16 +164,16 @@ class ChooseInterest extends Component {
             <TouchableOpacity
               onPress={() => {
                 this.setState({
-                  selectedInterestType: "Both",
+                  selectedInterestType: "3",
                 });
               }}
               style={[
                 styles.connectionTypeContainer,
 
-                selectedInterestType == "Both"
+                selectedInterestType == "3"
                   ? { borderWidth: 3 }
                   : { borderWidth: 0 },
-                selectedInterestType == "Both"
+                selectedInterestType == "3"
                   ? { borderColor: "#5FAEB6" }
                   : { borderColor: "none" },
                 {
@@ -132,7 +181,7 @@ class ChooseInterest extends Component {
                 },
               ]}
             >
-              <Text style={{ fontFamily: font.SemiBold, color: "#fff" }}>
+              <Text style={{ fontFamily: font.Medium, color: "#fff" }}>
                 {"Both"}
               </Text>
             </TouchableOpacity>
@@ -141,7 +190,7 @@ class ChooseInterest extends Component {
             <Button
               text="Save"
               backgroundColor="#5FAEB6"
-              Pressed={() => this.props.navigation.navigate("ChooseLookingFor")}
+              Pressed={() => this.SetConnections()}
             />
           </View>
         </View>
@@ -163,7 +212,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   headingText: {
-    fontFamily: font.SemiBold,
+    fontFamily: font.Medium,
     fontSize: 25,
     color: "#000",
   },
@@ -178,7 +227,8 @@ const styles = StyleSheet.create({
   userImage: {
     width: 80,
     height: 80,
-    resizeMode: "contain",
+    // resizeMode: "contain",
+    borderRadius: 40,
   },
   connectionTypeContainer: {
     width: width / 3.1,
@@ -198,4 +248,22 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
-export default ChooseInterest;
+
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+export default connect(mapStateToProps, mapDispatchToProps)(ChooseInterest);
+// export default ChooseInterest;

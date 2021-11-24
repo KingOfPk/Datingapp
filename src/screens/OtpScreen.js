@@ -17,12 +17,100 @@ import color from "color";
 import { font } from "../components/fonts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import OtpInputs from "react-native-otp-inputs";
-
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Loader } from "../components/Loader";
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import Toast from "react-native-simple-toast";
+import { getUserDetail } from "../Store/Action/User.action";
 class OtpScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      code: "",
+      number: "",
+      isloading: false,
+    };
+    this.timeout = null;
+  }
+
   componentDidMount = () => {};
 
+  CheckOtp = () => {
+    var data = JSON.stringify({
+      otp: this.state.code,
+      phone: this.props.route.params.data,
+    });
+
+    this.setState({
+      isloading: true,
+    });
+
+    var config = {
+      method: "post",
+      url: `${baseurl}/api/v1/sessions/check_otp`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(async (response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+        if (res.user_type && res.user_type == "new_user") {
+          this.props.navigation.navigate("RegisterScreen", {
+            mobile: this.props.route.params.data,
+          });
+        } else {
+          console.log(res.data);
+          await AsyncStorage.setItem("userToken", res.data.token);
+          await AsyncStorage.setItem("userID", res.data.id.toString());
+          this.props.getUserDetail(res.data);
+          if (!res.data.is_bio) {
+            console.log("Isbio");
+            this.props.navigation.navigate("RecordBio");
+          } else if (!res.data.is_connection) {
+            console.log("Isconnection");
+            this.props.navigation.navigate("ChooseConnections");
+          } else if (!res.data.is_interests) {
+            console.log("Interes");
+            this.props.navigation.navigate("ChooseInterest");
+          } else if (!res.data.is_lookings) {
+            console.log("Looking");
+            this.props.navigation.navigate("ChooseLookingFor");
+          } else if (!res.data.is_loves) {
+            console.log("Love");
+            this.props.navigation.navigate("ChooseHobby");
+          } else if (!res.data.is_user_distance) {
+            console.log("dsictance");
+            this.props.navigation.navigate("ChooseAgeOrDistance");
+          } else {
+            this.props.navigation.navigate("HomeScreen");
+          }
+        }
+        this.setState({
+          isloading: false,
+        });
+        // this.props.navigation.navigate("RegisterScreen");
+      })
+      .catch((error) => {
+        console.log(error);
+        Toast.show("Enter your correct otp", Toast.LONG);
+        this.setState({
+          isloading: false,
+        });
+      });
+    // this.props.navigation.navigate("RegisterScreen");
+  };
+
   render() {
-    return (
+    return this.state.isloading ? (
+      <Loader />
+    ) : (
       <View style={styles.container}>
         <SafeAreaView style={{ width: "100%" }}>
           <View
@@ -41,28 +129,31 @@ class OtpScreen extends Component {
             </TouchableOpacity>
           </View>
         </SafeAreaView>
-        <ScrollView style={{ width: "100%", height: "100%" }}>
+        <KeyboardAwareScrollView
+          extraScrollHeight={220}
+          style={{ width: "100%", height: "100%" }}
+        >
           <View style={{ width: "100%", padding: 15 }}>
             <View style={{ width: "100%", marginTop: 10 }}>
               <Text
                 style={{
                   color: "rgba(0, 0, 0, 0.82);",
-                  fontFamily: font.SemiBold,
+                  fontFamily: font.Medium,
                   textAlign: "center",
                   fontSize: 16,
                 }}
               >
-                Please enter 4-Digit OTP Sent to +44 9999290377
+                Please enter 4-Digit OTP Sent to {"\n"} +44{" "}
+                {this.props.route.params.data}
               </Text>
             </View>
             <View style={{ width: "100%", marginTop: 30 }}>
               <Text
                 style={{
                   color: "#406284",
-                  fontFamily: font.SemiBold,
+                  fontFamily: font.Medium,
                   textAlign: "center",
                   fontSize: 16,
-                  fontWeight: "500",
                 }}
               >
                 Resend OTP
@@ -117,13 +208,10 @@ class OtpScreen extends Component {
             }}
           >
             <View style={{ width: "75%" }}>
-              <Button
-                text="ACCEPT"
-                Pressed={() => this.props.navigation.navigate("RegisterScreen")}
-              />
+              <Button text="ACCEPT" Pressed={() => this.CheckOtp()} />
             </View>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
     );
   }
@@ -141,7 +229,6 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     color: "white",
-    fontWeight: "bold",
   },
   headerdescription: {
     marginTop: 20,
@@ -165,4 +252,21 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OtpScreen;
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    // user: state.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+export default connect(mapStateToProps, mapDispatchToProps)(OtpScreen);
+// export default OtpScreen;

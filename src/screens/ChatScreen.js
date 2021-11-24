@@ -99,7 +99,7 @@ class ChatScreen extends Component {
                 <Text
                   style={{
                     color: "#fff",
-                    fontFamily: font.SemiBold,
+                    fontFamily: font.Medium,
                     fontSize: 20,
                     marginLeft: 20,
                   }}

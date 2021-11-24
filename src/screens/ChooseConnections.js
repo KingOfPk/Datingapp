@@ -7,9 +7,16 @@ import {
   Dimensions,
   TouchableOpacity,
   FlatList,
+  AsyncStorage,
 } from "react-native";
 import Button from "../components/Button";
 import { font } from "../components/fonts";
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { getUserDetail } from "../Store/Action/User.action";
+import { Loader } from "../components/Loader";
 const { height, width } = Dimensions.get("window");
 
 class ChooseConnections extends Component {
@@ -35,21 +42,95 @@ class ChooseConnections extends Component {
           name: "Meetups",
         },
       ],
+      isloading: true,
     };
   }
   selectType = (selectedItemId) => {
     console.log(selectedItemId);
     const tempAray = this.state.selectedConnectionType;
-    tempAray.push({ id: selectedItemId });
+    tempAray.push(selectedItemId);
     this.setState({
       selectedConnectionType: tempAray,
     });
     console.log(this.state.selectedConnectionType);
   };
 
+  componentDidMount = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    this.setState({
+      isloading: true,
+    });
+    var data = JSON.stringify({
+      bio_description: this.state.bio_description,
+      bio_audio: this.state.AudioUri,
+    });
+
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/preferences/connections`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+
+        this.setState({
+          isloading: false,
+          connectionType: res.data,
+        });
+        // this.props.navigation.navigate("ChooseConnections");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  SetConnections = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    this.setState({
+      isloading: true,
+    });
+    var data = JSON.stringify({
+      connection_ids: this.state.selectedConnectionType.toString(),
+    });
+
+    var config = {
+      method: "put",
+      url: `${baseurl}/api/v1/preferences/connection_update`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+        this.setState({
+          isloading: false,
+        });
+        // this.props.navigation.navigate("ChooseConnections");
+        this.props.navigation.navigate("ChooseInterest");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   render() {
-    const { connectionType, selectedConnectionType } = this.state;
-    return (
+    const { connectionType, selectedConnectionType, isloading } = this.state;
+    return isloading ? (
+      <Loader />
+    ) : (
       <View style={styles.container}>
         <View
           style={{
@@ -60,9 +141,13 @@ class ChooseConnections extends Component {
           }}
         >
           <View style={styles.rowContainer}>
-            <Text style={styles.userNameText}>Steven,</Text>
+            <Text style={styles.userNameText}>{this.props.user.name},</Text>
             <Image
-              source={require("../../assets/images/dummyUser.png")}
+              source={
+                this.props.user.profile_pic.url
+                  ? { uri: baseurl + this.props.user.profile_pic.url }
+                  : require("../../assets/images/dummyUser.png")
+              }
               style={styles.userImage}
             />
           </View>
@@ -109,20 +194,16 @@ class ChooseConnections extends Component {
                     style={[
                       styles.connectionTypeContainer,
 
-                      selectedConnectionType.some(
-                        (check) => check.id == item.id
-                      )
+                      selectedConnectionType.some((check) => check == item.id)
                         ? { borderWidth: 3 }
                         : { borderWidth: 0 },
-                      selectedConnectionType.some(
-                        (check) => check.id == item.id
-                      )
+                      selectedConnectionType.some((check) => check == item.id)
                         ? { borderColor: "#5FAEB6" }
                         : { borderColor: "none" },
                     ]}
                   >
-                    <Text style={{ fontFamily: font.SemiBold, color: "#fff" }}>
-                      {item.name}
+                    <Text style={{ fontFamily: font.Medium, color: "#fff" }}>
+                      {item.title}
                     </Text>
                   </TouchableOpacity>
                 );
@@ -140,7 +221,7 @@ class ChooseConnections extends Component {
             <Button
               text="Save"
               backgroundColor="#5FAEB6"
-              Pressed={() => this.props.navigation.navigate("ChooseInterest")}
+              Pressed={() => this.SetConnections()}
             />
           </View>
         </View>
@@ -162,7 +243,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   headingText: {
-    fontFamily: font.SemiBold,
+    fontFamily: font.Medium,
     fontSize: 25,
     color: "#000",
   },
@@ -177,7 +258,8 @@ const styles = StyleSheet.create({
   userImage: {
     width: 80,
     height: 80,
-    resizeMode: "contain",
+    // resizeMode: "contain",
+    borderRadius: 40,
   },
   connectionTypeContainer: {
     width: width / 3.1,
@@ -200,4 +282,23 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
-export default ChooseConnections;
+
+function mapStateToProps(state) {
+  console.log(state.User.user.bio);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChooseConnections);
+// export default ChooseConnections;

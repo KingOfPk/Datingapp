@@ -19,6 +19,12 @@ import { font } from "../components/fonts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "react-native-ui-lib";
 import { fonts } from "react-native-elements/dist/config";
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { getUserDetail } from "../Store/Action/User.action";
+import { Loader } from "../components/Loader";
 const { width, height } = Dimensions.get("window");
 class OnBoarding extends Component {
   constructor(props) {
@@ -44,6 +50,7 @@ class OnBoarding extends Component {
   componentDidMount = () => {};
 
   render() {
+    console.log(this.props.user.profile_pic);
     return (
       <View style={styles.container}>
         <View
@@ -56,14 +63,14 @@ class OnBoarding extends Component {
         >
           <View style={styles.rowContainer}>
             <View>
-              <Text style={styles.headingText}>Steven,</Text>
+              <Text style={styles.headingText}>{this.props.user.name}</Text>
               <Text
                 style={[
                   styles.headingText,
                   {
                     fontSize: 18,
-                    fontWeight: "400",
-                    fontFamily: font.SemiBold,
+
+                    fontFamily: font.Medium,
                   },
                 ]}
               >
@@ -72,7 +79,11 @@ class OnBoarding extends Component {
             </View>
 
             <Image
-              source={require("../../assets/images/dummyUser.png")}
+              source={
+                this.props.user.profile_pic.url
+                  ? { uri: baseurl + this.props.user.profile_pic.url }
+                  : require("../../assets/images/dummyUser.png")
+              }
               style={styles.userImage}
             />
           </View>
@@ -155,7 +166,8 @@ const styles = StyleSheet.create({
   userImage: {
     width: 80,
     height: 80,
-    resizeMode: "contain",
+    // resizeMode: "contain",
+    borderRadius: 40,
   },
   headerdescription: {
     marginTop: 20,
@@ -188,4 +200,23 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OnBoarding;
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(OnBoarding);
+
+// export default OnBoarding;

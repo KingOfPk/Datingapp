@@ -1,5 +1,6 @@
-com/dating/MainActivity.java
- com.dating.MainActivity
+com/dating/MainApplication.java
+ com.dating.MainApplication
+ com.dating.MainApplication$1
 com/dating/BuildConfig.java
  com.dating.BuildConfig
 com/dating/ReactNativeFlipper.java
@@ -9,6 +10,5 @@ com/dating/ReactNativeFlipper.java
  com.dating.ReactNativeFlipper$2$1
 com/facebook/react/PackageList.java
  com.facebook.react.PackageList
-com/dating/MainApplication.java
- com.dating.MainApplication
- com.dating.MainApplication$1
+com/dating/MainActivity.java
+ com.dating.MainActivity

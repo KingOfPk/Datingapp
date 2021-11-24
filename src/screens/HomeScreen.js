@@ -20,6 +20,12 @@ import { font } from "../components/fonts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "react-native-ui-lib";
 import Footer from "../components/Footer";
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { getUserDetail } from "../Store/Action/User.action";
+import { Loader } from "../components/Loader";
 const { width, height } = Dimensions.get("window");
 class HomeScreen extends Component {
   constructor(props) {
@@ -122,8 +128,12 @@ class HomeScreen extends Component {
               }}
             >
               <Image
-                source={require("../../assets/images/Rectangle.png")}
-                style={{ width: 50, height: 50 }}
+                source={
+                  this.props.user.profile_pic.url
+                    ? { uri: baseurl + this.props.user.profile_pic.url }
+                    : require("../../assets/images/Rectangle.png")
+                }
+                style={{ width: 50, height: 50, borderRadius: 25 }}
               />
               <Text
                 style={{
@@ -233,7 +243,7 @@ class HomeScreen extends Component {
                       <Text
                         style={{
                           fontSize: 18,
-                          fontFamily: font.SemiBold,
+                          fontFamily: font.Medium,
                           color: "#fff",
                         }}
                       >
@@ -270,7 +280,6 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     color: "white",
-    fontWeight: "bold",
   },
   headerdescription: {
     marginTop: 20,
@@ -303,4 +312,21 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+// export default HomeScreen;

@@ -58,7 +58,7 @@ class Setting extends Component {
                     <Text
                       style={{
                         fontFamily: font.Regular,
-                        fontWeight: "400",
+
                         color: "rgba(0, 0, 0, 0.81)",
                         left: 10,
                         paddingVertical: 5,

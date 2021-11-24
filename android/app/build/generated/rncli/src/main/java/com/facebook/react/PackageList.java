@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 // @react-native-clipboard/clipboard
 import com.reactnativecommunity.clipboard.ClipboardPackage;
+// @react-native-community/async-storage
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 // @react-native-community/blur
 import com.cmcewen.blurview.BlurViewPackage;
 // @react-native-community/checkbox
@@ -29,16 +31,28 @@ import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.reactnativecommunity.picker.RNCPickerPackage;
 // lottie-react-native
 import com.airbnb.android.react.lottie.LottiePackage;
+// react-native-audio-record
+import com.goodatlas.audiorecord.RNAudioRecordPackage;
+// react-native-fs
+import com.rnfs.RNFSPackage;
+// react-native-geocoder
+import com.devfd.RNGeocoder.RNGeocoderPackage;
 // react-native-gesture-handler
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+// react-native-image-crop-picker
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
 // react-native-linear-gradient
 import com.BV.LinearGradient.LinearGradientPackage;
+// react-native-permissions
+import com.zoontek.rnpermissions.RNPermissionsPackage;
 // react-native-reanimated
 import com.swmansion.reanimated.ReanimatedPackage;
 // react-native-safe-area-context
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 // react-native-screens
 import com.swmansion.rnscreens.RNScreensPackage;
+// react-native-sound-player
+import com.johnsonsu.rnsoundplayer.RNSoundPlayerPackage;
 // react-native-svg
 import com.horcrux.svg.SvgPackage;
 // react-native-ui-lib
@@ -96,6 +110,7 @@ public class PackageList {
     return new ArrayList<>(Arrays.<ReactPackage>asList(
       new MainReactPackage(mConfig),
       new ClipboardPackage(),
+      new AsyncStoragePackage(),
       new BlurViewPackage(),
       new ReactCheckBoxPackage(),
       new RNDateTimePickerPackage(),
@@ -104,11 +119,17 @@ public class PackageList {
       new NetInfoPackage(),
       new RNCPickerPackage(),
       new LottiePackage(),
+      new RNAudioRecordPackage(),
+      new RNFSPackage(),
+      new RNGeocoderPackage(),
       new RNGestureHandlerPackage(),
+      new PickerPackage(),
       new LinearGradientPackage(),
+      new RNPermissionsPackage(),
       new ReanimatedPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage(),
+      new RNSoundPlayerPackage(),
       new SvgPackage(),
       new HighlighterViewPackage(),
       new WheelPickerPackage(),

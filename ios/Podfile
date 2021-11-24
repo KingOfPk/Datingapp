@@ -14,6 +14,16 @@ target 'Dating' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
+  pod 'RNAudioRecord', :path => '../node_modules/react-native-audio-record'
+  
+  permissions_path = '../node_modules/react-native-permissions/ios'
+       pod 'Permission-Camera', :path => "#{permissions_path}/Camera/Permission-Camera.podspec"
+       pod 'Permission-MediaLibrary', :path => "#{permissions_path}/MediaLibrary/Permission-MediaLibrary.podspec"
+       pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary/Permission-PhotoLibrary.podspec"
+       pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways/Permission-LocationAlways.podspec"
+       pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse/Permission-LocationWhenInUse.podspec"
+       pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone/Permission-Microphone.podspec"
+
   target 'DatingTests' do
     inherit! :complete
     # Pods for testing

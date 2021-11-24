@@ -146,7 +146,7 @@ class YouLike extends Component {
                           {
                             color: "#ACABB4",
                             fontSize: 14,
-                            fontFamily: font.SemiBold,
+                            fontFamily: font.Medium,
                           },
                         ]}
                       >

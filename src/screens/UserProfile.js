@@ -135,8 +135,8 @@ class UserProfile extends Component {
                       style={{
                         fontSize: 18,
                         color: "#000",
-                        fontWeight: "500",
-                        fontFamily: font.SemiBold,
+
+                        fontFamily: font.Medium,
                       }}
                     >
                       30
@@ -146,7 +146,7 @@ class UserProfile extends Component {
                     style={{
                       fontSize: 16,
                       color: "#000",
-                      fontFamily: font.SemiBold,
+                      fontFamily: font.Medium,
                       marginTop: 5,
                     }}
                   >
@@ -170,8 +170,8 @@ class UserProfile extends Component {
                     style={{
                       fontSize: 16,
                       color: "#000",
-                      fontWeight: "300",
-                      fontFamily: font.SemiBold,
+
+                      fontFamily: font.Medium,
                     }}
                   >
                     Match Scrore
@@ -263,7 +263,7 @@ class UserProfile extends Component {
                 <Text
                   style={{
                     fontSize: 20,
-                    fontFamily: font.SemiBold,
+                    fontFamily: font.Medium,
                     color: "#000",
                   }}
                 >
@@ -393,7 +393,6 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     color: "white",
-    fontWeight: "bold",
   },
   shodow: {
     shadowColor: "#000",
@@ -426,7 +425,7 @@ const styles = StyleSheet.create({
   sportButtonText: {
     fontSize: 18,
     color: "#fff",
-    fontFamily: font.SemiBold,
+    fontFamily: font.Medium,
   },
 });
 
