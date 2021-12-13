@@ -24,6 +24,7 @@ import { baseurl } from "../utils/index";
 import axios from "axios";
 import Toast from "react-native-simple-toast";
 import { Loader } from "../components/Loader";
+import SoundPlayer from "react-native-sound-player";
 class LoginScreen extends Component {
   constructor(props) {
     super(props);
@@ -49,19 +50,17 @@ class LoginScreen extends Component {
 
   componentDidMount = () => {
     console.log(baseurl);
+    SoundPlayer.playUrl("https://example.com/music.mp3");
   };
 
   Login = () => {
     if (this.state.number == "") {
       Toast.show("Enter your phone number", Toast.LONG);
     } else {
-      this.setState({
-        isloading: true,
-      });
       var data = JSON.stringify({
         phone: this.state.number,
       });
-
+      console.log(data);
       var config = {
         method: "post",
         url: `${baseurl}/api/v1/sessions/login`,
@@ -74,9 +73,6 @@ class LoginScreen extends Component {
       axios(config)
         .then((response) => {
           console.log(JSON.stringify(response.data));
-          this.setState({
-            isloading: false,
-          });
           this.props.navigation.navigate("OtpScreen", {
             data: this.state.number,
           });
@@ -111,7 +107,10 @@ class LoginScreen extends Component {
             </TouchableOpacity>
           </View>
         </SafeAreaView>
-        <KeyboardAwareScrollView style={{ width: "100%", height: "100%" }}>
+        <KeyboardAwareScrollView
+          extraScrollHeight={100}
+          style={{ width: "100%", height: "100%" }}
+        >
           <View style={{ width: "100%", padding: 15 }}>
             <View style={styles.inputContainer}>
               <Text style={{ fontSize: 16, fontFamily: font.Light }}>
@@ -137,10 +136,10 @@ class LoginScreen extends Component {
                     {this.props.Address.country}
                   </Text>
                 </View>
-                <Image
+                {/* <Image
                   source={require("../../assets/icons/chevron-down.png")}
                   style={{ width: 30, height: 30 }}
-                />
+                /> */}
               </View>
             </View>
             <View style={styles.inputContainer}>

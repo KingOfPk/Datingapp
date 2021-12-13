@@ -35,6 +35,12 @@
 			</dict>
 		</dict>
 	</dict>
+  <key>NSAppTransportSecurity</key>
+  <dict>
+      <key>NSAllowsArbitraryLoads</key><true/>
+  </dict>
+  <key>NSAppleMusicUsageDescription</key>
+   <string>For playing and listining sound file</string>
   <key>NSCameraUsageDescription</key>
   <string>Camera Permission for uploading image or priscription</string>
   <key>NSLocationWhenInUseUsageDescription</key>

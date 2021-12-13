@@ -41,7 +41,7 @@ export default class Appnavigator extends Component {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="SplashScreen"
-          screenOptions={{ headerMode: false }}
+          screenOptions={{ headerMode: false, gestureEnabled: false }}
         >
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="AllowLocation" component={AllowLocation} />
@@ -61,6 +61,7 @@ export default class Appnavigator extends Component {
           <Stack.Screen name="ChooseLookingFor" component={ChooseLookingFor} />
           <Stack.Screen
             name="ChooseAgeOrDistance"
+            options={{ gestureEnabled: false }}
             component={ChooseAgeOrDistance}
           />
           <Stack.Screen name="ChatUserList" component={ChatUserList} />

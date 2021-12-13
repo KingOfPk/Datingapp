@@ -135,7 +135,9 @@ class OnBoarding extends Component {
               backgroundColor="#fff"
               textColor="#406284"
               text="CONTINUE"
-              Pressed={() => this.props.navigation.navigate("RecordBio")}
+              Pressed={() =>
+                this.props.navigation.navigate("RecordBio", { isGoback: false })
+              }
             />
           </View>
         </View>

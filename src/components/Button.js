@@ -11,9 +11,17 @@ import { font } from "../components/fonts";
 import { Icon } from "react-native-elements";
 // https://youtu.be/6-r9PVI94hE?list=RDB8G3zCnZvMU
 // https://youtu.be/6-r9PVI94hE
-const Button = ({ text, icon, Pressed, backgroundColor, textColor }) => {
+const Button = ({
+  text,
+  icon,
+  Pressed,
+  backgroundColor,
+  textColor,
+  disabled,
+}) => {
   return (
     <TouchableOpacity
+      disabled={disabled}
       onPress={Pressed}
       style={[
         styles.ButtonContainer,

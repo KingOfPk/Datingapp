@@ -12,28 +12,105 @@ import {
   ScrollView,
   Dimensions,
   FlatList,
+  SafeAreaView,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import Button from "../components/Button2";
 import color from "color";
 import { font } from "../components/fonts";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { getUserDetail } from "../Store/Action/User.action";
+import { Loader } from "../components/Loader";
 import { Picker } from "react-native-ui-lib";
 import Footer from "../components/Footer";
+import moment from "moment";
+import SoundPlayer from "react-native-sound-player";
 const { width, height } = Dimensions.get("window");
 class UserProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
       allCategory: [],
+      userData: {},
+      youBothLike: [],
+      matchScore: 0,
+      isloading: true,
+      isSoundPlaying: false,
     };
     this.timeout = null;
   }
 
-  componentDidMount = () => {};
+  componentDidMount = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/profile/${this.props.route.params.data.id}/get_user_profile`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        console.log(response);
+        var res = response.data;
+        console.log(response.data);
+        this.setState({
+          isloading: false,
+          userData: res.data,
+          islike: res.is_like,
+          matchScore: res.match_score,
+          youBothLike: res.you_both_like,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({
+          isloading: false,
+          Post: [],
+        });
+      });
+  };
+
+  PlaySound = () => {
+    SoundPlayer.playUrl(this.state.userData.bio.bio_audio.url);
+    this.setState({
+      isSoundPlaying: true,
+    });
+  };
+
+  Play = () => {
+    SoundPlayer.play();
+    this.setState({
+      isSoundPlaying: true,
+    });
+  };
+  Pause = () => {
+    SoundPlayer.pause();
+    this.setState({
+      isSoundPlaying: false,
+    });
+  };
+
+  age = (dob) => {
+    var currentDate = moment();
+    var date = moment(dob);
+    var diff = currentDate.diff(date, "years");
+    console.log(diff);
+    return diff;
+  };
 
   render() {
-    return (
+    const { userData, youBothLike, isloading, matchScore } = this.state;
+    return isloading ? (
+      <Loader />
+    ) : (
       <View style={styles.container}>
         <View
           style={{
@@ -53,7 +130,11 @@ class UserProfile extends Component {
               >
                 <ImageBackground
                   resizeMode="cover"
-                  source={require("../../assets/images/profile.png")}
+                  source={{
+                    uri: userData.profile_pic.url
+                      ? baseurl + userData.profile_pic.url
+                      : "https://bitsofco.de/content/images/2018/12/broken-1.png",
+                  }}
                   style={{ width: "100%", height: 300 }}
                 >
                   <View
@@ -119,7 +200,7 @@ class UserProfile extends Component {
                         fontFamily: font.Bold,
                       }}
                     >
-                      Jessica
+                      {userData.name}
                     </Text>
                     <Text
                       style={{
@@ -129,7 +210,7 @@ class UserProfile extends Component {
                         paddingHorizontal: 3,
                       }}
                     >
-                      O’liver,
+                      {userData.last_name}
                     </Text>
                     <Text
                       style={{
@@ -139,7 +220,7 @@ class UserProfile extends Component {
                         fontFamily: font.Medium,
                       }}
                     >
-                      30
+                      {this.age(userData.dob)}
                     </Text>
                   </View>
                   <Text
@@ -205,7 +286,7 @@ class UserProfile extends Component {
                         color: "#000",
                       }}
                     >
-                      89
+                      {matchScore}
                       <Text
                         style={{
                           fontSize: 20,
@@ -238,7 +319,7 @@ class UserProfile extends Component {
                       color: "#000",
                     }}
                   >
-                    I love go on date with you!!!
+                    {userData.bio_description ? userData.bio_description : ""}
                   </Text>
                   <ImageBackground
                     source={require("../../assets/icons/Ellipse.png")}
@@ -252,10 +333,12 @@ class UserProfile extends Component {
                       alignItems: "center",
                     }}
                   >
-                    <Image
-                      source={require("../../assets/icons/Play.png")}
-                      style={{ width: 40, height: 40, marginBottom: 8 }}
-                    />
+                    <TouchableOpacity onPress={() => this.PlaySound()}>
+                      <Image
+                        source={require("../../assets/icons/Play.png")}
+                        style={{ width: 40, height: 40, marginBottom: 8 }}
+                      />
+                    </TouchableOpacity>
                   </ImageBackground>
                 </View>
               </View>
@@ -277,21 +360,21 @@ class UserProfile extends Component {
                     marginTop: 10,
                   }}
                 >
-                  <View style={{ width: "50%", padding: 5 }}>
-                    <View style={styles.sportButton}>
-                      <Text style={styles.sportButtonText}>Sports</Text>
-                    </View>
-                  </View>
-                  <View style={{ width: "50%", padding: 5 }}>
-                    <View style={styles.sportButton}>
-                      <Text style={styles.sportButtonText}>Eating out</Text>
-                    </View>
-                  </View>
-                </View>
-                <View style={{ width: "50%", padding: 5 }}>
-                  <View style={styles.sportButton}>
-                    <Text style={styles.sportButtonText}>Vaccation</Text>
-                  </View>
+                  <FlatList
+                    data={youBothLike}
+                    style={{ flex: 1 }}
+                    numColumns={2}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                      <View style={{ width: "50%", padding: 5 }}>
+                        <View style={styles.sportButton}>
+                          <Text style={styles.sportButtonText}>
+                            {item.title}
+                          </Text>
+                        </View>
+                      </View>
+                    )}
+                  />
                 </View>
               </View>
             </View>
@@ -377,6 +460,7 @@ class UserProfile extends Component {
             </View>
           </View>
         </View>
+        <SafeAreaView></SafeAreaView>
       </View>
     );
   }
@@ -407,9 +491,10 @@ const styles = StyleSheet.create({
   },
   sportButton: {
     width: "100%",
-    height: 50,
+    // height: 50,
     backgroundColor: "#416181",
     borderRadius: 10,
+    padding: 10,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
@@ -426,6 +511,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#fff",
     fontFamily: font.Medium,
+    textAlign: "center",
   },
 });
 

@@ -38,10 +38,14 @@ class LikeScreen extends Component {
                 // height: "100%",
               }}
             >
-              <Image
-                source={require("../../assets/images/Rectangle.png")}
-                style={{ width: 50, height: 50 }}
-              />
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("Setting")}
+              >
+                <Image
+                  source={require("../../assets/images/Rectangle.png")}
+                  style={{ width: 50, height: 50 }}
+                />
+              </TouchableOpacity>
               <Text
                 style={{
                   fontFamily: font.Bold,

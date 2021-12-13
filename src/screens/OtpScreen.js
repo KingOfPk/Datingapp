@@ -24,6 +24,8 @@ import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import Toast from "react-native-simple-toast";
+import Modal from "react-native-modal";
+import Styles from "../components/CommanStyle";
 import { getUserDetail } from "../Store/Action/User.action";
 class OtpScreen extends Component {
   constructor(props) {
@@ -32,6 +34,7 @@ class OtpScreen extends Component {
       code: "",
       number: "",
       isloading: false,
+      planModal: false,
     };
     this.timeout = null;
   }
@@ -99,10 +102,12 @@ class OtpScreen extends Component {
       })
       .catch((error) => {
         console.log(error);
-        Toast.show("Enter your correct otp", Toast.LONG);
         this.setState({
           isloading: false,
+          planModal: true,
         });
+        // Toast.show("Enter your correct otp", Toast.LONG);
+        // alert("Enter your correct otp");
       });
     // this.props.navigation.navigate("RegisterScreen");
   };
@@ -212,6 +217,86 @@ class OtpScreen extends Component {
             </View>
           </View>
         </KeyboardAwareScrollView>
+        <Modal
+          onBackdropPress={() => {
+            this.setState({
+              planModal: false,
+            });
+          }}
+          onBackButtonPress={() => {
+            this.setState({ planModal: false });
+          }}
+          transparent={true}
+          isVisible={this.state.planModal}
+          style={{ margin: 0 }}
+        >
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <View
+              style={[
+                Styles.modalContainer,
+                { height: 300, backgroundColor: "#fff" },
+              ]}
+            >
+              <TouchableOpacity style={{ alignSelf: "flex-end" }}>
+                <Image
+                  source={require("../../assets/icons/Cancel.png")}
+                  style={styles.closeIcon}
+                />
+              </TouchableOpacity>
+              <Image
+                source={require("../../assets/icons/togatherMainLogo.png")}
+                style={styles.logo}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  // backgroundColor: "#f00",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#000",
+                    fontFamily: font.Medium,
+                    textAlign: "center",
+                    fontSize: 18,
+                  }}
+                >
+                  Enter your correct otp
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    this.setState({
+                      planModal: false,
+                    });
+                  }}
+                  style={[
+                    styles.buttonContainer,
+                    {
+                      backgroundColor: "#416181",
+                      height: 50,
+                      width: "45%",
+                      // marginRight: 15,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.buttonText, { color: "#fff" }]}>OK</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -249,6 +334,37 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 15,
     padding: 10,
+  },
+  planContainer: {
+    width: "28%",
+    height: 100,
+    backgroundColor: "#c4c4c4c4",
+    borderRadius: 10,
+    marginTop: "10%",
+  },
+  buttonContainer: {
+    padding: 10,
+    borderRadius: 10,
+    height: 50,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    fontFamily: font.Bold,
+    color: "#416181",
+    fontSize: 20,
+  },
+  closeIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
+  },
+  logo: {
+    width: "100%",
+    height: 100,
+    resizeMode: "contain",
+    alignSelf: "center",
   },
 });
 

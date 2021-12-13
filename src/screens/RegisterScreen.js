@@ -28,6 +28,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getUserDetail } from "../Store/Action/User.action";
 import { Loader } from "../components/Loader";
+import Icon from "react-native-vector-icons/FontAwesome";
 import moment from "moment";
 class RegisterScreen extends Component {
   constructor(props) {
@@ -37,6 +38,7 @@ class RegisterScreen extends Component {
       selectedPreference: "male",
       imageUri: "",
       name: "",
+      lastName: "",
       DOB: "",
       imageUri: "",
       isloading: false,
@@ -44,7 +46,9 @@ class RegisterScreen extends Component {
     this.timeout = null;
   }
 
-  componentDidMount = () => {};
+  componentDidMount = () => {
+    console.log(this.props.Address);
+  };
 
   selectPhotoTapped = () => {
     ImagePicker.openPicker({
@@ -53,23 +57,23 @@ class RegisterScreen extends Component {
       compressImageMaxHeight: 400,
       compressImageMaxWidth: 400,
       cropping: true,
-      multiple: true,
+      mediaType: "photo",
     }).then((response) => {
       console.log(response);
 
       this.setState({
         ImageArray: response,
       });
-      response.map((value) => {
-        console.log(value);
-
-        RNFS.readFile(value.path, "base64").then((res) => {
-          console.log(res);
-          this.setState({
-            imageUri: "data:image/png;base64," + res,
-          });
+      RNFS.readFile(response.path, "base64").then((res) => {
+        console.log(res);
+        this.setState({
+          imageUri: "data:image/png;base64," + res,
         });
       });
+      // response.map((value) => {
+      //   console.log(value);
+
+      // });
     });
   };
 
@@ -83,16 +87,21 @@ class RegisterScreen extends Component {
         user: {
           phone: this.props.route.params.mobile,
           name: this.state.name,
+          last_name: this.state.lastName,
           dob: this.state.DOB,
           preference_of_interests: this.state.selectedPreference,
           gender: this.state.selectedGender,
           profile_pic: this.state.imageUri,
+          latitude: this.props.Address.position.lat,
+          longitude: this.props.Address.position.lng,
         },
       });
 
       this.setState({
         isloading: true,
       });
+
+      console.log(data);
 
       var config = {
         method: "post",
@@ -237,13 +246,31 @@ class RegisterScreen extends Component {
                   source={{ uri: this.state.imageUri }}
                   style={{ width: "100%", height: 200 }}
                 />
+                <TouchableOpacity
+                  onPress={() =>
+                    this.setState({
+                      imageUri: "",
+                    })
+                  }
+                  style={{
+                    width: 30,
+                    height: 30,
+                    // backgroundColor: "#f00",
+                    borderRadius: 15,
+                    position: "absolute",
+                    top: 0,
+                    right: 10,
+                  }}
+                >
+                  <Icon name="times" size={30} color="#000" />
+                </TouchableOpacity>
               </View>
             )}
 
             <View style={{ width: "100%", padding: 15 }}>
               <View style={styles.inputContainer}>
                 <Text style={{ fontSize: 16, fontFamily: font.Light }}>
-                  Name
+                  First Name
                 </Text>
                 <View
                   style={{
@@ -256,9 +283,39 @@ class RegisterScreen extends Component {
                     placeholder=""
                     placeholderTextColor="#000"
                     style={styles.inputTextStyle}
+                    autoCorrect={false}
                     onChangeText={(text) =>
                       this.setState({
                         name: text,
+                      })
+                    }
+                  />
+                  {/* <Image
+                source={require('../../assets/icons/Mobile2.png')}
+                style={{width: 30, height: 30}}
+              /> */}
+                </View>
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={{ fontSize: 16, fontFamily: font.Light }}>
+                  Last Name
+                </Text>
+                <View
+                  style={{
+                    width: "100%",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <TextInput
+                    placeholder=""
+                    placeholderTextColor="#000"
+                    autoCorrect={false}
+                    style={styles.inputTextStyle}
+                    onChangeText={(text) =>
+                      this.setState({
+                        lastName: text,
                       })
                     }
                   />

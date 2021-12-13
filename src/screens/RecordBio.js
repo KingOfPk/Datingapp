@@ -33,7 +33,7 @@ const options = {
   channels: 1, // 1 or 2, default 1
   bitsPerSample: 16, // 8 or 16, default 16
   audioSource: 6, // android only (see below)
-  wavFile: "test.wav", // default 'audio.wav'
+  wavFile: "test.mp3", // default 'audio.wav'
 };
 
 class RecordBio extends Component {
@@ -69,6 +69,8 @@ class RecordBio extends Component {
     });
   };
 
+  componentWillUnmount() {}
+
   StartAudio = () => {
     AudioRecord.start();
 
@@ -95,9 +97,10 @@ class RecordBio extends Component {
     RNFS.readFile(audioFile, "base64").then((res) => {
       console.log(res);
       this.setState({
-        AudioUri: "data:audio/wav;base64," + res,
+        AudioUri: "data:audio/mp3;base64," + res,
       });
     });
+    // SoundPlayer.loadUrl(audioFile);
     SoundPlayer.playUrl(audioFile);
     this.setState({
       startAudio: false,
@@ -151,7 +154,13 @@ class RecordBio extends Component {
         this.setState({
           isloading: false,
         });
-        this.props.navigation.navigate("ChooseConnections");
+        // this.props.navigation.navigate("ChooseConnections");
+        if (this.props.route.params.isGoback) {
+          this.props.navigation.navigate("HomeScreen");
+        } else {
+          this.props.navigation.navigate("ChooseConnections");
+        }
+        // this.props.navigation.navigate("ChooseConnections");
       })
       .catch(function (error) {
         console.log(error);
@@ -345,13 +354,15 @@ class RecordBio extends Component {
               onChangeText={(text) =>
                 this.setState({
                   bio_description: text,
+                  isEndRecord: true,
                 })
               }
             />
             <View style={{ width: "90%", paddingTop: "15%" }}>
               <Button
                 text="Save"
-                backgroundColor="#5FAEB6"
+                disabled={!this.state.isEndRecord}
+                backgroundColor={this.state.isEndRecord ? "#5FAEB6" : "#ccc"}
                 Pressed={() => this.SendFile()}
               />
             </View>

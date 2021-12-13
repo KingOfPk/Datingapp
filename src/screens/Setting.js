@@ -8,17 +8,49 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  AsyncStorage,
 } from "react-native";
 import Styles from "../components/CommanStyle";
 import { font } from "../components/fonts";
 import Footer from "../components/Footer";
 import SettingHeader from "../components/SettingHeader";
+import { Loader } from "../components/Loader";
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import Toast from "react-native-simple-toast";
+import { getUserDetail } from "../Store/Action/User.action";
 
 class Setting extends Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
+
+  Signout = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/sessions/signout`,
+      headers: {
+        token: token,
+      },
+    };
+
+    axios(config)
+      .then(async (response) => {
+        console.log(JSON.stringify(response.data));
+        await AsyncStorage.removeItem("userToken");
+        // this.props.getUserDetail({});
+
+        this.props.navigation.navigate("SplashScreen");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   render() {
     return (
       <SafeAreaView>
@@ -42,7 +74,11 @@ class Setting extends Component {
               <View style={Styles.mainWhiteContainer}>
                 <View style={Styles.rowContainer}>
                   <Image
-                    source={require("../../assets/images/profile.png")}
+                    source={
+                      this.props.user.profile_pic.url
+                        ? { uri: baseurl + this.props.user.profile_pic.url }
+                        : require("../../assets/images/profile.png")
+                    }
                     borderRadius={45}
                     style={styles.profileImage}
                   />
@@ -53,7 +89,7 @@ class Setting extends Component {
                     }}
                   >
                     <Text style={Styles.settingHeadingText}>
-                      Alica Silverstone Simith
+                      {this.props.user.name} {this.props.user.last_name}
                     </Text>
                     <Text
                       style={{
@@ -64,7 +100,7 @@ class Setting extends Component {
                         paddingVertical: 5,
                       }}
                     >
-                      London, United Kingdom
+                      {this.props.user.phone}
                     </Text>
                     <TouchableOpacity
                       onPress={() => {
@@ -130,7 +166,10 @@ class Setting extends Component {
                 >
                   <Text style={[styles.normalText]}>Purchases </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.settingLinksContainer}>
+                <TouchableOpacity
+                  onPress={this.Signout}
+                  style={styles.settingLinksContainer}
+                >
                   <Text style={[styles.normalText]}>Sign out </Text>
                 </TouchableOpacity>
               </View>
@@ -188,4 +227,22 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Setting;
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Setting);
+
+// export default Setting;

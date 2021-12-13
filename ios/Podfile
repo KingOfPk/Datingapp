@@ -15,6 +15,7 @@ target 'Dating' do
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
   pod 'RNAudioRecord', :path => '../node_modules/react-native-audio-record'
+  pod 'RNSoundPlayer', :path => '../node_modules/react-native-sound-player'
   
   permissions_path = '../node_modules/react-native-permissions/ios'
        pod 'Permission-Camera', :path => "#{permissions_path}/Camera/Permission-Camera.podspec"

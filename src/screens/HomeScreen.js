@@ -26,28 +26,16 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getUserDetail } from "../Store/Action/User.action";
 import { Loader } from "../components/Loader";
+import moment from "moment";
 const { width, height } = Dimensions.get("window");
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      allCategory: [
-        { label: "Sunday", value: 1 },
-        { label: "10", value: 10 },
-        { label: "20", value: 20 },
-        { label: "30", value: 30 },
-        { label: "40", value: 40 },
-        { label: "50", value: 50 },
-        { label: "60", value: 60 },
-        { label: "70", value: 70 },
-        { label: "80", value: 80 },
-        { label: "90", value: 90 },
-        { label: "100", value: 100 },
-      ],
       Post: [
         {
           id: 0,
-          username: "Kelly O’liver",
+          name: "Kelly O’liver",
           age: "27",
           meet: "Meetups",
           image: require("../../assets/images/Rectangle1.png"),
@@ -60,7 +48,7 @@ class HomeScreen extends Component {
         },
         {
           id: 1,
-          username: "Kelly O’liver",
+          name: "Kelly O’liver",
           age: "27",
           meet: "Meetups",
           image: require("../../assets/images/Rectangle2.png"),
@@ -73,7 +61,7 @@ class HomeScreen extends Component {
         },
         {
           id: 2,
-          username: "Kelly O’liver",
+          name: "Kelly O’liver",
           age: "27",
           meet: "Meetups",
           image: require("../../assets/images/Rectangle3.png"),
@@ -86,7 +74,7 @@ class HomeScreen extends Component {
         },
         {
           id: 3,
-          username: "Kelly O’liver",
+          name: "Kelly O’liver",
           age: "27",
           meet: "Meetups",
           image: require("../../assets/images/Rectangle1.png"),
@@ -98,14 +86,85 @@ class HomeScreen extends Component {
           orderid: "#6257441",
         },
       ],
+      isloading: true,
     };
     this.timeout = null;
   }
 
-  componentDidMount = () => {};
+  componentDidMount = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+
+    var data = JSON.stringify({
+      latitude: this.props.Address.position.lat,
+      longitude: this.props.Address.position.lng,
+      page: 1,
+    });
+    console.log(data);
+    var config = {
+      method: "post",
+      url: `${baseurl}/api/v1/feeds/users`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        console.log(response);
+        var res = response.data;
+        this.setState({
+          isloading: false,
+          Post: res.data,
+        });
+
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({
+          isloading: false,
+          Post: [],
+        });
+      });
+
+    this.UserDetail();
+  };
+
+  UserDetail = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/profile`,
+      headers: {
+        token: token,
+      },
+    };
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+        if (res.status) {
+          this.props.getUserDetail(res.data);
+        }
+      })
+      .catch((error) => {});
+  };
+
+  age = (dob) => {
+    var currentDate = moment();
+    var date = moment(dob);
+    var diff = currentDate.diff(date, "years");
+    console.log(diff);
+    return diff;
+  };
 
   render() {
-    return (
+    return this.state.isloading ? (
+      <Loader />
+    ) : (
       <View style={styles.container}>
         <SafeAreaView style={{ width: "100%" }}>
           <View
@@ -127,14 +186,18 @@ class HomeScreen extends Component {
                 height: "100%",
               }}
             >
-              <Image
-                source={
-                  this.props.user.profile_pic.url
-                    ? { uri: baseurl + this.props.user.profile_pic.url }
-                    : require("../../assets/images/Rectangle.png")
-                }
-                style={{ width: 50, height: 50, borderRadius: 25 }}
-              />
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("Setting")}
+              >
+                <Image
+                  source={
+                    this.props.user.profile_pic.url
+                      ? { uri: baseurl + this.props.user.profile_pic.url }
+                      : require("../../assets/images/Rectangle.png")
+                  }
+                  style={{ width: 50, height: 50, borderRadius: 25 }}
+                />
+              </TouchableOpacity>
               <Text
                 style={{
                   fontFamily: font.Bold,
@@ -179,7 +242,9 @@ class HomeScreen extends Component {
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ width: "100%" }}>
               <Text style={{ fontSize: 16, fontFamily: font.Regular }}>
-                <Text style={{ fontFamily: font.Bold }}>We found 1,247</Text>{" "}
+                <Text style={{ fontFamily: font.Bold }}>
+                  We found {this.state.Post.length}
+                </Text>{" "}
                 persons as per your preference!
               </Text>
             </View>
@@ -189,7 +254,11 @@ class HomeScreen extends Component {
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
                 <ImageBackground
-                  source={item.image}
+                  source={
+                    item.profile_pic.url
+                      ? { uri: baseurl + item.profile_pic.url }
+                      : require("../../assets/images/Rectangle1.png")
+                  }
                   style={{
                     width: "100%",
                     height: 240,
@@ -201,7 +270,9 @@ class HomeScreen extends Component {
                 >
                   <TouchableOpacity
                     onPress={() =>
-                      this.props.navigation.navigate("UserProfile")
+                      this.props.navigation.navigate("UserProfile", {
+                        data: item,
+                      })
                     }
                     style={{
                       width: "100%",
@@ -228,7 +299,7 @@ class HomeScreen extends Component {
                             color: "#fff",
                           }}
                         >
-                          {item.username}, {item.age}
+                          {item.name}, {this.age(item.dob)}
                         </Text>
                         <Text
                           style={{
@@ -237,7 +308,7 @@ class HomeScreen extends Component {
                             color: "#fff",
                           }}
                         >
-                          {item.meet}, New Friend
+                          Meetsup, New Friend
                         </Text>
                       </View>
                       <Text
