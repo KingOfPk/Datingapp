@@ -26,7 +26,7 @@ import { bindActionCreators } from "redux";
 import Toast from "react-native-simple-toast";
 import Modal from "react-native-modal";
 import Styles from "../components/CommanStyle";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 class OtpScreen extends Component {
   constructor(props) {
     super(props);
@@ -35,6 +35,7 @@ class OtpScreen extends Component {
       number: "",
       isloading: false,
       planModal: false,
+      errorText: "e",
     };
     this.timeout = null;
   }
@@ -62,7 +63,7 @@ class OtpScreen extends Component {
 
     axios(config)
       .then(async (response) => {
-        console.log(JSON.stringify(response.data));
+        console.log(response.data);
         var res = response.data;
         if (res.user_type && res.user_type == "new_user") {
           this.props.navigation.navigate("RegisterScreen", {
@@ -73,9 +74,15 @@ class OtpScreen extends Component {
           await AsyncStorage.setItem("userToken", res.data.token);
           await AsyncStorage.setItem("userID", res.data.id.toString());
           this.props.getUserDetail(res.data);
+          console.log(res.data.bio_description == null);
           if (!res.data.is_bio) {
             console.log("Isbio");
-            this.props.navigation.navigate("RecordBio");
+            if (res.data.bio_description) {
+              Toast.show("Login Succussfully", Toast.LONG);
+              this.props.navigation.navigate("HomeScreen");
+            } else {
+              this.props.navigation.navigate("RecordBio", { isGoback: false });
+            }
           } else if (!res.data.is_connection) {
             console.log("Isconnection");
             this.props.navigation.navigate("ChooseConnections");
@@ -92,6 +99,7 @@ class OtpScreen extends Component {
             console.log("dsictance");
             this.props.navigation.navigate("ChooseAgeOrDistance");
           } else {
+            Toast.show("Login Succussfully", Toast.LONG);
             this.props.navigation.navigate("HomeScreen");
           }
         }

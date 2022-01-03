@@ -26,10 +26,12 @@ import { baseurl } from "../utils/index";
 import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 import Icon from "react-native-vector-icons/FontAwesome";
 import moment from "moment";
+import Modal from "react-native-modal";
+import Styles from "../components/CommanStyle";
 class RegisterScreen extends Component {
   constructor(props) {
     super(props);
@@ -42,6 +44,8 @@ class RegisterScreen extends Component {
       DOB: "",
       imageUri: "",
       isloading: false,
+      planModal: false,
+      message: "",
     };
     this.timeout = null;
   }
@@ -52,12 +56,13 @@ class RegisterScreen extends Component {
 
   selectPhotoTapped = () => {
     ImagePicker.openPicker({
-      width: 200,
-      height: 200,
-      compressImageMaxHeight: 400,
-      compressImageMaxWidth: 400,
+      width: 300,
+      height: 500,
+      compressImageMaxHeight: 1000,
+      compressImageMaxWidth: 1000,
       cropping: true,
       mediaType: "photo",
+      multiple: false,
     }).then((response) => {
       console.log(response);
 
@@ -119,6 +124,7 @@ class RegisterScreen extends Component {
 
           if (res.status) {
             await AsyncStorage.setItem("userToken", res.data.token);
+            await AsyncStorage.setItem("isComplete", "true");
             await AsyncStorage.setItem("userID", res.data.id.toString());
             this.props.getUserDetail(res.data);
             this.props.navigation.navigate("OnBoarding");
@@ -130,9 +136,12 @@ class RegisterScreen extends Component {
         })
         .catch((error) => {
           console.log(error.response);
+          var err = error.response.data;
 
           this.setState({
             isloading: false,
+            planModal: true,
+            message: err.message,
           });
         });
     }
@@ -181,7 +190,7 @@ class RegisterScreen extends Component {
   };
 
   render() {
-    const { selectedGender, selectedPreference } = this.state;
+    const { selectedGender, selectedPreference, message } = this.state;
     return this.state.isloading ? (
       <Loader />
     ) : (
@@ -352,6 +361,7 @@ class RegisterScreen extends Component {
                     title={""}
                     maximumDate={new Date()}
                     placeholder={""}
+                    hideUnderline={true}
                     renderInput={this.renderCustomInput}
                     dateFormat={"DD/MM/YYYY"}
                     onChange={(date) => this.SelectedDate(date)}
@@ -468,6 +478,86 @@ class RegisterScreen extends Component {
             </View>
           </KeyboardAwareScrollView>
         </View>
+        <Modal
+          onBackdropPress={() => {
+            this.setState({
+              planModal: false,
+            });
+          }}
+          onBackButtonPress={() => {
+            this.setState({ planModal: false });
+          }}
+          transparent={true}
+          isVisible={this.state.planModal}
+          style={{ margin: 0 }}
+        >
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <View
+              style={[
+                Styles.modalContainer,
+                { height: 300, backgroundColor: "#fff" },
+              ]}
+            >
+              <TouchableOpacity style={{ alignSelf: "flex-end" }}>
+                <Image
+                  source={require("../../assets/icons/Cancel.png")}
+                  style={styles.closeIcon}
+                />
+              </TouchableOpacity>
+              <Image
+                source={require("../../assets/icons/togatherMainLogo.png")}
+                style={styles.logo}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  // backgroundColor: "#f00",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#000",
+                    fontFamily: font.Medium,
+                    textAlign: "center",
+                    fontSize: 18,
+                  }}
+                >
+                  {message}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    this.setState({
+                      planModal: false,
+                    });
+                  }}
+                  style={[
+                    styles.buttonContainer,
+                    {
+                      backgroundColor: "#416181",
+                      height: 50,
+                      width: "45%",
+                      // marginRight: 15,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.buttonText, { color: "#fff" }]}>OK</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -540,6 +630,37 @@ const styles = StyleSheet.create({
   genderText: {
     fontFamily: font.Bold,
     color: "#406284",
+  },
+  planContainer: {
+    width: "28%",
+    height: 100,
+    backgroundColor: "#c4c4c4c4",
+    borderRadius: 10,
+    marginTop: "10%",
+  },
+  buttonContainer: {
+    padding: 10,
+    borderRadius: 10,
+    height: 50,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    fontFamily: font.Bold,
+    color: "#416181",
+    fontSize: 20,
+  },
+  closeIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
+  },
+  logo: {
+    width: "100%",
+    height: 100,
+    resizeMode: "contain",
+    alignSelf: "center",
   },
 });
 

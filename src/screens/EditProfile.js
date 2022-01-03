@@ -21,12 +21,15 @@ import { baseurl } from "../utils/index";
 import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 import moment from "moment";
 import ImagePicker from "react-native-image-crop-picker";
 import RNFS from "react-native-fs";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Toast from "react-native-simple-toast";
+import Modal from "react-native-modal";
+import ThemedListItem from "react-native-elements/dist/list/ListItem";
 class EditProfile extends Component {
   constructor(props) {
     super(props);
@@ -40,13 +43,17 @@ class EditProfile extends Component {
       galleryImages: [{ image: "" }],
       isloading: false,
       maxFiles: 6,
+      planModal: false,
+      message: "",
+      errorModal: false,
     };
   }
 
   componentDidMount = () => {
     var blankArray = [{ image: "" }];
+    console.log(this.props.user.galleries);
     this.props.user.galleries.map((value) => {
-      blankArray.push({ image: baseurl + value.images.url, id: value });
+      blankArray.push({ image: value.images.url, id: value.id });
       this.setState({
         galleryImages: blankArray,
         maxFiles:
@@ -57,13 +64,13 @@ class EditProfile extends Component {
 
   uploadPic = () => {
     ImagePicker.openPicker({
-      width: 200,
-      height: 200,
-      compressImageMaxHeight: 400,
-      compressImageMaxWidth: 400,
-      cropping: true,
+      width: 300,
+      height: 500,
+      compressImageMaxHeight: 800,
+      compressImageMaxWidth: 800,
       mediaType: "photo",
       multiple: true,
+      cropping: true,
       maxFiles: this.state.maxFiles,
     }).then((response) => {
       console.log(response);
@@ -71,6 +78,7 @@ class EditProfile extends Component {
         RNFS.readFile(value.path, "base64").then((res) => {
           console.log(res);
           // this.state.galleryImages[key].image = ;
+          // Toast.show("Image upload succussfully", Toast.LONG);
           this.setState({
             galleryImages: [
               ...this.state.galleryImages,
@@ -95,9 +103,13 @@ class EditProfile extends Component {
     this.setState({
       isloading: true,
     });
+    var blankArray = [];
+    this.state.galleryImages.slice(1).map((value) => {
+      blankArray.push(value.image);
+    });
     console.log();
     var data = JSON.stringify({
-      images: this.state.galleryImages.slice(1),
+      images: blankArray,
     });
     console.log(data);
     var config = {
@@ -119,13 +131,21 @@ class EditProfile extends Component {
           isloading: false,
         });
         this.setProfile();
+        Toast.show("Image upload succussfully", Toast.LONG);
         console.log(JSON.stringify(response.data));
       })
       .catch((error) => {
         console.log(error);
+        var err = error.response;
+        if (err.status == 413) {
+          this.setState({
+            errorModal: true,
+            message: "Data entity too large",
+            galleryImages: [{ image: "" }],
+          });
+        }
         this.setState({
           isloading: false,
-          Post: [],
         });
       });
   };
@@ -142,7 +162,7 @@ class EditProfile extends Component {
     });
     console.log(data);
     var config = {
-      method: "post",
+      method: "delete",
       url: `${baseurl}/api/v1/profile/remove_gallery?gallery_id=${id}`,
       headers: {
         "Content-Type": "application/json",
@@ -158,12 +178,13 @@ class EditProfile extends Component {
         var res = response.data;
         this.setState({
           isloading: false,
+          maxFiles: parseInt(this.state.maxFiles) + 1,
         });
 
         console.log(JSON.stringify(response.data));
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.response);
         this.setState({
           isloading: false,
           Post: [],
@@ -206,6 +227,7 @@ class EditProfile extends Component {
       galleryImages,
       isloading,
       maxFiles,
+      message,
     } = this.state;
     console.log(maxFiles);
     return isloading ? (
@@ -226,7 +248,7 @@ class EditProfile extends Component {
             >
               <Image
                 resizeMode="cover"
-                source={{ uri: baseurl + this.props.user.profile_pic.url }}
+                source={{ uri: this.props.user.profile_pic.url }}
                 style={{ width: "100%", height: 300, marginTop: 1 }}
               />
               <View style={{ padding: 10, width: "100%" }}>
@@ -235,6 +257,7 @@ class EditProfile extends Component {
                   <View style={{ flex: 1 }}>
                     {updateName ? (
                       <TextInput
+                        editable={false}
                         onChangeText={(text) => {
                           this.setState({ updatedName: text });
                         }}
@@ -313,6 +336,7 @@ class EditProfile extends Component {
                       <TextInput
                         keyboardType="number-pad"
                         maxLength={10}
+                        editable={false}
                         onChangeText={(text) => {
                           this.setState({ updatedMobile: text });
                         }}
@@ -363,9 +387,7 @@ class EditProfile extends Component {
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item, index }) => (
                       <View style={{ width: "33%", padding: 5 }}>
-                        <TouchableOpacity
-                          disabled={maxFiles == 0}
-                          onPress={() => this.uploadPic(index)}
+                        <View
                           style={{
                             width: "100%",
                             height: 120,
@@ -376,12 +398,31 @@ class EditProfile extends Component {
                           }}
                         >
                           {item.image == "" ? (
-                            <Image
-                              source={require("../../assets/icons/Plus.png")}
-                              style={{ height: 50, width: 50 }}
-                            />
+                            <TouchableOpacity
+                              disabled={maxFiles == 0}
+                              onPress={() => this.uploadPic(index)}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Image
+                                source={require("../../assets/icons/Plus.png")}
+                                style={{ height: 50, width: 50 }}
+                              />
+                            </TouchableOpacity>
                           ) : (
-                            <View style={{ width: "100%", height: "100%" }}>
+                            <TouchableOpacity
+                              onPress={() =>
+                                this.setState({
+                                  planModal: true,
+                                  modalImage: item.image,
+                                })
+                              }
+                              style={{ width: "100%", height: "100%" }}
+                            >
                               <Image
                                 source={{ uri: item.image }}
                                 style={{
@@ -408,9 +449,9 @@ class EditProfile extends Component {
                                   color="#fff"
                                 />
                               </View>
-                            </View>
+                            </TouchableOpacity>
                           )}
-                        </TouchableOpacity>
+                        </View>
                       </View>
                     )}
                   />
@@ -436,6 +477,151 @@ class EditProfile extends Component {
             settingPress={() => this.props.navigation.navigate("Setting")}
           />
         </View>
+        <Modal
+          onBackdropPress={() => {
+            this.setState({
+              planModal: false,
+            });
+          }}
+          onBackButtonPress={() => {
+            this.setState({ planModal: false });
+          }}
+          transparent={true}
+          isVisible={this.state.planModal}
+          style={{ margin: 0 }}
+        >
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(0,0,0,.8)",
+            }}
+          >
+            <View style={[styles.modalContainer]}>
+              <View
+                style={{
+                  width: "100%",
+                  height: 50,
+
+                  position: "absolute",
+                  top: 30,
+                  zIndex: 1000,
+                  justifyContent: "flex-end",
+                  alignItems: "flex-end",
+                  padding: 10,
+                  backgroundColor: "rgba(0,0,0,.6)",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() =>
+                    this.setState({
+                      planModal: false,
+                    })
+                  }
+                >
+                  <Image
+                    source={require("../../assets/icons/FilterClose.png")}
+                    style={{ width: 30, height: 30, resizeMode: "contain" }}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <Image
+                source={{ uri: this.state.modalImage }}
+                style={{ width: "100%", height: "100%", resizeMode: "contain" }}
+              />
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          onBackdropPress={() => {
+            this.setState({
+              errorModal: false,
+            });
+          }}
+          onBackButtonPress={() => {
+            this.setState({ errorModal: false });
+          }}
+          transparent={true}
+          isVisible={this.state.errorModal}
+          style={{ margin: 0 }}
+        >
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <View
+              style={[
+                Styles.modalContainer,
+                { height: 300, backgroundColor: "#fff" },
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  this.setState({
+                    errorModal: false,
+                  });
+                }}
+                style={{ alignSelf: "flex-end" }}
+              >
+                <Image
+                  source={require("../../assets/icons/Cancel.png")}
+                  style={styles.closeIcon}
+                />
+              </TouchableOpacity>
+              <Image
+                source={require("../../assets/icons/togatherMainLogo.png")}
+                style={styles.logo}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  // backgroundColor: "#f00",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#000",
+                    fontFamily: font.Medium,
+                    textAlign: "center",
+                    fontSize: 18,
+                  }}
+                >
+                  {message}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    this.setState({
+                      errorModal: false,
+                    });
+                  }}
+                  style={[
+                    styles.buttonContainer,
+                    {
+                      backgroundColor: "#416181",
+                      height: 50,
+                      width: "45%",
+                      // marginRight: 15,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.buttonText, { color: "#fff" }]}>OK</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     );
   }
@@ -467,6 +653,37 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 5,
     resizeMode: "contain",
+  },
+  modalContainer: {
+    // height: height / 1.5,
+    width: "100%",
+    // backgroundColor: "#",
+    borderRadius: 10,
+    padding: 10,
+  },
+  closeIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
+  },
+  logo: {
+    width: "100%",
+    height: 100,
+    resizeMode: "contain",
+    alignSelf: "center",
+  },
+  buttonContainer: {
+    padding: 10,
+    borderRadius: 10,
+    height: 50,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    fontFamily: font.Bold,
+    color: "#416181",
+    fontSize: 20,
   },
 });
 

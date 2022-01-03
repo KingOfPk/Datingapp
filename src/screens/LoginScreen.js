@@ -43,20 +43,25 @@ class LoginScreen extends Component {
         { label: "100", value: 100 },
       ],
       number: "",
+
       isloading: false,
+      isDisable: false,
     };
+
     this.timeout = null;
   }
 
   componentDidMount = () => {
     console.log(baseurl);
-    SoundPlayer.playUrl("https://example.com/music.mp3");
   };
 
   Login = () => {
     if (this.state.number == "") {
       Toast.show("Enter your phone number", Toast.LONG);
     } else {
+      this.setState({
+        isDisable: true,
+      });
       var data = JSON.stringify({
         phone: this.state.number,
       });
@@ -69,16 +74,17 @@ class LoginScreen extends Component {
         },
         data: data,
       };
-
+      console.log(config);
       axios(config)
         .then((response) => {
-          console.log(JSON.stringify(response.data));
+          console.log(response);
           this.props.navigation.navigate("OtpScreen", {
             data: this.state.number,
           });
         })
         .catch(function (error) {
           console.log(error);
+          alert(error);
         });
 
       // this.props.navigation.navigate("OtpScreen");
@@ -195,7 +201,11 @@ class LoginScreen extends Component {
             }}
           >
             <View style={{ width: "75%", height: 120 }}>
-              <Button text="CONTINUE" Pressed={() => this.Login()} />
+              <Button
+                disabled={this.state.isDisable}
+                text="CONTINUE"
+                Pressed={() => this.Login()}
+              />
             </View>
           </View>
         </KeyboardAwareScrollView>

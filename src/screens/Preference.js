@@ -17,7 +17,7 @@ import { baseurl } from "../utils/index";
 import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 import moment from "moment";
 const { height, width } = Dimensions.get("window");

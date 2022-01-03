@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { useNavigation } from "@react-navigation/native";
 import LikesYou from "./LikesYou";
 import YouLike from "./YouLike";
 import { font } from "../../components/fonts";
@@ -7,6 +8,7 @@ import { font } from "../../components/fonts";
 const Tab = createMaterialTopTabNavigator();
 
 function LikeTabs() {
+  const navigation = useNavigation();
   return (
     <Tab.Navigator
       tabBarOptions={{
@@ -25,8 +27,26 @@ function LikeTabs() {
         },
       }}
     >
-      <Tab.Screen name="LIKES YOU" component={LikesYou} />
-      <Tab.Screen name="YOU LIKE" component={YouLike} />
+      <Tab.Screen
+        name="LIKES YOU"
+        children={() => (
+          <LikesYou
+            goToCart={(item) =>
+              navigation.navigate("UserProfile", { data: item })
+            }
+          />
+        )}
+      />
+      <Tab.Screen
+        name="YOU LIKE"
+        children={() => (
+          <YouLike
+            goToCart={(item) =>
+              navigation.navigate("UserProfile", { data: item })
+            }
+          />
+        )}
+      />
     </Tab.Navigator>
   );
 }

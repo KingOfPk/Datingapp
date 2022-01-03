@@ -24,69 +24,19 @@ import { baseurl } from "../utils/index";
 import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 import moment from "moment";
+import { getDistance, getPreciseDistance } from "geolib";
 const { width, height } = Dimensions.get("window");
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      Post: [
-        {
-          id: 0,
-          name: "Kelly O’liver",
-          age: "27",
-          meet: "Meetups",
-          image: require("../../assets/images/Rectangle1.png"),
-          date: "April 26,2020 | 11:30 AM",
-          process: "In Process",
-          price: "$ 129.1",
-          uid: "#6257441",
-          status: "Assign on April 26,2020 | 11:00 AM",
-          orderid: "#6257441",
-        },
-        {
-          id: 1,
-          name: "Kelly O’liver",
-          age: "27",
-          meet: "Meetups",
-          image: require("../../assets/images/Rectangle2.png"),
-          date: "April 26,2020 | 11:30 AM",
-          process: "In Process",
-          price: "$ 129.1",
-          uid: "#6257441",
-          status: "Assign on April 26,2020 | 11:00 AM",
-          orderid: "#6257441",
-        },
-        {
-          id: 2,
-          name: "Kelly O’liver",
-          age: "27",
-          meet: "Meetups",
-          image: require("../../assets/images/Rectangle3.png"),
-          date: "April 26,2020 | 11:30 AM",
-          process: "In Process",
-          price: "$ 129.1",
-          uid: "#6257441",
-          status: "Assign on April 26,2020 | 11:00 AM",
-          orderid: "#6257441",
-        },
-        {
-          id: 3,
-          name: "Kelly O’liver",
-          age: "27",
-          meet: "Meetups",
-          image: require("../../assets/images/Rectangle1.png"),
-          date: "April 26,2020 | 11:30 AM",
-          process: "In Process",
-          price: "$ 129.1",
-          uid: "#6257441",
-          status: "Assign on April 26,2020 | 11:00 AM",
-          orderid: "#6257441",
-        },
-      ],
+      Post: [],
       isloading: true,
+      page: 1,
+      totalCount: 0,
     };
     this.timeout = null;
   }
@@ -97,7 +47,7 @@ class HomeScreen extends Component {
     var data = JSON.stringify({
       latitude: this.props.Address.position.lat,
       longitude: this.props.Address.position.lng,
-      page: 1,
+      page: this.state.page,
     });
     console.log(data);
     var config = {
@@ -115,9 +65,12 @@ class HomeScreen extends Component {
       .then((response) => {
         console.log(response);
         var res = response.data;
+
         this.setState({
           isloading: false,
           Post: res.data,
+          totalCount: res.paginate.total_count,
+          page: parseInt(this.state.page) + 1,
         });
 
         console.log(JSON.stringify(response.data));
@@ -131,6 +84,54 @@ class HomeScreen extends Component {
       });
 
     this.UserDetail();
+  };
+
+  loadMoreData = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+
+    var data = JSON.stringify({
+      latitude: this.props.Address.position.lat,
+      longitude: this.props.Address.position.lng,
+      page: this.state.page,
+    });
+    console.log(data);
+    var config = {
+      method: "post",
+      url: `${baseurl}/api/v1/feeds/users`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+    var BlankArray = this.state.Post;
+    axios(config)
+      .then((response) => {
+        console.log(response);
+        var res = response.data;
+        // this.state.Post.push();
+        if (res.data.length > 0) {
+          res.data.map((value) => {
+            BlankArray.push(value);
+            this.setState({
+              Post: BlankArray,
+            });
+          });
+          this.setState({
+            isloading: false,
+            page: parseInt(this.state.page) + 1,
+          });
+        }
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({
+          isloading: false,
+          Post: [],
+        });
+      });
   };
 
   UserDetail = async () => {
@@ -157,11 +158,30 @@ class HomeScreen extends Component {
     var currentDate = moment();
     var date = moment(dob);
     var diff = currentDate.diff(date, "years");
-    console.log(diff);
     return diff;
   };
 
+  distance = (item) => {
+    // console.log(this.props.Address);
+    const { position } = this.props.Address;
+    var dis = getDistance(
+      { latitude: position.lat, longitude: position.lng },
+      {
+        latitude: parseFloat(item.latitude),
+        longitude: parseFloat(item.longitude),
+      }
+    );
+    var distance = dis / 1000;
+    // console.log(dis);
+    return distance.toFixed(2);
+  };
+
+  isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - 1;
+  };
+
   render() {
+    console.log(this.state.Post);
     return this.state.isloading ? (
       <Loader />
     ) : (
@@ -192,7 +212,7 @@ class HomeScreen extends Component {
                 <Image
                   source={
                     this.props.user.profile_pic.url
-                      ? { uri: baseurl + this.props.user.profile_pic.url }
+                      ? { uri: this.props.user.profile_pic.url }
                       : require("../../assets/images/Rectangle.png")
                   }
                   style={{ width: 50, height: 50, borderRadius: 25 }}
@@ -239,11 +259,18 @@ class HomeScreen extends Component {
             // marginBottom: 10,
           }}
         >
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView
+            onScroll={({ nativeEvent }) => {
+              if (this.isCloseToBottom(nativeEvent)) {
+                this.loadMoreData();
+              }
+            }}
+            showsVerticalScrollIndicator={false}
+          >
             <View style={{ width: "100%" }}>
               <Text style={{ fontSize: 16, fontFamily: font.Regular }}>
                 <Text style={{ fontFamily: font.Bold }}>
-                  We found {this.state.Post.length}
+                  We found {this.state.totalCount}
                 </Text>{" "}
                 persons as per your preference!
               </Text>
@@ -256,7 +283,7 @@ class HomeScreen extends Component {
                 <ImageBackground
                   source={
                     item.profile_pic.url
-                      ? { uri: baseurl + item.profile_pic.url }
+                      ? { uri: item.profile_pic.url }
                       : require("../../assets/images/Rectangle1.png")
                   }
                   style={{
@@ -291,7 +318,7 @@ class HomeScreen extends Component {
                         justifyContent: "space-between",
                       }}
                     >
-                      <View>
+                      <View style={{ flex: 1 }}>
                         <Text
                           style={{
                             fontSize: 24,
@@ -301,6 +328,7 @@ class HomeScreen extends Component {
                         >
                           {item.name}, {this.age(item.dob)}
                         </Text>
+
                         <Text
                           style={{
                             fontSize: 16,
@@ -308,7 +336,11 @@ class HomeScreen extends Component {
                             color: "#fff",
                           }}
                         >
-                          Meetsup, New Friend
+                          {item.preference_list
+                            .slice(0, 2)
+                            .map((value, index) => {
+                              return index == 1 ? value : value + ", ";
+                            })}
                         </Text>
                       </View>
                       <Text
@@ -318,7 +350,7 @@ class HomeScreen extends Component {
                           color: "#fff",
                         }}
                       >
-                        10 Miles
+                        {this.distance(item)} Miles
                       </Text>
                     </View>
                   </TouchableOpacity>

@@ -19,7 +19,7 @@ import { Loader } from "../components/Loader";
 import Toast from "react-native-simple-toast";
 import Geolocation from "@react-native-community/geolocation";
 import Geocoder from "react-native-geocoder";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 import { SetAddress } from "../Store/Action/Data.action";
 class SplashScreen extends Component {
   constructor(props) {
@@ -35,7 +35,9 @@ class SplashScreen extends Component {
 
   MoveToLogin = async () => {
     var token = await AsyncStorage.getItem("userToken");
-    if (token) {
+    var isComplete = await AsyncStorage.getItem("isComplete");
+    console.log(token && !isComplete, token, !isComplete);
+    if (token && !isComplete) {
       console.log(token);
       this.setState({
         isloading: true,
@@ -49,7 +51,7 @@ class SplashScreen extends Component {
       };
       axios(config)
         .then((response) => {
-          console.log(JSON.stringify(response));
+          console.log(response);
           var res = response.data;
           if (res.status) {
             this.setState({
@@ -72,30 +74,33 @@ class SplashScreen extends Component {
   };
 
   setLoction = () => {
-    Geolocation.getCurrentPosition((info) => {
-      var cords = info.coords;
-      var NY = {
-        lat: cords.latitude,
-        lng: cords.longitude,
-      };
+    // this.props.navigation.navigate("HomeScreen");
+    try {
+      Geolocation.getCurrentPosition((info) => {
+        var cords = info.coords;
+        var NY = {
+          lat: cords.latitude,
+          lng: cords.longitude,
+        };
 
-      console.log(NY);
+        console.log(NY);
 
-      Geocoder.geocodePosition(NY).then((res) => {
-        // res is an Array of geocoding object (see below)
-
-        var value = res[0];
-        console.log(value);
-        this.props.SetAddress(value);
-        // this.setState({
-        //   isloading: false,
+        Geocoder.geocodePosition(NY).then((res) => {
+          // res is an Array of geocoding object (see below)
+          var value = res[0];
+          console.log(value);
+          this.props.SetAddress(value);
+          this.props.navigation.navigate("HomeScreen");
+          var position = value.position;
+          var blankArray = [];
+        });
         // });
-        this.props.navigation.navigate("HomeScreen");
-        var position = value.position;
-        var blankArray = [];
       });
-      // });
-    });
+    } catch {
+      (e) => {
+        console.log(e);
+      };
+    }
   };
 
   render() {

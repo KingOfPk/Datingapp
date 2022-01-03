@@ -23,7 +23,7 @@ import { baseurl } from "../utils/index";
 import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 import Icon from "react-native-vector-icons/FontAwesome";
 const { height, width } = Dimensions.get("window");
@@ -67,9 +67,39 @@ class RecordBio extends Component {
       // base64-encoded audio data chunks
       console.log(data);
     });
+
+    this._onFinishedPlayingSubscription = SoundPlayer.addEventListener(
+      "FinishedPlaying",
+      ({ success }) => {
+        console.log("finished playing", success);
+      }
+    );
+    this._onFinishedLoadingSubscription = SoundPlayer.addEventListener(
+      "FinishedLoading",
+      ({ success }) => {
+        console.log("finished loading", success);
+      }
+    );
+    this._onFinishedLoadingFileSubscription = SoundPlayer.addEventListener(
+      "FinishedLoadingFile",
+      ({ success, name, type }) => {
+        console.log("finished loading file", success, name, type);
+      }
+    );
+    this._onFinishedLoadingURLSubscription = SoundPlayer.addEventListener(
+      "FinishedLoadingURL",
+      ({ success, url }) => {
+        console.log("finished loading url", success, url);
+      }
+    );
   };
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    this._onFinishedPlayingSubscription.remove();
+    this._onFinishedLoadingSubscription.remove();
+    this._onFinishedLoadingURLSubscription.remove();
+    this._onFinishedLoadingFileSubscription.remove();
+  }
 
   StartAudio = () => {
     AudioRecord.start();
@@ -190,7 +220,7 @@ class RecordBio extends Component {
               <Image
                 source={
                   this.props.user.profile_pic.url
-                    ? { uri: baseurl + this.props.user.profile_pic.url }
+                    ? { uri: this.props.user.profile_pic.url }
                     : require("../../assets/images/dummyUser.png")
                 }
                 style={styles.userImage}

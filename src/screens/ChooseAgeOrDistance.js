@@ -17,7 +17,7 @@ import { baseurl } from "../utils/index";
 import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 const { height, width } = Dimensions.get("window");
 
@@ -89,12 +89,13 @@ class ChooseAgeOrDistance extends Component {
         console.log(config);
 
         axios(config)
-          .then((response) => {
+          .then(async (response) => {
             console.log(JSON.stringify(response.data));
             var res = response.data;
             this.setState({
               isloading: false,
             });
+            await AsyncStorage.removeItem("isComplete");
             this.props.navigation.navigate("HomeScreen");
             // this.props.navigation.navigate("ChooseInterest");
           })
@@ -134,7 +135,7 @@ class ChooseAgeOrDistance extends Component {
             <Image
               source={
                 this.props.user.profile_pic.url
-                  ? { uri: baseurl + this.props.user.profile_pic.url }
+                  ? { uri: this.props.user.profile_pic.url }
                   : require("../../assets/images/dummyUser.png")
               }
               style={styles.userImage}

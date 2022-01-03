@@ -22,13 +22,19 @@ import { baseurl } from "../utils/index";
 import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 import { Picker } from "react-native-ui-lib";
 import Footer from "../components/Footer";
 import moment from "moment";
 import SoundPlayer from "react-native-sound-player";
+import Carousel, { Pagination } from "react-native-snap-carousel";
+import Modal from "react-native-modal";
+import Styles from "../components/CommanStyle";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { getDistance, getPreciseDistance } from "geolib";
 const { width, height } = Dimensions.get("window");
+
 class UserProfile extends Component {
   constructor(props) {
     super(props);
@@ -39,13 +45,19 @@ class UserProfile extends Component {
       matchScore: 0,
       isloading: true,
       isSoundPlaying: false,
+      activeSlide: 0,
+      GalleryImage: [],
+      liked: false,
+      dislike: false,
+      planModal: false,
+      modalImage: "",
     };
     this.timeout = null;
   }
 
   componentDidMount = async () => {
     var token = await AsyncStorage.getItem("userToken");
-
+    var galleryImages = [];
     var config = {
       method: "get",
       url: `${baseurl}/api/v1/profile/${this.props.route.params.data.id}/get_user_profile`,
@@ -61,13 +73,28 @@ class UserProfile extends Component {
         console.log(response);
         var res = response.data;
         console.log(response.data);
-        this.setState({
-          isloading: false,
-          userData: res.data,
-          islike: res.is_like,
-          matchScore: res.match_score,
-          youBothLike: res.you_both_like,
-        });
+        galleryImages.push(res.data.profile_pic);
+        this.setState(
+          {
+            isloading: false,
+            userData: res.data,
+            liked: res.is_like,
+            matchScore: res.match_score,
+            youBothLike: res.you_both_like,
+            GalleryImage: galleryImages,
+          },
+          () => {
+            res.data.galleries.map((value) => {
+              galleryImages.push(value.images);
+              this.setState({
+                GalleryImage: galleryImages,
+              });
+            });
+            if (this.state.userData.bio) {
+              SoundPlayer.loadUrl(this.state.userData.bio.bio_audio.url);
+            }
+          }
+        );
       })
       .catch((error) => {
         console.log(error);
@@ -76,25 +103,64 @@ class UserProfile extends Component {
           Post: [],
         });
       });
+
+    this._onFinishedPlayingSubscription = SoundPlayer.addEventListener(
+      "FinishedPlaying",
+      ({ success }) => {
+        console.log("finished playing", success);
+      }
+    );
+    this._onFinishedLoadingSubscription = SoundPlayer.addEventListener(
+      "FinishedLoading",
+      ({ success }) => {
+        console.log("finished loading", success);
+      }
+    );
+    this._onFinishedLoadingFileSubscription = SoundPlayer.addEventListener(
+      "FinishedLoadingFile",
+      ({ success, name, type }) => {
+        console.log("finished loading file", success, name, type);
+      }
+    );
+    this._onFinishedLoadingURLSubscription = SoundPlayer.addEventListener(
+      "FinishedLoadingURL",
+      ({ success, url }) => {
+        console.log("finished loading url", success, url);
+      }
+    );
   };
 
+  componentWillUnmount() {
+    this._onFinishedPlayingSubscription.remove();
+    this._onFinishedLoadingSubscription.remove();
+    this._onFinishedLoadingURLSubscription.remove();
+    this._onFinishedLoadingFileSubscription.remove();
+  }
+
   PlaySound = () => {
-    SoundPlayer.playUrl(this.state.userData.bio.bio_audio.url);
-    this.setState({
-      isSoundPlaying: true,
-    });
+    try {
+      console.log(this.state.userData.bio.bio_audio.url);
+      SoundPlayer.playUrl(this.state.userData.bio.bio_audio.url);
+      this.setState({
+        isSoundPlaying: true,
+        soundPlayed: true,
+      });
+    } catch (e) {
+      console.log("error", e);
+    }
   };
 
   Play = () => {
     SoundPlayer.play();
     this.setState({
-      isSoundPlaying: true,
+      // isSoundPlaying: true,
+      soundPlayed: true,
     });
   };
   Pause = () => {
     SoundPlayer.pause();
     this.setState({
-      isSoundPlaying: false,
+      soundPlayed: false,
     });
   };
 
@@ -106,8 +172,171 @@ class UserProfile extends Component {
     return diff;
   };
 
+  _renderItem = ({ item, index }) => {
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          this.setState({
+            planModal: true,
+            modalImage: index,
+          })
+        }
+        style={{ width: "100%", height: 450 }}
+      >
+        <ImageBackground
+          resizeMode="cover"
+          source={{
+            uri: item.url,
+          }}
+          style={{ width: "100%", height: 450 }}
+        ></ImageBackground>
+      </TouchableOpacity>
+    );
+  };
+
+  _renderItem2 = ({ item, index }) => {
+    return (
+      <View style={{ width: "100%", height: "100%" }}>
+        <Image
+          source={{ uri: item.url }}
+          style={{ width: "100%", height: "100%", resizeMode: "contain" }}
+        />
+        {/* <ImageBackground
+          resizeMode="cover"
+          source={{
+            uri: item.url,
+          }}
+          style={{ width: "100%", height: 450 }}
+        ></ImageBackground> */}
+      </View>
+    );
+  };
+
+  distance = (item) => {
+    console.log(this.props.Address);
+    const { position } = this.props.Address;
+    var dis = getDistance(
+      { latitude: position.lat, longitude: position.lng },
+      {
+        latitude: parseFloat(item.latitude),
+        longitude: parseFloat(item.longitude),
+      }
+    );
+    var distance = dis / 1000;
+    // console.log(dis);
+    return distance.toFixed(2);
+  };
+
+  get pagination() {
+    const { userData, activeSlide, GalleryImage } = this.state;
+    return (
+      <Pagination
+        dotsLength={GalleryImage.length}
+        activeDotIndex={activeSlide}
+        containerStyle={{
+          backgroundColor: "rgba(0, 0, 0, 0)",
+          position: "absolute",
+          bottom: -10,
+          width: "100%",
+        }}
+        dotStyle={{
+          width: 20,
+          height: 6,
+          borderRadius: 5,
+          marginHorizontal: 8,
+          backgroundColor: "rgba(0, 0, 0, 0.92)",
+        }}
+        inactiveDotStyle={{
+          width: 20,
+          height: 6,
+          borderRadius: 5,
+          marginHorizontal: 8,
+          backgroundColor: "rgba(0, 0, 0, 0.92)",
+        }}
+        inactiveDotOpacity={0.4}
+        inactiveDotScale={0.6}
+      />
+    );
+  }
+
+  likeUser = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var data = JSON.stringify({
+      like_to: this.props.route.params.data.id,
+    });
+    console.log(data);
+    var config = {
+      method: "post",
+      url: `${baseurl}/api/v1/like_dislikes/like`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        if (res.status) {
+          this.setState({
+            liked: true,
+          });
+        }
+        this.props.navigation.navigate("HomeScreen");
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({
+          isloading: false,
+          Post: [],
+        });
+      });
+  };
+
+  disLikeUser = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var data = JSON.stringify({
+      dislike_to: this.props.route.params.data.id,
+    });
+    console.log(data);
+    var config = {
+      method: "post",
+      url: `${baseurl}/api/v1/like_dislikes/dislike`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        if (res.status) {
+          this.setState({
+            dislike: true,
+          });
+        }
+        this.props.navigation.navigate("HomeScreen");
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({
+          isloading: false,
+          Post: [],
+        });
+      });
+  };
+
   render() {
-    const { userData, youBothLike, isloading, matchScore } = this.state;
+    const { userData, youBothLike, isloading, matchScore, GalleryImage } =
+      this.state;
+    console.log(GalleryImage);
     return isloading ? (
       <Loader />
     ) : (
@@ -128,14 +357,16 @@ class UserProfile extends Component {
                   width: "100%",
                 }}
               >
-                <ImageBackground
-                  resizeMode="cover"
-                  source={{
-                    uri: userData.profile_pic.url
-                      ? baseurl + userData.profile_pic.url
-                      : "https://bitsofco.de/content/images/2018/12/broken-1.png",
+                <View
+                  style={{
+                    width: "100%",
+                    height: 60,
+                    backgroundColor: "rgba(0,0,0,.1)",
+                    position: "absolute",
+                    zIndex: 1000,
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
-                  style={{ width: "100%", height: 300 }}
                 >
                   <View
                     style={{
@@ -166,7 +397,7 @@ class UserProfile extends Component {
                     <TouchableOpacity
                       // onPress={() => this.props.navigation.goBack()}
                       style={{
-                        height: 40,
+                        height: 30,
                         width: 30,
                         // backgroundColor: "#666",
                         alignItems: "center",
@@ -176,11 +407,27 @@ class UserProfile extends Component {
                     >
                       <Image
                         source={require("../../assets/icons/info.png")}
-                        style={{ width: 10, height: 30, resizeMode: "contain" }}
+                        style={{ width: 10, height: 25, resizeMode: "contain" }}
                       />
                     </TouchableOpacity>
                   </View>
-                </ImageBackground>
+                </View>
+
+                <View style={{ width: "100%" }}>
+                  <Carousel
+                    ref={(c) => {
+                      this._carousel = c;
+                    }}
+                    data={GalleryImage}
+                    renderItem={this._renderItem}
+                    sliderWidth={width}
+                    itemWidth={width}
+                    onSnapToItem={(index) =>
+                      this.setState({ activeSlide: index })
+                    }
+                  />
+                  {this.pagination}
+                </View>
               </View>
             </SafeAreaView>
             <View style={{ width: "100%", padding: 20 }}>
@@ -231,7 +478,7 @@ class UserProfile extends Component {
                       marginTop: 5,
                     }}
                   >
-                    10 Miles Away
+                    {this.distance(userData)} Miles Away
                   </Text>
                   <Text
                     style={{
@@ -281,7 +528,7 @@ class UserProfile extends Component {
                   >
                     <Text
                       style={{
-                        fontSize: 28,
+                        fontSize: 26,
                         fontFamily: font.Bold,
                         color: "#000",
                       }}
@@ -289,7 +536,7 @@ class UserProfile extends Component {
                       {matchScore}
                       <Text
                         style={{
-                          fontSize: 20,
+                          fontSize: 18,
                           fontFamily: font.Bold,
                           color: "#000",
                         }}
@@ -321,25 +568,44 @@ class UserProfile extends Component {
                   >
                     {userData.bio_description ? userData.bio_description : ""}
                   </Text>
-                  <ImageBackground
-                    source={require("../../assets/icons/Ellipse.png")}
-                    style={{
-                      width: 60,
-                      height: 60,
-                      position: "absolute",
-                      right: -30,
-                      top: 30,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <TouchableOpacity onPress={() => this.PlaySound()}>
-                      <Image
-                        source={require("../../assets/icons/Play.png")}
-                        style={{ width: 40, height: 40, marginBottom: 8 }}
-                      />
-                    </TouchableOpacity>
-                  </ImageBackground>
+                  {this.state.userData.bio && (
+                    <ImageBackground
+                      source={require("../../assets/icons/Ellipse.png")}
+                      style={{
+                        width: 60,
+                        height: 60,
+                        position: "absolute",
+                        right: -30,
+                        top: 30,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      {this.state.isSoundPlaying ? (
+                        <Icon
+                          onPress={() =>
+                            this.state.soundPlayed ? this.Pause() : this.Play()
+                          }
+                          name={
+                            this.state.soundPlayed
+                              ? "pause-circle"
+                              : "play-circle"
+                          }
+                          color="#5FAEB6"
+                          size={40}
+                          style={{ marginBottom: 8 }}
+                        />
+                      ) : (
+                        <Icon
+                          onPress={() => this.PlaySound()}
+                          name="play-circle"
+                          color="#5FAEB6"
+                          size={40}
+                          style={{ marginBottom: 8 }}
+                        />
+                      )}
+                    </ImageBackground>
+                  )}
                 </View>
               </View>
               <View style={{ width: "100%", marginTop: 10 }}>
@@ -390,7 +656,8 @@ class UserProfile extends Component {
             alignItems: "center",
           }}
         >
-          <View
+          <TouchableOpacity
+            onPress={this.disLikeUser}
             style={{
               width: "33%",
               padding: 5,
@@ -402,7 +669,7 @@ class UserProfile extends Component {
               source={require("../../assets/icons/Unlike.png")}
               style={{ width: 50, height: 50 }}
             />
-          </View>
+          </TouchableOpacity>
           <View
             style={{
               width: "33%",
@@ -411,14 +678,16 @@ class UserProfile extends Component {
               alignItems: "center",
             }}
           >
-            <View
+            <TouchableOpacity
+              onPress={this.likeUser}
+              disabled={this.state.liked}
               style={[
                 styles.shodow,
                 {
                   height: 70,
                   width: 70,
                   borderRadius: 35,
-                  backgroundColor: "#E5E5E5",
+                  backgroundColor: this.state.liked ? "#416181" : "#E5E5E5",
                   margin: 5,
                   justifyContent: "center",
                   alignItems: "center",
@@ -429,7 +698,7 @@ class UserProfile extends Component {
                 source={require("../../assets/icons/Heart.png")}
                 style={{ width: 50, height: 50 }}
               />
-            </View>
+            </TouchableOpacity>
           </View>
           <View
             style={{
@@ -461,6 +730,77 @@ class UserProfile extends Component {
           </View>
         </View>
         <SafeAreaView></SafeAreaView>
+        <Modal
+          onBackdropPress={() => {
+            this.setState({
+              planModal: false,
+            });
+          }}
+          onBackButtonPress={() => {
+            this.setState({ planModal: false });
+          }}
+          transparent={true}
+          isVisible={this.state.planModal}
+          style={{ margin: 0 }}
+        >
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(0,0,0,.8)",
+            }}
+          >
+            <View style={[styles.modalContainer]}>
+              <View
+                style={{
+                  width: width,
+                  height: 50,
+                  top: 30,
+                  position: "absolute",
+
+                  zIndex: 1000,
+                  justifyContent: "flex-end",
+                  alignItems: "flex-end",
+                  padding: 10,
+                  backgroundColor: "rgba(0,0,0,.6)",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() =>
+                    this.setState({
+                      planModal: false,
+                    })
+                  }
+                >
+                  <Image
+                    source={require("../../assets/icons/FilterClose.png")}
+                    style={{ width: 25, height: 25, resizeMode: "contain" }}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={{ width: "100%", height: "100%" }}>
+                <Carousel
+                  ref={(c) => {
+                    this._carousel = c;
+                  }}
+                  firstItem={this.state.modalImage}
+                  data={GalleryImage}
+                  renderItem={this._renderItem2}
+                  sliderWidth={width}
+                  itemWidth={width}
+                  onSnapToItem={(index) =>
+                    this.setState({ activeSlide: index })
+                  }
+                />
+              </View>
+              {/* <Image
+                source={{ uri: this.state.modalImage }}
+                style={{ width: "100%", height: "100%", resizeMode: "contain" }}
+              /> */}
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -513,6 +853,36 @@ const styles = StyleSheet.create({
     fontFamily: font.Medium,
     textAlign: "center",
   },
+  closeIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
+  },
+  modalContainer: {
+    // height: height / 1.5,
+    width: "100%",
+    // backgroundColor: "#",
+    borderRadius: 10,
+    padding: 10,
+  },
 });
 
-export default UserProfile;
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfile);
+
+// export default UserProfile;

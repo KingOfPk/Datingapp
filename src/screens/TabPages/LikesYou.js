@@ -7,58 +7,99 @@ import {
   FlatList,
   ScrollView,
   TouchableOpacity,
+  AsyncStorage,
 } from "react-native";
-
+import { baseurl } from "../../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { getUserDetail } from "../../Store/Action/user.action.js";
+import { Loader } from "../../components/Loader";
 import Styles from "../../components/CommanStyle";
 import { font } from "../../components/fonts";
-
+import moment from "moment";
+import { getDistance, getPreciseDistance } from "geolib";
 class LikesYou extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userList: [
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-        {
-          id: 0,
-        },
-      ],
+      userList: [],
     };
   }
+
+  componentDidMount = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/like_dislikes/likes_you`,
+      headers: {
+        token: token,
+      },
+    };
+
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        if (res.status) {
+          this.setState({
+            userList: res.data,
+          });
+        }
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  async componentWillReceiveProps(nextProp) {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/like_dislikes/likes_you`,
+      headers: {
+        token: token,
+      },
+    };
+    console.log(config);
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        if (res.status) {
+          this.setState({
+            userList: res.data,
+          });
+        }
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  age = (dob) => {
+    var currentDate = moment();
+    var date = moment(dob);
+    var diff = currentDate.diff(date, "years");
+    console.log(diff);
+    return diff;
+  };
+
+  distance = (item) => {
+    console.log(this.props.Address);
+    const { position } = this.props.Address;
+    var dis = getDistance(
+      { latitude: position.lat, longitude: position.lng },
+      {
+        latitude: parseFloat(item.latitude),
+        longitude: parseFloat(item.longitude),
+      }
+    );
+    var distance = dis / 1000;
+    // console.log(dis);
+    return distance.toFixed(2);
+  };
+
   render() {
     const { userList } = this.state;
     return (
@@ -76,9 +117,12 @@ class LikesYou extends Component {
           <FlatList
             data={userList}
             numColumns={2}
-            renderItem={() => {
+            renderItem={({ item }) => {
               return (
-                <TouchableOpacity style={styles.containerView}>
+                <TouchableOpacity
+                  onPress={() => this.props.goToCart(item)}
+                  style={styles.containerView}
+                >
                   <View
                     style={{
                       width: "100%",
@@ -86,7 +130,7 @@ class LikesYou extends Component {
                     }}
                   >
                     <Image
-                      source={require("../../../assets/images/profile.png")}
+                      source={{ uri: item.profile_pic.url }}
                       style={{
                         height: "100%",
                         width: "100%",
@@ -115,7 +159,7 @@ class LikesYou extends Component {
                       width={"100%"}
                       style={styles.boldText}
                     >
-                      Jessica
+                      {item.name}
                     </Text>
                     <Text
                       ellipsizeMode="tail"
@@ -128,7 +172,7 @@ class LikesYou extends Component {
                         },
                       ]}
                     >
-                      O’liver
+                      {item.last_name}
                     </Text>
                     <View
                       style={{
@@ -149,7 +193,7 @@ class LikesYou extends Component {
                           },
                         ]}
                       >
-                        10 Miles
+                        {this.distance(item)} Miles
                       </Text>
                       <Text
                         ellipsizeMode="tail"
@@ -157,7 +201,7 @@ class LikesYou extends Component {
                         width={"100%"}
                         style={styles.boldText}
                       >
-                        30
+                        {this.age(item.dob)}
                       </Text>
                     </View>
                   </View>
@@ -196,4 +240,23 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
 });
-export default LikesYou;
+
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+    // user: state.user,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+export default connect(mapStateToProps, mapDispatchToProps)(LikesYou);
+// export default LikesYou;

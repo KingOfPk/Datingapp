@@ -14,9 +14,15 @@ import { font } from "../components/fonts";
 import Footer from "../components/Footer";
 import SettingHeader from "../components/SettingHeader";
 import LikeTabs from "./TabPages/LikeTab";
-
+import { baseurl } from "../utils/index";
+import axios from "axios";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import Toast from "react-native-simple-toast";
+import { getUserDetail } from "../Store/Action/user.action.js";
 class LikeScreen extends Component {
   state = {};
+
   render() {
     return (
       <SafeAreaView>
@@ -42,8 +48,12 @@ class LikeScreen extends Component {
                 onPress={() => this.props.navigation.navigate("Setting")}
               >
                 <Image
-                  source={require("../../assets/images/Rectangle.png")}
-                  style={{ width: 50, height: 50 }}
+                  source={
+                    this.props.user.profile_pic.url
+                      ? { uri: this.props.user.profile_pic.url }
+                      : require("../../assets/images/profile.png")
+                  }
+                  style={{ width: 50, height: 50, borderRadius: 25 }}
                 />
               </TouchableOpacity>
               <Text
@@ -104,5 +114,21 @@ class LikeScreen extends Component {
     );
   }
 }
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+  };
+}
 
-export default LikeScreen;
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      getUserDetail,
+    },
+    dispatch
+  );
+}
+export default connect(mapStateToProps, mapDispatchToProps)(LikeScreen);
+// export default LikeScreen;

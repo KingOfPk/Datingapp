@@ -23,7 +23,7 @@ import { baseurl } from "../utils/index";
 import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getUserDetail } from "../Store/Action/User.action";
+import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 const { width, height } = Dimensions.get("window");
 class OnBoarding extends Component {
@@ -81,7 +81,7 @@ class OnBoarding extends Component {
             <Image
               source={
                 this.props.user.profile_pic.url
-                  ? { uri: baseurl + this.props.user.profile_pic.url }
+                  ? { uri: this.props.user.profile_pic.url }
                   : require("../../assets/images/dummyUser.png")
               }
               style={styles.userImage}
