@@ -17,6 +17,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
+import Toast from "react-native-simple-toast";
 const { height, width } = Dimensions.get("window");
 
 class ChooseConnections extends Component {
@@ -93,37 +94,41 @@ class ChooseConnections extends Component {
 
   SetConnections = async () => {
     var token = await AsyncStorage.getItem("userToken");
-    this.setState({
-      isloading: true,
-    });
-    var data = JSON.stringify({
-      connection_ids: this.state.selectedConnectionType.toString(),
-    });
-
-    var config = {
-      method: "put",
-      url: `${baseurl}/api/v1/preferences/connection_update`,
-      headers: {
-        "Content-Type": "application/json",
-        token: token,
-      },
-      data: data,
-    };
-    console.log(config);
-
-    axios(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        var res = response.data;
-        this.setState({
-          isloading: false,
-        });
-        // this.props.navigation.navigate("ChooseConnections");
-        this.props.navigation.navigate("ChooseInterest");
-      })
-      .catch(function (error) {
-        console.log(error);
+    if (this.state.selectedConnectionType.length == 0) {
+      Toast.show("Please choose your connection", Toast.LONG);
+    } else {
+      this.setState({
+        isloading: true,
       });
+      var data = JSON.stringify({
+        connection_ids: this.state.selectedConnectionType.toString(),
+      });
+
+      var config = {
+        method: "put",
+        url: `${baseurl}/api/v1/preferences/connection_update`,
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        data: data,
+      };
+      console.log(config);
+
+      axios(config)
+        .then((response) => {
+          console.log(JSON.stringify(response.data));
+          var res = response.data;
+          this.setState({
+            isloading: false,
+          });
+          // this.props.navigation.navigate("ChooseConnections");
+          this.props.navigation.navigate("ChooseInterest");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
   };
 
   render() {

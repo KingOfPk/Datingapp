@@ -17,6 +17,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
+import Toast from "react-native-simple-toast";
 const { height, width } = Dimensions.get("window");
 
 class ChooseInterest extends Component {
@@ -30,37 +31,41 @@ class ChooseInterest extends Component {
 
   SetConnections = async () => {
     var token = await AsyncStorage.getItem("userToken");
-    this.setState({
-      isloading: true,
-    });
-    var data = JSON.stringify({
-      interest_ids: this.state.selectedInterestType,
-    });
-
-    var config = {
-      method: "put",
-      url: `${baseurl}/api/v1/preferences/interest_update`,
-      headers: {
-        "Content-Type": "application/json",
-        token: token,
-      },
-      data: data,
-    };
-    console.log(config);
-
-    axios(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        var res = response.data;
-        this.setState({
-          isloading: false,
-        });
-        // this.props.navigation.navigate("ChooseConnections");
-        this.props.navigation.navigate("ChooseLookingFor");
-      })
-      .catch(function (error) {
-        console.log(error);
+    if (this.state.selectedInterestType == "") {
+      Toast.show("Please choose your interest", Toast.LONG);
+    } else {
+      this.setState({
+        isloading: true,
       });
+      var data = JSON.stringify({
+        interest_ids: this.state.selectedInterestType,
+      });
+
+      var config = {
+        method: "put",
+        url: `${baseurl}/api/v1/preferences/interest_update`,
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        data: data,
+      };
+      console.log(config);
+
+      axios(config)
+        .then((response) => {
+          console.log(JSON.stringify(response.data));
+          var res = response.data;
+          this.setState({
+            isloading: false,
+          });
+          // this.props.navigation.navigate("ChooseConnections");
+          this.props.navigation.navigate("ChooseLookingFor");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
   };
 
   render() {

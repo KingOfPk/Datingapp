@@ -333,6 +333,42 @@ class UserProfile extends Component {
       });
   };
 
+  createChat = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var data = JSON.stringify({
+      chat_to: this.props.route.params.data.id,
+    });
+    console.log(data);
+    var config = {
+      method: "post",
+      url: `${baseurl}/api/v1/channels?chat_to=${this.props.route.params.data.id}`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        console.log(res);
+        if (res.status) {
+          this.props.navigation.navigate("ChatScreen", {
+            channnelName: res.data.channel_name,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({
+          isloading: false,
+          Post: [],
+        });
+      });
+  };
+
   render() {
     const { userData, youBothLike, isloading, matchScore, GalleryImage } =
       this.state;
@@ -708,7 +744,8 @@ class UserProfile extends Component {
               alignItems: "center",
             }}
           >
-            <View
+            <TouchableOpacity
+              onPress={this.createChat}
               style={[
                 styles.shodow,
                 {
@@ -726,7 +763,7 @@ class UserProfile extends Component {
                 source={require("../../assets/icons/Chat.png")}
                 style={{ width: 40, height: 40 }}
               />
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
         <SafeAreaView></SafeAreaView>

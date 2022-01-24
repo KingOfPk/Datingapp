@@ -17,6 +17,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
+import Toast from "react-native-simple-toast";
 const { height, width } = Dimensions.get("window");
 
 class ChooseLookingFor extends Component {
@@ -110,37 +111,41 @@ class ChooseLookingFor extends Component {
 
   SetConnections = async () => {
     var token = await AsyncStorage.getItem("userToken");
-    this.setState({
-      isloading: true,
-    });
-    var data = JSON.stringify({
-      looking_ids: this.state.selectedHobby.toString(),
-    });
-
-    var config = {
-      method: "put",
-      url: `${baseurl}/api/v1/preferences/lookings_update`,
-      headers: {
-        "Content-Type": "application/json",
-        token: token,
-      },
-      data: data,
-    };
-    console.log(config);
-
-    axios(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        var res = response.data;
-        this.setState({
-          isloading: false,
-        });
-        // this.props.navigation.navigate("ChooseConnections");
-        this.props.navigation.navigate("ChooseHobby");
-      })
-      .catch(function (error) {
-        console.log(error);
+    if (this.state.selectedHobby.length == 0) {
+      Toast.show("Please choose your looking for", Toast.LONG);
+    } else {
+      this.setState({
+        isloading: true,
       });
+      var data = JSON.stringify({
+        looking_ids: this.state.selectedHobby.toString(),
+      });
+
+      var config = {
+        method: "put",
+        url: `${baseurl}/api/v1/preferences/lookings_update`,
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        data: data,
+      };
+      console.log(config);
+
+      axios(config)
+        .then((response) => {
+          console.log(JSON.stringify(response.data));
+          var res = response.data;
+          this.setState({
+            isloading: false,
+          });
+          // this.props.navigation.navigate("ChooseConnections");
+          this.props.navigation.navigate("ChooseHobby");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
   };
 
   render() {

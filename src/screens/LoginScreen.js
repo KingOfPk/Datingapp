@@ -82,8 +82,11 @@ class LoginScreen extends Component {
             data: this.state.number,
           });
         })
-        .catch(function (error) {
-          console.log(error);
+        .catch((error) => {
+          console.log(error.response);
+          this.setState({
+            isDisable: false,
+          });
           alert(error);
         });
 

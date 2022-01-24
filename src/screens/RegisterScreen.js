@@ -87,6 +87,10 @@ class RegisterScreen extends Component {
       Toast.show("Enter your name", Toast.LONG);
     } else if (this.state.DOB == "") {
       Toast.show("Enter your Date of birth", Toast.LONG);
+    } else if (this.state.lastName == "") {
+      Toast.show("Enter your last name", Toast.LONG);
+    } else if (this.state.imageUri == "") {
+      Toast.show("Upload your picture ", Toast.LONG);
     } else {
       var data = JSON.stringify({
         user: {
@@ -186,7 +190,17 @@ class RegisterScreen extends Component {
 
   SelectedDate = (date) => {
     var time = moment(date).format("DD/MM/YYYY");
-    this.setState({ DOB: time });
+    var currentTime = moment().format("DD/MM/YYYY");
+    var DTime = moment(time);
+    var CTime = moment(currentTime);
+    const dateIsAfter = moment(time).isAfter(currentTime);
+
+    if (dateIsAfter) {
+      alert("please select valid date");
+      this.setState({ DOB: currentTime });
+    } else {
+      this.setState({ DOB: time });
+    }
   };
 
   render() {
@@ -359,9 +373,9 @@ class RegisterScreen extends Component {
                   <DateTimePicker
                     containerStyle={[styles.inputTextStyle, { height: 35 }]}
                     title={""}
-                    maximumDate={new Date()}
                     placeholder={""}
                     hideUnderline={true}
+                    value={this.state.DOB}
                     renderInput={this.renderCustomInput}
                     dateFormat={"DD/MM/YYYY"}
                     onChange={(date) => this.SelectedDate(date)}

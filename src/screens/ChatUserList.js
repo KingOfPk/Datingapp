@@ -7,11 +7,15 @@ import {
   SafeAreaView,
   TouchableOpacity,
   StyleSheet,
+  AsyncStorage,
 } from "react-native";
 import Styles from "../components/CommanStyle";
 import { font } from "../components/fonts";
 import Footer from "../components/Footer";
-
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { baseurl } from "../utils/index";
+import axios from "axios";
 class ChatUserList extends Component {
   constructor(props) {
     super(props);
@@ -50,6 +54,32 @@ class ChatUserList extends Component {
       ],
     };
   }
+
+  componentDidMount = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/channels`,
+      headers: {
+        token: token,
+      },
+    };
+    console.log(config);
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        if (res.status) {
+          this.setState({
+            userList: res.data,
+          });
+        }
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   render() {
     const { userList } = this.state;
     return (
@@ -101,7 +131,9 @@ class ChatUserList extends Component {
                 return (
                   <TouchableOpacity
                     onPress={() => {
-                      this.props.navigation.navigate("ChatScreen");
+                      this.props.navigation.navigate("ChatScreen", {
+                        channnelName: item.channel_name,
+                      });
                     }}
                     style={styles.userContainer}
                   >
@@ -197,4 +229,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatUserList;
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    user: state.User.user,
+  };
+}
+
+export default connect(mapStateToProps)(ChatUserList);
+
+// export default ChatUserList;

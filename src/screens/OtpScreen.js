@@ -100,6 +100,7 @@ class OtpScreen extends Component {
             this.props.navigation.navigate("ChooseAgeOrDistance");
           } else {
             Toast.show("Login Succussfully", Toast.LONG);
+            await AsyncStorage.removeItem("isComplete");
             this.props.navigation.navigate("HomeScreen");
           }
         }
