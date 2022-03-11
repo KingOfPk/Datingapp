@@ -238,7 +238,7 @@ class RecordBio extends Component {
               alignItems: "center",
             }}
           >
-            {this.state.startAudio ? (
+            {/* {this.state.startAudio ? (
               <View
                 style={{
                   width: "100%",
@@ -329,9 +329,9 @@ class RecordBio extends Component {
                   />
                 )}
               </TouchableOpacity>
-            )}
+            )} */}
 
-            {this.state.isEndRecord && (
+            {/* {this.state.isEndRecord && (
               <View
                 style={{
                   width: "100%",
@@ -349,9 +349,9 @@ class RecordBio extends Component {
                   color="#5FAEB6"
                 />
               </View>
-            )}
+            )} */}
 
-            <Text
+            {/* <Text
               style={{
                 paddingVertical: "5%",
                 fontFamily: font.Medium,
@@ -367,7 +367,7 @@ class RecordBio extends Component {
               ]}
             >
               OR
-            </Text>
+            </Text> */}
             <TextInput
               maxLength={100}
               multiline={true}
@@ -388,7 +388,7 @@ class RecordBio extends Component {
                 })
               }
             />
-            <View style={{ width: "90%", paddingTop: "15%" }}>
+            <View style={{ width: "90%", paddingTop: "50%" }}>
               <Button
                 text="Save"
                 disabled={!this.state.isEndRecord}

@@ -56,8 +56,8 @@ class RegisterScreen extends Component {
 
   selectPhotoTapped = () => {
     ImagePicker.openPicker({
-      width: 300,
-      height: 500,
+      width: 400,
+      height: 400,
       compressImageMaxHeight: 1000,
       compressImageMaxWidth: 1000,
       cropping: true,
@@ -173,7 +173,7 @@ class RegisterScreen extends Component {
         <Text
           style={{ fontSize: 18, fontFamily: font.Bold }}
           absR
-          color={Colors.primary}
+          color="#000"
           text80BO
         >
           {this.getCustomInputValue(value)}
@@ -191,13 +191,20 @@ class RegisterScreen extends Component {
   SelectedDate = (date) => {
     var time = moment(date).format("DD/MM/YYYY");
     var currentTime = moment().format("DD/MM/YYYY");
-    var DTime = moment(time);
-    var CTime = moment(currentTime);
+    var DTime = moment(time, "DD/MM/YYYY");
+    var CTime = moment(currentTime, "DD/MM/YYYY");
     const dateIsAfter = moment(time).isAfter(currentTime);
+    var duration = moment.duration(CTime.diff(DTime));
 
-    if (dateIsAfter) {
-      alert("please select valid date");
-      this.setState({ DOB: currentTime });
+    var days = duration.get("Days");
+    var months = duration.get("Months");
+    var years = duration.get("Years");
+
+    if (years < 18) {
+      alert("You are not 18 or more");
+      this.setState({ DOB: "" });
+    } else if (years > 100) {
+      alert("The age must be less than 90 years");
     } else {
       this.setState({ DOB: time });
     }
@@ -267,7 +274,7 @@ class RegisterScreen extends Component {
               >
                 <Image
                   source={{ uri: this.state.imageUri }}
-                  style={{ width: "100%", height: 200 }}
+                  style={{ width: "100%", height: 400 }}
                 />
                 <TouchableOpacity
                   onPress={() =>
@@ -283,9 +290,10 @@ class RegisterScreen extends Component {
                     position: "absolute",
                     top: 0,
                     right: 10,
+                    backgroundColor: "#fff",
                   }}
                 >
-                  <Icon name="times" size={30} color="#000" />
+                  <Image source={require("../../assets/icons/Cancel2.png")} />
                 </TouchableOpacity>
               </View>
             )}
@@ -375,7 +383,6 @@ class RegisterScreen extends Component {
                     title={""}
                     placeholder={""}
                     hideUnderline={true}
-                    value={this.state.DOB}
                     renderInput={this.renderCustomInput}
                     dateFormat={"DD/MM/YYYY"}
                     onChange={(date) => this.SelectedDate(date)}

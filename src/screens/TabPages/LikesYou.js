@@ -114,72 +114,72 @@ class LikesYou extends Component {
           <View style={Styles.arrowView} />
         </View>
         <ScrollView style={{ flex: 1, paddingHorizontal: 10 }}>
-          <FlatList
-            data={userList}
-            numColumns={2}
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => this.props.goToCart(item)}
-                  style={styles.containerView}
-                >
-                  <View
-                    style={{
-                      width: "100%",
-                      height: "60%",
-                    }}
-                  >
-                    <Image
-                      source={{ uri: item.profile_pic.url }}
-                      style={{
-                        height: "100%",
-                        width: "100%",
-                        resizeMode: "cover",
-                        borderRadius: 20,
-                      }}
-                    />
-                  </View>
+          {userList.length == 0 ? (
+            <View
+              style={{
+                height: 500,
+                width: "100%",
 
-                  <View
-                    style={{
-                      width: "100%",
-                      height: "40%",
-                      paddingHorizontal: 10,
-                    }}
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ fontSize: 18, fontFamily: font.Bold }}>
+                No likes
+              </Text>
+            </View>
+          ) : (
+            <FlatList
+              data={userList}
+              numColumns={2}
+              renderItem={({ item }) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => this.props.goToCart(item)}
+                    style={styles.containerView}
                   >
-                    <TouchableOpacity style={{ alignSelf: "flex-end" }}>
-                      <Image
-                        source={require("../../../assets/icons/Heart.png")}
-                        style={{ width: 25, height: 25, resizeMode: "contain" }}
-                      />
-                    </TouchableOpacity>
-                    <Text
-                      ellipsizeMode="tail"
-                      numberOfLines={1}
-                      width={"100%"}
-                      style={styles.boldText}
-                    >
-                      {item.name}
-                    </Text>
-                    <Text
-                      ellipsizeMode="tail"
-                      numberOfLines={1}
-                      width={"100%"}
-                      style={[
-                        styles.boldText,
-                        {
-                          color: "#ACABB4",
-                        },
-                      ]}
-                    >
-                      {item.last_name}
-                    </Text>
                     <View
                       style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
+                        width: "100%",
+                        height: "60%",
                       }}
                     >
+                      <Image
+                        source={{ uri: item.profile_pic.url }}
+                        style={{
+                          height: "100%",
+                          width: "100%",
+                          resizeMode: "cover",
+                          borderRadius: 20,
+                        }}
+                      />
+                    </View>
+
+                    <View
+                      style={{
+                        width: "100%",
+                        height: "40%",
+                        paddingHorizontal: 10,
+                      }}
+                    >
+                      <TouchableOpacity style={{ alignSelf: "flex-end" }}>
+                        <Image
+                          source={require("../../../assets/icons/Heart.png")}
+                          style={{
+                            width: 25,
+                            height: 25,
+                            resizeMode: "contain",
+                          }}
+                        />
+                      </TouchableOpacity>
+                      <Text
+                        ellipsizeMode="tail"
+                        numberOfLines={1}
+                        width={"100%"}
+                        style={styles.boldText}
+                      >
+                        {item.name}
+                      </Text>
                       <Text
                         ellipsizeMode="tail"
                         numberOfLines={1}
@@ -188,27 +188,47 @@ class LikesYou extends Component {
                           styles.boldText,
                           {
                             color: "#ACABB4",
-                            fontSize: 14,
-                            fontFamily: font.Medium,
                           },
                         ]}
                       >
-                        {this.distance(item)} Miles
+                        {item.last_name}
                       </Text>
-                      <Text
-                        ellipsizeMode="tail"
-                        numberOfLines={1}
-                        width={"100%"}
-                        style={styles.boldText}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
                       >
-                        {this.age(item.dob)}
-                      </Text>
+                        <Text
+                          ellipsizeMode="tail"
+                          numberOfLines={1}
+                          width={"100%"}
+                          style={[
+                            styles.boldText,
+                            {
+                              color: "#ACABB4",
+                              fontSize: 14,
+                              fontFamily: font.Medium,
+                            },
+                          ]}
+                        >
+                          {this.distance(item)} Miles
+                        </Text>
+                        <Text
+                          ellipsizeMode="tail"
+                          numberOfLines={1}
+                          width={"100%"}
+                          style={styles.boldText}
+                        >
+                          {this.age(item.dob)}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            }}
-          />
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          )}
         </ScrollView>
       </View>
     );

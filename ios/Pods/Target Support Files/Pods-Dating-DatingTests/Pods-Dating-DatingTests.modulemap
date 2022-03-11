@@ -1,6 +1,0 @@
-module Pods_Dating_DatingTests {
-  umbrella header "Pods-Dating-DatingTests-umbrella.h"
-
-  export *
-  module * { export * }
-}

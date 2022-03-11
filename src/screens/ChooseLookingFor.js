@@ -18,6 +18,7 @@ import { bindActionCreators } from "redux";
 import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 import Toast from "react-native-simple-toast";
+import { SafeAreaView } from "react-native";
 const { height, width } = Dimensions.get("window");
 
 class ChooseLookingFor extends Component {
@@ -154,42 +155,43 @@ class ChooseLookingFor extends Component {
       <Loader />
     ) : (
       <View style={styles.container}>
+        <SafeAreaView style={{ width: "100%" }}>
+          <View
+            style={{
+              width: "100%",
+              height: 150,
+              justifyContent: "center",
+              padding: 10,
+            }}
+          >
+            <View style={styles.rowContainer}>
+              <Text style={styles.userNameText}>{this.props.user.name},</Text>
+              <Image
+                source={
+                  this.props.user.profile_pic.url
+                    ? { uri: this.props.user.profile_pic.url }
+                    : require("../../assets/images/dummyUser.png")
+                }
+                style={styles.userImage}
+              />
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={styles.headingText}>Are you</Text>
+              <Text
+                style={[
+                  styles.headingText,
+                  { color: "#5FAEB6", left: 5, fontStyle: "italic" },
+                ]}
+              >
+                looking
+              </Text>
+              <Text style={[styles.headingText, { left: 10 }]}>for</Text>
+            </View>
+          </View>
+        </SafeAreaView>
         <View
           style={{
-            width: "100%",
-            height: "30%",
-            justifyContent: "center",
-            padding: 10,
-          }}
-        >
-          <View style={styles.rowContainer}>
-            <Text style={styles.userNameText}>{this.props.user.name},</Text>
-            <Image
-              source={
-                this.props.user.profile_pic.url
-                  ? { uri: this.props.user.profile_pic.url }
-                  : require("../../assets/images/dummyUser.png")
-              }
-              style={styles.userImage}
-            />
-          </View>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={styles.headingText}>Are you</Text>
-            <Text
-              style={[
-                styles.headingText,
-                { color: "#5FAEB6", left: 5, fontStyle: "italic" },
-              ]}
-            >
-              looking
-            </Text>
-            <Text style={[styles.headingText, { left: 10 }]}>for</Text>
-          </View>
-        </View>
-        <View
-          style={{
-            width: "100%",
-            height: "70%",
+            flex: 1,
             alignItems: "center",
           }}
         >
@@ -220,15 +222,15 @@ class ChooseLookingFor extends Component {
               );
             }}
           />
-          <View
-            style={{ width: "85%", height: "15%", justifyContent: "center" }}
-          >
-            <Button
-              text="Save"
-              backgroundColor="#5FAEB6"
-              Pressed={() => this.SetConnections()}
-            />
-          </View>
+          <SafeAreaView>
+            <View style={{ width: "85%", justifyContent: "center" }}>
+              <Button
+                text="Save"
+                backgroundColor="#5FAEB6"
+                Pressed={() => this.SetConnections()}
+              />
+            </View>
+          </SafeAreaView>
         </View>
       </View>
     );

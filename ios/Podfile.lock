@@ -80,17 +80,17 @@ PODS:
     - lottie-ios (~> 3.2.3)
     - React-Core
   - OpenSSL-Universal (1.1.180)
-  - Permission-Camera (3.1.0):
+  - Permission-Camera (3.3.0):
     - RNPermissions
-  - Permission-LocationAlways (3.1.0):
+  - Permission-LocationAlways (3.3.0):
     - RNPermissions
-  - Permission-LocationWhenInUse (3.1.0):
+  - Permission-LocationWhenInUse (3.3.0):
     - RNPermissions
-  - Permission-MediaLibrary (3.1.0):
+  - Permission-MediaLibrary (3.3.0):
     - RNPermissions
-  - Permission-Microphone (3.1.0):
+  - Permission-Microphone (3.3.0):
     - RNPermissions
-  - Permission-PhotoLibrary (3.1.0):
+  - Permission-PhotoLibrary (3.3.0):
     - RNPermissions
   - RCT-Folly (2021.06.28.00-v2):
     - boost
@@ -296,6 +296,8 @@ PODS:
     - React
   - react-native-geolocation (2.0.2):
     - React
+  - react-native-geolocation-service (5.3.0-beta.4):
+    - React
   - react-native-netinfo (5.9.10):
     - React-Core
   - react-native-safe-area-context (3.3.2):
@@ -368,8 +370,6 @@ PODS:
     - React-jsi (= 0.66.1)
     - React-logger (= 0.66.1)
     - React-perflogger (= 0.66.1)
-  - ReactNativeUiLib (3.0.4):
-    - React
   - rn-range-slider (1.3.3):
     - React
   - RNAudioRecord (0.2.2):
@@ -399,7 +399,7 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController
-  - RNPermissions (3.1.0):
+  - RNPermissions (3.3.0):
     - React-Core
   - RNReanimated (2.2.3):
     - DoubleConversion
@@ -430,9 +430,6 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.9.0):
-    - React-Core
-    - React-RCTImage
   - RNSoundPlayer (0.11.1):
     - React
   - RNSVG (12.1.1):
@@ -474,7 +471,7 @@ DEPENDENCIES:
   - FlipperKit/SKIOSNetworkPlugin (= 0.99.0)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera/Permission-Camera.podspec`)
+  - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-LocationAlways (from `../node_modules/react-native-permissions/ios/LocationAlways/Permission-LocationAlways.podspec`)
   - Permission-LocationWhenInUse (from `../node_modules/react-native-permissions/ios/LocationWhenInUse/Permission-LocationWhenInUse.podspec`)
   - Permission-MediaLibrary (from `../node_modules/react-native-permissions/ios/MediaLibrary/Permission-MediaLibrary.podspec`)
@@ -497,6 +494,7 @@ DEPENDENCIES:
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-geocoder (from `../node_modules/react-native-geocoder`)
   - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
+  - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-simple-toast (from `../node_modules/react-native-simple-toast`)
@@ -512,7 +510,6 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - ReactNativeUiLib (from `../node_modules/react-native-ui-lib/lib`)
   - rn-range-slider (from `../node_modules/rn-range-slider`)
   - RNAudioRecord (from `../node_modules/react-native-audio-record`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
@@ -526,7 +523,6 @@ DEPENDENCIES:
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
-  - RNScreens (from `../node_modules/react-native-screens`)
   - RNSoundPlayer (from `../node_modules/react-native-sound-player`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
@@ -568,7 +564,7 @@ EXTERNAL SOURCES:
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
   Permission-Camera:
-    :path: "../node_modules/react-native-permissions/ios/Camera/Permission-Camera.podspec"
+    :path: "../node_modules/react-native-permissions/ios/Camera"
   Permission-LocationAlways:
     :path: "../node_modules/react-native-permissions/ios/LocationAlways/Permission-LocationAlways.podspec"
   Permission-LocationWhenInUse:
@@ -609,6 +605,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-geocoder"
   react-native-geolocation:
     :path: "../node_modules/@react-native-community/geolocation"
+  react-native-geolocation-service:
+    :path: "../node_modules/react-native-geolocation-service"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -639,8 +637,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
-  ReactNativeUiLib:
-    :path: "../node_modules/react-native-ui-lib/lib"
   rn-range-slider:
     :path: "../node_modules/rn-range-slider"
   RNAudioRecord:
@@ -667,8 +663,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
-  RNScreens:
-    :path: "../node_modules/react-native-screens"
   RNSoundPlayer:
     :path: "../node_modules/react-native-sound-player"
   RNSVG:
@@ -700,12 +694,12 @@ SPEC CHECKSUMS:
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
   lottie-react-native: b561920bba7ec727ec94a473b683cffba00faece
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
-  Permission-Camera: 0db4fd6e1c556c1cf47f38b989a8084cea3ec3dd
-  Permission-LocationAlways: f1e021c3b348946cd7c5760172925b749e5d07a6
-  Permission-LocationWhenInUse: d98db702ec75e93a3ff94bc297d0b66ea04231e1
-  Permission-MediaLibrary: eb4dc997f8d3f81f28940f997651cd1a2bf16149
-  Permission-Microphone: 7b75718196244a6e59dd60f82f12962562c2ea12
-  Permission-PhotoLibrary: 9dcf80d1353d81b9f1e210c34291591236aaf2b6
+  Permission-Camera: 597646618d1edcc055a3f660844c2ee6de8e0596
+  Permission-LocationAlways: dc302c06bead91cc4e0076c21393d0b8573caa6a
+  Permission-LocationWhenInUse: 9be81f411058a40ef6616825062fc74cec660cc9
+  Permission-MediaLibrary: 4acaae8adc5986d9d110f75315108a1acd74e5dd
+  Permission-Microphone: 964f87c350f8bc7aa163700a9736dd33c028817a
+  Permission-PhotoLibrary: 33911b5522ee5978fcabe25d604756135325d067
   RCT-Folly: a21c126816d8025b547704b777a2ba552f3d9fa9
   RCTRequired: 3cc065b52aa18db729268b9bd78a2feffb4d0f91
   RCTTypeSafety: 3c4fc37d5dea452d2ef17324db5504ec2f05083a
@@ -721,6 +715,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-geocoder: 757427682892bb256f3b3745858cc90eba148a8e
   react-native-geolocation: c956aeb136625c23e0dce0467664af2c437888c9
+  react-native-geolocation-service: c0efb872258ed9240f1003a70fca9e9757e5c785
   react-native-netinfo: 30fb89fa913c342be82a887b56e96be6d71201dd
   react-native-safe-area-context: 584dc04881deb49474363f3be89e4ca0e854c057
   react-native-simple-toast: bf002828cf816775a6809f7a9ec3907509bce11f
@@ -736,7 +731,6 @@ SPEC CHECKSUMS:
   React-RCTVibration: 6600b5eed7c0fda4a433fa1198d1cb2690151791
   React-runtimeexecutor: 33a949a51bec5f8a3c9e8d8092deb259600d761e
   ReactCommon: 620442811dc6f707b4bf5e3b27d4f19c12d5a821
-  ReactNativeUiLib: cde7263a7d308b60161cd286f95c9433e79f2f7d
   rn-range-slider: f9c0e4b489c0415dfb1f8de8581bd395ba084d05
   RNAudioRecord: 162fee3b8fb628773ec704bf0333823125be2ed7
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
@@ -748,9 +742,8 @@ SPEC CHECKSUMS:
   RNFS: 3ab21fa6c56d65566d1fb26c2228e2b6132e5e32
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNImageCropPicker: 448d3c6e923fde3466b49caf3c2457c2a0ba02dd
-  RNPermissions: 4b54095940aea8c03fa3e6c92d4ac3647b31ed4e
+  RNPermissions: bcd846e8f5a7f39e921cc7ca7172e2de0e698b6f
   RNReanimated: b04ef2a4f0cb61b062bbcf033f84a9e470f4f60b
-  RNScreens: 4d79118be80f79fa1f4aa131909a1d6e86280af3
   RNSoundPlayer: 1a8fb785d9c41ec0cb14283a5ba87ff30c2a50b6
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
@@ -759,6 +752,6 @@ SPEC CHECKSUMS:
   Yoga: 2b4a01651f42a32f82e6cef3830a3ba48088237f
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: f56eba1fc6a50726ea747b02d864f7ad691739f8
+PODFILE CHECKSUM: 1b56f140899e3ce9890dcf8f1582ca3fed377974
 
 COCOAPODS: 1.11.2

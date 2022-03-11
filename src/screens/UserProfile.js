@@ -33,6 +33,7 @@ import Modal from "react-native-modal";
 import Styles from "../components/CommanStyle";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { getDistance, getPreciseDistance } from "geolib";
+import Toast from "react-native-simple-toast";
 const { width, height } = Dimensions.get("window");
 
 class UserProfile extends Component {
@@ -51,6 +52,8 @@ class UserProfile extends Component {
       dislike: false,
       planModal: false,
       modalImage: "",
+      reportModal: false,
+      reportUserType: "block",
     };
     this.timeout = null;
   }
@@ -284,6 +287,7 @@ class UserProfile extends Component {
             liked: true,
           });
         }
+        Toast.show("you liked", Toast.LONG);
         this.props.navigation.navigate("HomeScreen");
         console.log(JSON.stringify(response.data));
       })
@@ -321,6 +325,7 @@ class UserProfile extends Component {
             dislike: true,
           });
         }
+        Toast.show("you disliked", Toast.LONG);
         this.props.navigation.navigate("HomeScreen");
         console.log(JSON.stringify(response.data));
       })
@@ -357,6 +362,7 @@ class UserProfile extends Component {
         if (res.status) {
           this.props.navigation.navigate("ChatScreen", {
             channnelName: res.data.channel_name,
+            data: res.data.chat_to_user,
           });
         }
       })
@@ -431,7 +437,11 @@ class UserProfile extends Component {
                       />
                     </TouchableOpacity>
                     <TouchableOpacity
-                      // onPress={() => this.props.navigation.goBack()}
+                      onPress={() =>
+                        this.setState({
+                          reportModal: true,
+                        })
+                      }
                       style={{
                         height: 30,
                         width: 30,
@@ -588,7 +598,7 @@ class UserProfile extends Component {
               >
                 <View
                   style={{
-                    width: "90%",
+                    width: "100%",
                     backgroundColor: "#C4C4C445",
                     height: 120,
                     padding: 10,
@@ -604,7 +614,7 @@ class UserProfile extends Component {
                   >
                     {userData.bio_description ? userData.bio_description : ""}
                   </Text>
-                  {this.state.userData.bio && (
+                  {/* {this.state.userData.bio && (
                     <ImageBackground
                       source={require("../../assets/icons/Ellipse.png")}
                       style={{
@@ -641,7 +651,7 @@ class UserProfile extends Component {
                         />
                       )}
                     </ImageBackground>
-                  )}
+                  )} */}
                 </View>
               </View>
               <View style={{ width: "100%", marginTop: 10 }}>
@@ -838,6 +848,133 @@ class UserProfile extends Component {
             </View>
           </View>
         </Modal>
+
+        <Modal
+          testID={"modal"}
+          isVisible={this.state.reportModal}
+          onBackdropPress={() =>
+            this.setState({
+              reportModal: false,
+            })
+          }
+          onSwipeComplete={() =>
+            this.setState({
+              reportModal: false,
+            })
+          }
+          swipeDirection={["up", "left", "right", "down"]}
+          style={styles.view}
+        >
+          <View style={styles.content}>
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text
+                style={{ fontSize: 18, fontFamily: font.Bold, color: "#fff" }}
+              >
+                Report profile
+              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  this.setState({
+                    reportUserType: "report",
+                  })
+                }
+                style={{
+                  height: 25,
+                  width: 25,
+                  borderRadius: 13,
+                  backgroundColor: "#406284",
+                  padding: 5,
+                }}
+              >
+                {this.state.reportUserType == "report" && (
+                  <View
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "#fff",
+                      borderRadius: 13,
+                    }}
+                  ></View>
+                )}
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 15,
+              }}
+            >
+              <Text
+                style={{ fontSize: 18, fontFamily: font.Bold, color: "#fff" }}
+              >
+                Block
+              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  this.setState({
+                    reportUserType: "block",
+                  })
+                }
+                style={{
+                  height: 25,
+                  width: 25,
+                  borderRadius: 13,
+                  backgroundColor: "#406284",
+                  padding: 5,
+                }}
+              >
+                {this.state.reportUserType == "block" && (
+                  <View
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "#fff",
+                      borderRadius: 13,
+                    }}
+                  ></View>
+                )}
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                marginTop: 15,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  backgroundColor: "#416181",
+                  borderRadius: 20,
+                  width: 90,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: "#fff",
+                    fontFamily: font.Medium,
+                  }}
+                >
+                  SUBMIT
+                </Text>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -901,6 +1038,22 @@ const styles = StyleSheet.create({
     // backgroundColor: "#",
     borderRadius: 10,
     padding: 10,
+  },
+  content: {
+    backgroundColor: "#5FAEB6",
+    padding: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+  },
+  contentTitle: {
+    fontSize: 20,
+    marginBottom: 12,
+  },
+  view: {
+    justifyContent: "flex-end",
+    margin: 0,
   },
 });
 

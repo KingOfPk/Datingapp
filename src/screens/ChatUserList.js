@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import {
   View,
   Image,
@@ -16,46 +16,19 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { baseurl } from "../utils/index";
 import axios from "axios";
-class ChatUserList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userList: [
-        {
-          id: 0,
-        },
-        {
-          id: 1,
-        },
-        {
-          id: 2,
-        },
-        {
-          id: 3,
-        },
-        {
-          id: 4,
-        },
-        {
-          id: 5,
-        },
-        {
-          id: 6,
-        },
-        {
-          id: 7,
-        },
-        {
-          id: 8,
-        },
-        {
-          id: 9,
-        },
-      ],
-    };
-  }
+import { usePubNub } from "pubnub-react";
+const ChatUserList = ({ user, navigation, route }) => {
+  const pubnub = usePubNub();
+  const [userList, setUserList] = useState([]);
+  const [loading, setLaoding] = useState(true);
 
-  componentDidMount = async () => {
+  const [allMessages, setAllMessages] = useState([]);
+
+  useEffect(() => {
+    gteUserList();
+  }, []);
+
+  const gteUserList = async () => {
     var token = await AsyncStorage.getItem("userToken");
     var config = {
       method: "get",
@@ -69,9 +42,8 @@ class ChatUserList extends Component {
       .then((response) => {
         var res = response.data;
         if (res.status) {
-          this.setState({
-            userList: res.data,
-          });
+          setUserList(res.data);
+          setLaoding(false);
         }
         console.log(response.data);
       })
@@ -80,97 +52,161 @@ class ChatUserList extends Component {
       });
   };
 
-  render() {
-    const { userList } = this.state;
-    return (
-      <SafeAreaView>
-        <View style={Styles.container}>
-          <View style={styles.headerContainer}>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.goBack()}
-              style={Styles.backButtonContainer}
-            >
-              <Image
-                source={require("../../assets/icons/Left.png")}
-                style={{ width: 20, height: 20 }}
-              />
-            </TouchableOpacity>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 20,
-              }}
-            >
-              <View style={Styles.userProfileContainer}>
-                <Image
-                  source={require("../../assets/images/dummyUser.png")}
-                  style={{
-                    width: 55,
-                    height: 55,
-                    resizeMode: "contain",
-                  }}
-                />
-              </View>
-              <Text
-                style={{
-                  fontFamily: font.Medium,
-                  fontSize: 18,
-                  color: "#fff",
-                  marginLeft: 10,
-                }}
-              >
-                Your Messages
-              </Text>
-            </View>
-          </View>
-          <View style={{ flex: 1, padding: 5 }}>
-            <FlatList
-              data={userList}
-              renderItem={({ item }) => {
-                return (
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.props.navigation.navigate("ChatScreen", {
-                        channnelName: item.channel_name,
-                      });
-                    }}
-                    style={styles.userContainer}
-                  >
-                    <View style={{ flexDirection: "row" }}>
-                      <View style={styles.userActive} />
-                      <Image
-                        source={require("../../assets/images/dummyUser.png")}
-                        style={styles.userImage}
-                      />
-                    </View>
-                    <View style={{ paddingHorizontal: 10, flex: 1 }}>
-                      <Text style={styles.userName}>Kelly O’leri</Text>
-                      <Text
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                        style={styles.lastMessage}
-                      >
-                        Le’s meet at 10:30 Morning
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
+  useEffect(() => {
+    let BlankArray = [];
+    userList.map(async (value) => {
+      const message = await pubnub.fetchMessages({
+        channels: [value.channel_name],
+      });
+      if (message.channels[value.channel_name]) {
+        BlankArray.push(
+          message.channels[value.channel_name][
+            message.channels[value.channel_name].length - 1
+          ]
+        );
+        setAllMessages(BlankArray);
+      }
+    });
+  }, [loading]);
+
+  return (
+    <SafeAreaView>
+      <View style={Styles.container}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={Styles.backButtonContainer}
+          >
+            <Image
+              source={require("../../assets/icons/Left.png")}
+              style={{ width: 20, height: 20 }}
             />
+          </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 20,
+            }}
+          >
+            <View style={Styles.userProfileContainer}>
+              <Image
+                source={
+                  user.profile_pic.url
+                    ? { uri: user.profile_pic.url }
+                    : require("../../assets/images/Rectangle.png")
+                }
+                style={{
+                  width: 50,
+                  height: 50,
+
+                  borderRadius: 28,
+                }}
+              />
+            </View>
+            <Text
+              style={{
+                fontFamily: font.Medium,
+                fontSize: 18,
+                color: "#fff",
+                marginLeft: 10,
+              }}
+            >
+              Your Messages
+            </Text>
           </View>
-          <Footer
-            // selectedIcon="Setting"
-            homePress={() => this.props.navigation.navigate("HomeScreen")}
-            likePress={() => this.props.navigation.navigate("LikeScreen")}
-            preferencePress={() => this.props.navigation.navigate("Preference")}
-            settingPress={() => this.props.navigation.navigate("Setting")}
+        </View>
+        <View style={{ flex: 1, padding: 5 }}>
+          <FlatList
+            data={userList}
+            renderItem={({ item }) => {
+              return item.chat_from_user.phone == user.phone ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("ChatScreen", {
+                      channnelName: item.channel_name,
+                      data: item.chat_to_user,
+                    });
+                  }}
+                  style={styles.userContainer}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    {/* <View style={styles.userActive} /> */}
+                    <Image
+                      source={{ uri: item.chat_to_user.profile_pic.url }}
+                      style={styles.userImage}
+                    />
+                  </View>
+                  <View style={{ paddingHorizontal: 10, flex: 1 }}>
+                    <Text style={styles.userName}>
+                      {item.chat_to_user.name} {item.chat_to_user.last_name}
+                    </Text>
+                    {allMessages.map((value) => {
+                      return (
+                        value.channel == item.channel_name && (
+                          <Text
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                            style={styles.lastMessage}
+                          >
+                            {value.message.content}
+                          </Text>
+                        )
+                      );
+                    })}
+                  </View>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("ChatScreen", {
+                      channnelName: item.channel_name,
+                      data: item.chat_from_user,
+                    });
+                  }}
+                  style={styles.userContainer}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    {/* <View style={styles.userActive} /> */}
+                    <Image
+                      source={{ uri: item.chat_from_user.profile_pic.url }}
+                      style={styles.userImage}
+                    />
+                  </View>
+                  <View style={{ paddingHorizontal: 10, flex: 1 }}>
+                    <Text style={styles.userName}>
+                      {item.chat_from_user.name} {item.chat_from_user.last_name}
+                    </Text>
+                    {allMessages.map((value) => {
+                      return (
+                        value.channel == item.channel_name && (
+                          <Text
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                            style={styles.lastMessage}
+                          >
+                            {value.message.content}
+                          </Text>
+                        )
+                      );
+                    })}
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
-      </SafeAreaView>
-    );
-  }
-}
+        <Footer
+          // selectedIcon="Setting"
+          homePress={() => navigation.navigate("HomeScreen")}
+          likePress={() => navigation.navigate("LikeScreen")}
+          preferencePress={() => navigation.navigate("Preference")}
+          settingPress={() => navigation.navigate("Setting")}
+        />
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -214,7 +250,8 @@ const styles = StyleSheet.create({
   userImage: {
     width: 70,
     height: 70,
-    resizeMode: "contain",
+
+    borderRadius: 35,
   },
   userName: {
     fontFamily: font.Bold,

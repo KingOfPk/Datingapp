@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Dating</string>
+	<string>Together Again</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,31 +26,21 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
 	</dict>
-  <key>NSAppTransportSecurity</key>
-  <dict>
-      <key>NSAllowsArbitraryLoads</key><true/>
-  </dict>
-  <key>NSAppleMusicUsageDescription</key>
-   <string>For playing and listining sound file</string>
-  <key>NSCameraUsageDescription</key>
-  <string>Camera Permission for uploading image or priscription</string>
-  <key>NSLocationWhenInUseUsageDescription</key>
-  <string>We are using location for showing near by users</string>
-  <key>NSMicrophoneUsageDescription</key>
-  <string>Microphone Permission</string>
-  <key>NSPhotoLibraryUsageDescription</key>
-  <string>We are using photo library for upload priscription and user profile </string>
-  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-  <string>We are using location for showing near by users</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>For playing and listining sound file</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera Permission for uploading image or priscription</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We are using location for showing near by users</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We are using location for showing near by users</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone Permission</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We are using photo library for upload priscription and user profile </string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

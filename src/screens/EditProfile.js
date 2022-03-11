@@ -46,6 +46,8 @@ class EditProfile extends Component {
       planModal: false,
       message: "",
       errorModal: false,
+      bio_description: "",
+      AudioUri: "",
     };
   }
 
@@ -59,6 +61,9 @@ class EditProfile extends Component {
         maxFiles:
           parseInt(this.state.maxFiles) - this.props.user.galleries.length,
       });
+    });
+    this.setState({
+      bio_description: this.props.user.bio_description,
     });
   };
 
@@ -216,6 +221,68 @@ class EditProfile extends Component {
       .catch((error) => {});
   };
 
+  UpdateBio = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    this.setState({
+      isloading: true,
+    });
+    var data = JSON.stringify({
+      bio_description: this.state.bio_description,
+      bio_audio: this.state.AudioUri,
+    });
+
+    var config = {
+      method: "post",
+      url: `${baseurl}/api/v1/profile/bio_update`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+        this.setState({
+          isloading: false,
+        });
+        this.UserDetail();
+        // this.props.navigation.navigate("ChooseConnections");
+        // if (this.props.route.params.isGoback) {
+        //   this.props.navigation.navigate("HomeScreen");
+        // } else {
+        //   this.props.navigation.navigate("ChooseConnections");
+        // }
+        // this.props.navigation.navigate("ChooseConnections");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  UserDetail = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/profile`,
+      headers: {
+        token: token,
+      },
+    };
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+        if (res.status) {
+          this.props.getUserDetail(res.data);
+        }
+      })
+      .catch((error) => {});
+  };
+
   render() {
     const {
       updateBio,
@@ -321,13 +388,34 @@ class EditProfile extends Component {
                   <TouchableOpacity
                     style={{ justifyContent: "center" }}
                     onPress={() => {
-                      this.props.navigation.navigate("RecordBio", {
-                        isGoback: true,
-                      });
+                      this.UpdateBio();
                     }}
                   >
                     <Text style={styles.updateText}>Update</Text>
                   </TouchableOpacity>
+                </View>
+                <View style={{ width: "100%" }}>
+                  <TextInput
+                    maxLength={100}
+                    multiline={true}
+                    placeholder="Write your Bio Here in 100 words"
+                    placeholderTextColor="#666"
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#efefef",
+                      height: 130,
+                      borderRadius: 10,
+                      padding: 15,
+                      textAlignVertical: "top",
+                    }}
+                    value={this.state.bio_description}
+                    onChangeText={(text) =>
+                      this.setState({
+                        bio_description: text,
+                        isEndRecord: true,
+                      })
+                    }
+                  />
                 </View>
                 {/* update mobile */}
                 <View style={Styles.rowContainer}>
@@ -431,7 +519,25 @@ class EditProfile extends Component {
                                   borderRadius: 10,
                                 }}
                               />
-                              <View
+                              <TouchableOpacity
+                                onPress={() => this.RemoveItem(item.id)}
+                                style={{
+                                  width: 30,
+                                  height: 30,
+                                  position: "absolute",
+                                  right: -10,
+                                  top: -10,
+                                  backgroundColor: "#fff",
+                                  zIndex: 1000,
+                                  borderRadius: 15,
+                                }}
+                              >
+                                <Image
+                                  source={require("../../assets/icons/Cancel2.png")}
+                                  style={{ width: 30, height: 30 }}
+                                />
+                              </TouchableOpacity>
+                              {/* <View
                                 style={{
                                   width: "100%",
                                   height: "100%",
@@ -443,12 +549,13 @@ class EditProfile extends Component {
                                 }}
                               >
                                 <Icon
-                                  onPress={() => this.RemoveItem(item.id)}
+                                
                                   name="times"
                                   size={20}
                                   color="#fff"
                                 />
-                              </View>
+                                
+                              </View> */}
                             </TouchableOpacity>
                           )}
                         </View>
