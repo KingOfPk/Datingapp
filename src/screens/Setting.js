@@ -75,8 +75,8 @@ class Setting extends Component {
                 <View style={Styles.rowContainer}>
                   <Image
                     source={
-                      this.props.user.profile_pic.url
-                        ? { uri: this.props.user.profile_pic.url }
+                      this.props.user.profile_image?.images.url
+                        ? { uri: this.props.user.profile_image?.images.url }
                         : require("../../assets/images/profile.png")
                     }
                     borderRadius={45}

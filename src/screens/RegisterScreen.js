@@ -171,7 +171,7 @@ class RegisterScreen extends Component {
       >
         {/* <Text>Valid from</Text> */}
         <Text
-          style={{ fontSize: 18, fontFamily: font.Bold }}
+          style={{ fontSize: 18, fontFamily: font.Bold, color: "#000" }}
           absR
           color="#000"
           text80BO

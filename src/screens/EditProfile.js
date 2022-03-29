@@ -40,7 +40,7 @@ class EditProfile extends Component {
       updatedBio: "",
       updateMobile: false,
       UpdatedMobile: "",
-      galleryImages: [{ image: "" }],
+      galleryImages: [{ image: "", profile_pic: false }],
       isloading: false,
       maxFiles: 6,
       planModal: false,
@@ -48,6 +48,10 @@ class EditProfile extends Component {
       errorModal: false,
       bio_description: "",
       AudioUri: "",
+      desEditable: false,
+      name: "",
+      dob: "",
+      updateDob: false,
     };
   }
 
@@ -55,7 +59,11 @@ class EditProfile extends Component {
     var blankArray = [{ image: "" }];
     console.log(this.props.user.galleries);
     this.props.user.galleries.map((value) => {
-      blankArray.push({ image: value.images.url, id: value.id });
+      blankArray.push({
+        image: value.images.url,
+        id: value.id,
+        profile_pic: value.profile_pic,
+      });
       this.setState({
         galleryImages: blankArray,
         maxFiles:
@@ -64,6 +72,8 @@ class EditProfile extends Component {
     });
     this.setState({
       bio_description: this.props.user.bio_description,
+      name: this.props.user.name,
+      dob: this.props.user.dob,
     });
   };
 
@@ -87,7 +97,11 @@ class EditProfile extends Component {
           this.setState({
             galleryImages: [
               ...this.state.galleryImages,
-              { image: "data:image/png;base64," + res },
+              {
+                image: "data:image/png;base64," + res,
+                profile_pic: false,
+                newUpload: true,
+              },
             ],
           });
         });
@@ -110,9 +124,11 @@ class EditProfile extends Component {
     });
     var blankArray = [];
     this.state.galleryImages.slice(1).map((value) => {
-      blankArray.push(value.image);
+      if (value.newUpload) {
+        blankArray.push(value.image);
+      }
     });
-    console.log();
+    console.log(blankArray);
     var data = JSON.stringify({
       images: blankArray,
     });
@@ -182,11 +198,10 @@ class EditProfile extends Component {
         console.log(response);
         var res = response.data;
         this.setState({
-          isloading: false,
           maxFiles: parseInt(this.state.maxFiles) + 1,
+          isloading: false,
         });
-
-        console.log(JSON.stringify(response.data));
+        this.UserDetail();
       })
       .catch((error) => {
         console.log(error.response);
@@ -248,6 +263,93 @@ class EditProfile extends Component {
         var res = response.data;
         this.setState({
           isloading: false,
+          desEditable: false,
+        });
+        this.UserDetail();
+        // this.props.navigation.navigate("ChooseConnections");
+        // if (this.props.route.params.isGoback) {
+        //   this.props.navigation.navigate("HomeScreen");
+        // } else {
+        //   this.props.navigation.navigate("ChooseConnections");
+        // }
+        // this.props.navigation.navigate("ChooseConnections");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  UpdateName = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    this.setState({
+      isloading: true,
+    });
+    var data = JSON.stringify({
+      user: {
+        name: this.state.name,
+        dob: this.state.dob,
+      },
+    });
+
+    var config = {
+      method: "put",
+      url: `${baseurl}/api/v1/profile/update_profile`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+        this.setState({
+          isloading: false,
+          updateName: false,
+        });
+        this.UserDetail();
+        // this.props.navigation.navigate("ChooseConnections");
+        // if (this.props.route.params.isGoback) {
+        //   this.props.navigation.navigate("HomeScreen");
+        // } else {
+        //   this.props.navigation.navigate("ChooseConnections");
+        // }
+        // this.props.navigation.navigate("ChooseConnections");
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  SetProfilePic = async (id) => {
+    var token = await AsyncStorage.getItem("userToken");
+    this.setState({
+      isloading: true,
+    });
+    var data = JSON.stringify({
+      id: id,
+    });
+
+    var config = {
+      method: "put",
+      url: `${baseurl}/api/v1/profile/update_profile_pic_from_gallery`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+        this.setState({
+          isloading: false,
         });
         this.UserDetail();
         // this.props.navigation.navigate("ChooseConnections");
@@ -295,6 +397,10 @@ class EditProfile extends Component {
       isloading,
       maxFiles,
       message,
+      desEditable,
+      name,
+      dob,
+      updateDob,
     } = this.state;
     console.log(maxFiles);
     return isloading ? (
@@ -313,24 +419,27 @@ class EditProfile extends Component {
               style={{ flex: 1 }}
               showsVerticalScrollIndicator={false}
             >
-              <Image
-                resizeMode="cover"
-                source={{ uri: this.props.user.profile_pic.url }}
-                style={{ width: "100%", height: 300, marginTop: 1 }}
-              />
+              {this.props.user.galleries.map((value) => {
+                return value.profile_pic ? (
+                  <Image
+                    resizeMode="cover"
+                    source={{ uri: value.images.url }}
+                    style={{ width: "100%", height: 300, marginTop: 1 }}
+                  />
+                ) : null;
+              })}
               <View style={{ padding: 10, width: "100%" }}>
                 {/* update name */}
                 <View style={Styles.rowContainer}>
                   <View style={{ flex: 1 }}>
                     {updateName ? (
                       <TextInput
-                        editable={false}
                         onChangeText={(text) => {
-                          this.setState({ updatedName: text });
+                          this.setState({ name: text });
                         }}
                         style={styles.inputContainer}
                         placeholder="Update Name"
-                        value={this.props.user.name}
+                        value={name}
                       />
                     ) : (
                       <Text
@@ -351,9 +460,7 @@ class EditProfile extends Component {
                           updateName: true,
                         });
                       } else {
-                        this.setState({
-                          updateName: false,
-                        });
+                        this.UpdateName();
                       }
                     }}
                   >
@@ -385,41 +492,69 @@ class EditProfile extends Component {
                       </Text>
                     )}
                   </View>
-                  <TouchableOpacity
-                    style={{ justifyContent: "center" }}
-                    onPress={() => {
-                      this.UpdateBio();
-                    }}
-                  >
-                    <Text style={styles.updateText}>Update</Text>
-                  </TouchableOpacity>
+                  {desEditable ? (
+                    <TouchableOpacity
+                      style={{ justifyContent: "center" }}
+                      onPress={() => {
+                        this.UpdateBio();
+                      }}
+                    >
+                      <Text style={styles.updateText}>Save</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={{ justifyContent: "center" }}
+                      onPress={() => {
+                        this.setState({
+                          desEditable: true,
+                        });
+                      }}
+                    >
+                      <Text style={styles.updateText}>Update</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
                 <View style={{ width: "100%" }}>
-                  <TextInput
-                    maxLength={100}
-                    multiline={true}
-                    placeholder="Write your Bio Here in 100 words"
-                    placeholderTextColor="#666"
-                    style={{
-                      width: "100%",
-                      backgroundColor: "#efefef",
-                      height: 130,
-                      borderRadius: 10,
-                      padding: 15,
-                      textAlignVertical: "top",
-                    }}
-                    value={this.state.bio_description}
-                    onChangeText={(text) =>
-                      this.setState({
-                        bio_description: text,
-                        isEndRecord: true,
-                      })
-                    }
-                  />
+                  {desEditable ? (
+                    <TextInput
+                      maxLength={100}
+                      multiline={true}
+                      placeholder="Write your Bio Here in 100 words"
+                      placeholderTextColor="#666"
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#efefef",
+                        height: 130,
+                        borderRadius: 10,
+                        padding: 15,
+                        textAlignVertical: "top",
+                      }}
+                      value={this.state.bio_description}
+                      onChangeText={(text) =>
+                        this.setState({
+                          bio_description: text,
+                          isEndRecord: true,
+                        })
+                      }
+                    />
+                  ) : (
+                    <Text
+                      style={[
+                        {
+                          textAlign: "justify",
+                          fontSize: 16,
+                          fontFamily: font.Regular,
+                        },
+                      ]}
+                    >
+                      {this.state.bio_description}
+                    </Text>
+                  )}
                 </View>
+
                 {/* update mobile */}
                 <View style={Styles.rowContainer}>
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, marginTop: 10 }}>
                     {updateMobile ? (
                       <TextInput
                         keyboardType="number-pad"
@@ -474,12 +609,18 @@ class EditProfile extends Component {
                     numColumns={3}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item, index }) => (
-                      <View style={{ width: "33%", padding: 5 }}>
+                      <View
+                        style={{
+                          width: "33%",
+                          padding: 5,
+                          paddingVertical: 10,
+                        }}
+                      >
                         <View
                           style={{
                             width: "100%",
-                            height: 120,
-                            backgroundColor: "#C4C4C4",
+                            height: 140,
+
                             borderRadius: 10,
                             justifyContent: "center",
                             alignItems: "center",
@@ -491,9 +632,11 @@ class EditProfile extends Component {
                               onPress={() => this.uploadPic(index)}
                               style={{
                                 width: "100%",
-                                height: "100%",
+                                height: 120,
                                 justifyContent: "center",
                                 alignItems: "center",
+                                backgroundColor: "#C4C4C4",
+                                borderRadius: 10,
                               }}
                             >
                               <Image
@@ -509,16 +652,34 @@ class EditProfile extends Component {
                                   modalImage: item.image,
                                 })
                               }
-                              style={{ width: "100%", height: "100%" }}
+                              style={{
+                                width: "100%",
+                                height: 120,
+                                backgroundColor: "#C4C4C4",
+                                borderRadius: 10,
+                              }}
                             >
                               <Image
                                 source={{ uri: item.image }}
                                 style={{
-                                  height: "100%",
+                                  height: 120,
                                   width: "100%",
                                   borderRadius: 10,
                                 }}
                               />
+                              <Text
+                                onPress={() => this.SetProfilePic(item.id)}
+                                style={{
+                                  color: "#416181",
+                                  fontSize: 15,
+                                  fontFamily: font.Regular,
+                                  textAlign: "center",
+                                }}
+                              >
+                                {item.profile_pic
+                                  ? "Profile Pic"
+                                  : "Set Profile"}
+                              </Text>
                               <TouchableOpacity
                                 onPress={() => this.RemoveItem(item.id)}
                                 style={{

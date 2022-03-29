@@ -92,8 +92,8 @@ const ChatUserList = ({ user, navigation, route }) => {
             <View style={Styles.userProfileContainer}>
               <Image
                 source={
-                  user.profile_pic.url
-                    ? { uri: user.profile_pic.url }
+                  user.profile_image?.images.url
+                    ? { uri: user.profile_image?.images.url }
                     : require("../../assets/images/Rectangle.png")
                 }
                 style={{
@@ -133,7 +133,9 @@ const ChatUserList = ({ user, navigation, route }) => {
                   <View style={{ flexDirection: "row" }}>
                     {/* <View style={styles.userActive} /> */}
                     <Image
-                      source={{ uri: item.chat_to_user.profile_pic.url }}
+                      source={{
+                        uri: item.chat_to_user.profile_image?.images.url,
+                      }}
                       style={styles.userImage}
                     />
                   </View>
@@ -169,7 +171,9 @@ const ChatUserList = ({ user, navigation, route }) => {
                   <View style={{ flexDirection: "row" }}>
                     {/* <View style={styles.userActive} /> */}
                     <Image
-                      source={{ uri: item.chat_from_user.profile_pic.url }}
+                      source={{
+                        uri: item.chat_from_user.profile_image?.images.url,
+                      }}
                       style={styles.userImage}
                     />
                   </View>

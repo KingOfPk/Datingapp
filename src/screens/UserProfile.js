@@ -73,31 +73,17 @@ class UserProfile extends Component {
 
     axios(config)
       .then((response) => {
-        console.log(response);
         var res = response.data;
-        console.log(response.data);
-        galleryImages.push(res.data.profile_pic);
-        this.setState(
-          {
-            isloading: false,
-            userData: res.data,
-            liked: res.is_like,
-            matchScore: res.match_score,
-            youBothLike: res.you_both_like,
-            GalleryImage: galleryImages,
-          },
-          () => {
-            res.data.galleries.map((value) => {
-              galleryImages.push(value.images);
-              this.setState({
-                GalleryImage: galleryImages,
-              });
-            });
-            if (this.state.userData.bio) {
-              SoundPlayer.loadUrl(this.state.userData.bio.bio_audio.url);
-            }
-          }
-        );
+        console.log(response.data, res.data.galleries);
+
+        this.setState({
+          isloading: false,
+          userData: res.data,
+          liked: res.is_like,
+          matchScore: res.match_score,
+          youBothLike: res.you_both_like,
+          GalleryImage: res.data.galleries,
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -189,7 +175,7 @@ class UserProfile extends Component {
         <ImageBackground
           resizeMode="cover"
           source={{
-            uri: item.url,
+            uri: item.images.url,
           }}
           style={{ width: "100%", height: 450 }}
         ></ImageBackground>
@@ -201,7 +187,7 @@ class UserProfile extends Component {
     return (
       <View style={{ width: "100%", height: "100%" }}>
         <Image
-          source={{ uri: item.url }}
+          source={{ uri: item.images.url }}
           style={{ width: "100%", height: "100%", resizeMode: "contain" }}
         />
         {/* <ImageBackground
@@ -378,7 +364,6 @@ class UserProfile extends Component {
   render() {
     const { userData, youBothLike, isloading, matchScore, GalleryImage } =
       this.state;
-    console.log(GalleryImage);
     return isloading ? (
       <Loader />
     ) : (

@@ -80,8 +80,8 @@ class OnBoarding extends Component {
 
             <Image
               source={
-                this.props.user.profile_pic.url
-                  ? { uri: this.props.user.profile_pic.url }
+                this.props.user.profile_image?.images.url
+                  ? { uri: this.props.user.profile_image?.images.url }
                   : require("../../assets/images/dummyUser.png")
               }
               style={styles.userImage}

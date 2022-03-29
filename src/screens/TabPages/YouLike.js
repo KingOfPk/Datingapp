@@ -146,7 +146,7 @@ class YouLike extends Component {
                       }}
                     >
                       <Image
-                        source={{ uri: item.profile_pic.url }}
+                        source={{ uri: item.profile_image?.images.url }}
                         style={{
                           height: "100%",
                           width: "100%",

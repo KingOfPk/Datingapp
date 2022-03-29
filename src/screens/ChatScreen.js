@@ -217,8 +217,8 @@ const ChatScreen = ({ user, navigation, route }) => {
             >
               <Image
                 source={
-                  userData.profile_pic.url
-                    ? { uri: userData.profile_pic.url }
+                  userData.profile_image?.images.url
+                    ? { uri: userData.profile_image?.images.url }
                     : require("../../assets/images/Rectangle.png")
                 }
                 style={{

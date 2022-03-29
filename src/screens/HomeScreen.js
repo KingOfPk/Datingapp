@@ -129,7 +129,6 @@ class HomeScreen extends Component {
         console.log(error);
         this.setState({
           isloading: false,
-          Post: [],
         });
       });
   };
@@ -211,8 +210,8 @@ class HomeScreen extends Component {
               >
                 <Image
                   source={
-                    this.props.user.profile_pic.url
-                      ? { uri: this.props.user.profile_pic.url }
+                    this.props.user.profile_image?.images
+                      ? { uri: this.props.user.profile_image?.images.url }
                       : require("../../assets/images/Rectangle.png")
                   }
                   style={{ width: 50, height: 50, borderRadius: 25 }}
@@ -282,8 +281,8 @@ class HomeScreen extends Component {
               renderItem={({ item }) => (
                 <ImageBackground
                   source={
-                    item.profile_pic.url
-                      ? { uri: item.profile_pic.url }
+                    item.profile_image?.images.url
+                      ? { uri: item.profile_image?.images.url }
                       : require("../../assets/images/Rectangle1.png")
                   }
                   style={{
