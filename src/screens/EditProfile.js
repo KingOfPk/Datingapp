@@ -51,6 +51,7 @@ class EditProfile extends Component {
       desEditable: false,
       name: "",
       dob: "",
+      lastName: "",
       updateDob: false,
     };
   }
@@ -61,6 +62,7 @@ class EditProfile extends Component {
       bio_description: this.props.user.bio_description,
       name: this.props.user.name,
       dob: this.props.user.dob,
+      lastName: this.props.user.last_name,
     });
   };
   loadGalleryImages = () => {
@@ -290,10 +292,19 @@ class EditProfile extends Component {
     this.setState({
       isloading: true,
     });
+    console.log(
+      {
+        name: this.state.name,
+        dob: this.state.dob,
+        last_name: this.state.lastName,
+      },
+      "we are sending for upload"
+    );
     var data = JSON.stringify({
       user: {
         name: this.state.name,
         dob: this.state.dob,
+        last_name: this.state.lastName,
       },
     });
 
@@ -412,6 +423,7 @@ class EditProfile extends Component {
       name,
       dob,
       updateDob,
+      lastName,
     } = this.state;
     console.log(this.props.user, "render section");
     return isloading ? (
@@ -462,7 +474,7 @@ class EditProfile extends Component {
                         }}
                         style={[styles.inputContainer, { width: "50%" }]}
                         placeholder="Update name"
-                        // value={name}
+                        value={name}
                       />
                     ) : (
                       <Text
@@ -477,14 +489,14 @@ class EditProfile extends Component {
                     {updateName ? (
                       <TextInput
                         onChangeText={(text) => {
-                          this.setState({ name: text });
+                          this.setState({ lastName: text });
                         }}
                         style={[
                           styles.inputContainer,
                           { width: "50%", left: 5 },
                         ]}
                         placeholder="Update last Name"
-                        // value={name}
+                        value={lastName}
                       />
                     ) : (
                       <Text
