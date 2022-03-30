@@ -77,7 +77,7 @@ class Setting extends Component {
                     source={
                       this.props.user.profile_image?.images.url
                         ? { uri: this.props.user.profile_image?.images.url }
-                        : require("../../assets/images/profile.png")
+                        : require("../../assets/images/DummyUser.png")
                     }
                     borderRadius={45}
                     style={styles.profileImage}

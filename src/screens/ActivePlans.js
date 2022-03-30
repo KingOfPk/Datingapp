@@ -48,7 +48,7 @@ class ActivePlans extends Component {
                 ]}
               >
                 <Image
-                  source={require("../../assets/images/profile.png")}
+                  source={require("../../assets/images/DummyUser.png")}
                   borderRadius={45}
                   style={styles.profileImage}
                 />

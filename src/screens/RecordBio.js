@@ -221,7 +221,7 @@ class RecordBio extends Component {
                 source={
                   this.props.user.profile_image?.images.url
                     ? { uri: this.props.user.profile_image?.images.url }
-                    : require("../../assets/images/dummyUser.png")
+                    : require("../../assets/images/DummyUser.png")
                 }
                 style={styles.userImage}
               /> */}
@@ -229,13 +229,13 @@ class RecordBio extends Component {
                 source={
                   this.props.user.profile_image?.images.url
                     ? { uri: this.props.user.profile_image?.images.url }
-                    : require("../../assets/images/dummyUser.png")
+                    : require("../../assets/images/DummyUser.png")
                 }
                 style={styles.userImage}
               />
             </View>
             <Text style={[styles.headingText, { fontFamily: font.Medium }]}>
-              Record or Write Bio
+              Write Bio
             </Text>
           </View>
           <View

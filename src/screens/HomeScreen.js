@@ -180,7 +180,7 @@ class HomeScreen extends Component {
   };
 
   render() {
-    console.log(this.state.Post);
+    console.log(this.props.user, "render page ");
     return this.state.isloading ? (
       <Loader />
     ) : (
@@ -212,7 +212,7 @@ class HomeScreen extends Component {
                   source={
                     this.props.user.profile_image?.images
                       ? { uri: this.props.user.profile_image?.images.url }
-                      : require("../../assets/images/Rectangle.png")
+                      : require("../../assets/images/DummyUser.png")
                   }
                   style={{ width: 50, height: 50, borderRadius: 25 }}
                 />

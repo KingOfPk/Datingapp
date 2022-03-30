@@ -167,7 +167,7 @@ class ChooseHobby extends Component {
               source={
                 this.props.user.profile_image?.images.url
                   ? { uri: this.props.user.profile_image?.images.url }
-                  : require("../../assets/images/dummyUser.png")
+                  : require("../../assets/images/DummyUser.png")
               }
               style={styles.userImage}
             />

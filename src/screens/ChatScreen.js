@@ -191,12 +191,14 @@ const ChatScreen = ({ user, navigation, route }) => {
             </TouchableOpacity>
             <View style={{ flex: 1 }}>
               <Text
+                ellipsizeMode="tail"
+                numberOfLines={1}
                 style={{
                   color: "#fff",
                   fontFamily: font.Medium,
                   fontSize: 20,
-
                   textAlign: "center",
+                  width: "75%",
                 }}
               >
                 {userData.name} {userData.last_name}

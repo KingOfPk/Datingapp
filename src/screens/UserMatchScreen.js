@@ -66,7 +66,7 @@ class UserMatchScreen extends Component {
             }}
           >
             <Image
-              source={require("../../assets/images/profile.png")}
+              source={require("../../assets/images/DummyUser.png")}
               style={{
                 width: 150,
                 height: 150,
@@ -78,7 +78,7 @@ class UserMatchScreen extends Component {
               borderColor="#406284"
             />
             <Image
-              source={require("../../assets/images/profile.png")}
+              source={require("../../assets/images/DummyUser.png")}
               style={{
                 width: 150,
                 height: 150,

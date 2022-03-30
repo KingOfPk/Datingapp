@@ -56,6 +56,14 @@ class EditProfile extends Component {
   }
 
   componentDidMount = () => {
+    this.loadGalleryImages();
+    this.setState({
+      bio_description: this.props.user.bio_description,
+      name: this.props.user.name,
+      dob: this.props.user.dob,
+    });
+  };
+  loadGalleryImages = () => {
     var blankArray = [{ image: "" }];
     console.log(this.props.user.galleries);
     this.props.user.galleries.map((value) => {
@@ -70,13 +78,7 @@ class EditProfile extends Component {
           parseInt(this.state.maxFiles) - this.props.user.galleries.length,
       });
     });
-    this.setState({
-      bio_description: this.props.user.bio_description,
-      name: this.props.user.name,
-      dob: this.props.user.dob,
-    });
   };
-
   uploadPic = () => {
     ImagePicker.openPicker({
       width: 300,
@@ -146,7 +148,7 @@ class EditProfile extends Component {
 
     axios(config)
       .then((response) => {
-        console.log(response);
+        console.log(response, "image send successfully");
         var res = response.data;
         this.setState({
           isloading: false,
@@ -172,12 +174,14 @@ class EditProfile extends Component {
   };
 
   RemoveItem = async (id) => {
+    console.log(id, "remove local image");
     var token = await AsyncStorage.getItem("userToken");
     var filter = this.state.galleryImages.filter((value) => value.id !== id);
     this.setState({
       galleryImages: filter,
       isloading: true,
     });
+    this.loadGalleryImages();
     var data = JSON.stringify({
       gallery_id: id,
     });
@@ -223,8 +227,10 @@ class EditProfile extends Component {
     };
     axios(config)
       .then((response) => {
-        console.log(JSON.stringify(response.data));
+        // console.log(resposne, "save user profile");
+        // console.log(JSON.stringify(response.data));
         var res = response.data;
+        console.log(res, "after save user profile ");
         this.setState({
           isloading: false,
         });
@@ -325,6 +331,7 @@ class EditProfile extends Component {
   };
 
   SetProfilePic = async (id) => {
+    console.log(id, "pressed here");
     var token = await AsyncStorage.getItem("userToken");
     this.setState({
       isloading: true,
@@ -346,6 +353,7 @@ class EditProfile extends Component {
 
     axios(config)
       .then((response) => {
+        console.log(response, "response ,set profile");
         console.log(JSON.stringify(response.data));
         var res = response.data;
         this.setState({
@@ -376,10 +384,13 @@ class EditProfile extends Component {
     };
     axios(config)
       .then((response) => {
+        console.log(response, "user detail here");
         console.log(JSON.stringify(response.data));
         var res = response.data;
         if (res.status) {
+          // this.setState({ galleryImages: res.data.galleries });
           this.props.getUserDetail(res.data);
+          this.loadGalleryImages();
         }
       })
       .catch((error) => {});
@@ -402,7 +413,7 @@ class EditProfile extends Component {
       dob,
       updateDob,
     } = this.state;
-    console.log(maxFiles);
+    console.log(this.props.user, "render section");
     return isloading ? (
       <Loader />
     ) : (
@@ -430,16 +441,28 @@ class EditProfile extends Component {
               })}
               <View style={{ padding: 10, width: "100%" }}>
                 {/* update name */}
-                <View style={Styles.rowContainer}>
-                  <View style={{ flex: 1 }}>
+                <View
+                  style={[
+                    Styles.rowContainer,
+                    { flexDirection: updateName ? "column" : "row" },
+                  ]}
+                >
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      // justifyContent: "space-between",
+                    }}
+                  >
                     {updateName ? (
                       <TextInput
                         onChangeText={(text) => {
                           this.setState({ name: text });
                         }}
-                        style={styles.inputContainer}
-                        placeholder="Update Name"
-                        value={name}
+                        style={[styles.inputContainer, { width: "50%" }]}
+                        placeholder="Update name"
+                        // value={name}
                       />
                     ) : (
                       <Text
@@ -451,9 +474,31 @@ class EditProfile extends Component {
                         {this.props.user.name}
                       </Text>
                     )}
+                    {updateName ? (
+                      <TextInput
+                        onChangeText={(text) => {
+                          this.setState({ name: text });
+                        }}
+                        style={[
+                          styles.inputContainer,
+                          { width: "50%", left: 5 },
+                        ]}
+                        placeholder="Update last Name"
+                        // value={name}
+                      />
+                    ) : (
+                      <Text
+                        ellipsizeMode="tail"
+                        numberOfLines={1}
+                        width={"95%"}
+                        style={[styles.headingText, { textAlign: "justify" }]}
+                      >
+                        {this.props.user.last_name}
+                      </Text>
+                    )}
                   </View>
                   <TouchableOpacity
-                    style={{ justifyContent: "center" }}
+                    style={{ alignSelf: "flex-end", paddingVertical: 10 }}
                     onPress={() => {
                       if (!updateName) {
                         this.setState({
@@ -608,120 +653,126 @@ class EditProfile extends Component {
                     style={{ flex: 1 }}
                     numColumns={3}
                     showsVerticalScrollIndicator={false}
-                    renderItem={({ item, index }) => (
-                      <View
-                        style={{
-                          width: "33%",
-                          padding: 5,
-                          paddingVertical: 10,
-                        }}
-                      >
+                    renderItem={({ item, index }) => {
+                      console.log(item, "gallery images");
+                      return (
                         <View
                           style={{
-                            width: "100%",
-                            height: 140,
-
-                            borderRadius: 10,
-                            justifyContent: "center",
-                            alignItems: "center",
+                            width: "33%",
+                            padding: 5,
+                            paddingVertical: 10,
                           }}
                         >
-                          {item.image == "" ? (
-                            <TouchableOpacity
-                              disabled={maxFiles == 0}
-                              onPress={() => this.uploadPic(index)}
-                              style={{
-                                width: "100%",
-                                height: 120,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                backgroundColor: "#C4C4C4",
-                                borderRadius: 10,
-                              }}
-                            >
-                              <Image
-                                source={require("../../assets/icons/Plus.png")}
-                                style={{ height: 50, width: 50 }}
-                              />
-                            </TouchableOpacity>
-                          ) : (
-                            <TouchableOpacity
-                              onPress={() =>
-                                this.setState({
-                                  planModal: true,
-                                  modalImage: item.image,
-                                })
-                              }
-                              style={{
-                                width: "100%",
-                                height: 120,
-                                backgroundColor: "#C4C4C4",
-                                borderRadius: 10,
-                              }}
-                            >
-                              <Image
-                                source={{ uri: item.image }}
-                                style={{
-                                  height: 120,
-                                  width: "100%",
-                                  borderRadius: 10,
-                                }}
-                              />
-                              <Text
-                                onPress={() => this.SetProfilePic(item.id)}
-                                style={{
-                                  color: "#416181",
-                                  fontSize: 15,
-                                  fontFamily: font.Regular,
-                                  textAlign: "center",
-                                }}
-                              >
-                                {item.profile_pic
-                                  ? "Profile Pic"
-                                  : "Set Profile"}
-                              </Text>
+                          <View
+                            style={{
+                              width: "100%",
+                              height: 140,
+
+                              borderRadius: 10,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            {item.image == "" ? (
                               <TouchableOpacity
-                                onPress={() => this.RemoveItem(item.id)}
+                                disabled={maxFiles == 0}
+                                onPress={() => this.uploadPic(index)}
                                 style={{
-                                  width: 30,
-                                  height: 30,
-                                  position: "absolute",
-                                  right: -10,
-                                  top: -10,
-                                  backgroundColor: "#fff",
-                                  zIndex: 1000,
-                                  borderRadius: 15,
+                                  width: "100%",
+                                  height: 120,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  backgroundColor: "#C4C4C4",
+                                  borderRadius: 10,
                                 }}
                               >
                                 <Image
-                                  source={require("../../assets/icons/Cancel2.png")}
-                                  style={{ width: 30, height: 30 }}
+                                  source={require("../../assets/icons/Plus.png")}
+                                  style={{ height: 50, width: 50 }}
                                 />
                               </TouchableOpacity>
-                              {/* <View
+                            ) : (
+                              <TouchableOpacity
+                                onPress={() =>
+                                  this.setState({
+                                    planModal: true,
+                                    modalImage: item.image,
+                                  })
+                                }
                                 style={{
                                   width: "100%",
-                                  height: "100%",
-                                  backgroundColor: "rgba(0,0,0,.5)",
-                                  borderRadius: 15,
-                                  position: "absolute",
-                                  alignItems: "flex-end",
-                                  padding: 10,
+                                  height: 120,
+                                  backgroundColor: "#C4C4C4",
+                                  borderRadius: 10,
                                 }}
                               >
-                                <Icon
-                                
-                                  name="times"
-                                  size={20}
-                                  color="#fff"
+                                <Image
+                                  source={{ uri: item.image }}
+                                  style={{
+                                    height: 120,
+                                    width: "100%",
+                                    borderRadius: 10,
+                                  }}
                                 />
-                                
-                              </View> */}
-                            </TouchableOpacity>
-                          )}
+                                {!item.newUpload ? (
+                                  <Text
+                                    onPress={() => this.SetProfilePic(item.id)}
+                                    style={{
+                                      color: "#416181",
+                                      fontSize: 15,
+                                      fontFamily: font.Regular,
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    {item.profile_pic
+                                      ? "Profile Pic"
+                                      : "Set Profile"}
+                                  </Text>
+                                ) : null}
+                                <TouchableOpacity
+                                  disabled={item.profile_pic ? true : false}
+                                  onPress={() => this.RemoveItem(item.id)}
+                                  style={{
+                                    width: 30,
+                                    height: 30,
+                                    position: "absolute",
+                                    right: -10,
+                                    top: -10,
+                                    backgroundColor: "#fff",
+                                    zIndex: 1000,
+                                    borderRadius: 15,
+                                  }}
+                                >
+                                  <Image
+                                    source={require("../../assets/icons/Cancel2.png")}
+                                    style={{ width: 30, height: 30 }}
+                                  />
+                                </TouchableOpacity>
+                                {/* <View
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                backgroundColor: "rgba(0,0,0,.5)",
+                                borderRadius: 15,
+                                position: "absolute",
+                                alignItems: "flex-end",
+                                padding: 10,
+                              }}
+                            >
+                              <Icon
+                              
+                                name="times"
+                                size={20}
+                                color="#fff"
+                              />
+                              
+                            </View> */}
+                              </TouchableOpacity>
+                            )}
+                          </View>
                         </View>
-                      </View>
-                    )}
+                      );
+                    }}
                   />
                 </View>
 
