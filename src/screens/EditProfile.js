@@ -67,7 +67,7 @@ class EditProfile extends Component {
   };
   loadGalleryImages = () => {
     var blankArray = [{ image: "" }];
-    console.log(this.props.user.galleries);
+    // console.log(this.props.user.galleries);
     this.props.user.galleries.map((value) => {
       blankArray.push({
         image: value.images.url,
@@ -92,10 +92,10 @@ class EditProfile extends Component {
       cropping: true,
       maxFiles: this.state.maxFiles,
     }).then((response) => {
-      console.log(response);
+      // console.log(response);
       response.map((value) => {
         RNFS.readFile(value.path, "base64").then((res) => {
-          console.log(res);
+          // console.log(res);
           // this.state.galleryImages[key].image = ;
           // Toast.show("Image upload succussfully", Toast.LONG);
           this.setState({
@@ -136,7 +136,7 @@ class EditProfile extends Component {
     var data = JSON.stringify({
       images: blankArray,
     });
-    console.log(data);
+    // console.log(data);
     var config = {
       method: "post",
       url: `${baseurl}/api/v1/profile/update_gallery`,
@@ -150,7 +150,7 @@ class EditProfile extends Component {
 
     axios(config)
       .then((response) => {
-        console.log(response, "image send successfully");
+        // console.log(response, "image send successfully");
         var res = response.data;
         this.setState({
           isloading: false,
@@ -176,7 +176,7 @@ class EditProfile extends Component {
   };
 
   RemoveItem = async (id) => {
-    console.log(id, "remove local image");
+    // console.log(id, "remove local image");
     var token = await AsyncStorage.getItem("userToken");
     var filter = this.state.galleryImages.filter((value) => value.id !== id);
     this.setState({
@@ -187,7 +187,7 @@ class EditProfile extends Component {
     var data = JSON.stringify({
       gallery_id: id,
     });
-    console.log(data);
+    // console.log(data);
     var config = {
       method: "delete",
       url: `${baseurl}/api/v1/profile/remove_gallery?gallery_id=${id}`,
@@ -201,7 +201,7 @@ class EditProfile extends Component {
 
     axios(config)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         var res = response.data;
         this.setState({
           maxFiles: parseInt(this.state.maxFiles) + 1,
@@ -503,7 +503,10 @@ class EditProfile extends Component {
                         ellipsizeMode="tail"
                         numberOfLines={1}
                         width={"95%"}
-                        style={[styles.headingText, { textAlign: "justify" }]}
+                        style={[
+                          styles.headingText,
+                          { textAlign: "justify", left: 5 },
+                        ]}
                       >
                         {this.props.user.last_name}
                       </Text>
@@ -666,7 +669,7 @@ class EditProfile extends Component {
                     numColumns={3}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item, index }) => {
-                      console.log(item, "gallery images");
+                      // console.log(item, "gallery images");
                       return (
                         <View
                           style={{
