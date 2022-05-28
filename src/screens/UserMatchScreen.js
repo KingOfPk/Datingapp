@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  AsyncStorage,
 } from "react-native";
 import { font } from "../components/fonts";
 import Footer from "../components/Footer";
@@ -14,6 +15,9 @@ import LinearGradient from "react-native-linear-gradient";
 import Styles from "../components/CommanStyle";
 import Button from "../components/Button";
 import Modal from "react-native-modal";
+import { connect } from "react-redux";
+import { baseurl } from "../utils/index";
+import axios from "axios";
 
 class UserMatchScreen extends Component {
   constructor(props) {
@@ -21,16 +25,85 @@ class UserMatchScreen extends Component {
     this.state = {
       planModal: false,
       cardDetialModal: false,
+      userData: this.props.route.params.data,
     };
   }
+
+  componentDidMount = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/like_dislikes/update_seen_like`,
+      headers: {
+        token: token,
+      },
+    };
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        console.log("UserMatchScreen", res);
+      })
+      .catch((error) => {});
+  };
+
+  createChat = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var data = JSON.stringify({
+      chat_to: this.state.userData.like_from.id,
+    });
+    console.log(data);
+    var config = {
+      method: "post",
+      url: `${baseurl}/api/v1/channels?chat_to=${this.state.userData.like_from.id}`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      data: data,
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        console.log(res);
+        if (res.status) {
+          this.props.navigation.navigate("ChatScreen", {
+            channnelName: res.data.channel_name,
+            data: res.data.chat_to_user,
+            from: res.data.chat_from_user,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({
+          isloading: false,
+          Post: [],
+        });
+      });
+  };
+
   render() {
-    const { planModal, cardDetialModal } = this.state;
+    const { planModal, cardDetialModal, userData } = this.state;
+    console.log(userData);
     return (
       <SafeAreaView>
         <LinearGradient
           colors={["#5FADB5", "#4D7F96", "#446A87"]}
           style={[Styles.container, { alignItems: "center" }]}
         >
+          <View style={{ width: "100%", height: 40, padding: 10 }}>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.goBack()}
+              style={styles.backButtonContainer}
+            >
+              <Image
+                source={require("../../assets/icons/Left.png")}
+                style={{ width: 20, height: 20 }}
+              />
+            </TouchableOpacity>
+          </View>
           <View
             style={{
               width: "100%",
@@ -47,7 +120,7 @@ class UserMatchScreen extends Component {
               style={{
                 fontSize: 60,
                 color: "#fff",
-                fontFamily: font.matchRegular,
+                fontFamily: font.matchSemibold,
                 fontStyle: "italic",
               }}
             >
@@ -66,7 +139,7 @@ class UserMatchScreen extends Component {
             }}
           >
             <Image
-              source={require("../../assets/images/DummyUser.png")}
+              source={{ uri: this.props.user.profile_image.images.url }}
               style={{
                 width: 150,
                 height: 150,
@@ -78,7 +151,7 @@ class UserMatchScreen extends Component {
               borderColor="#406284"
             />
             <Image
-              source={require("../../assets/images/DummyUser.png")}
+              source={{ uri: userData.like_from.profile_image.images.url }}
               style={{
                 width: 150,
                 height: 150,
@@ -96,212 +169,13 @@ class UserMatchScreen extends Component {
             style={{ width: "50%", justifyContent: "center", marginTop: 25 }}
           >
             <TouchableOpacity
-              onPress={() => {
-                this.setState({
-                  planModal: true,
-                });
-              }}
+              onPress={() => this.createChat()}
               style={styles.buttonContainer}
             >
               <Text style={styles.buttonText}>START CHAT</Text>
             </TouchableOpacity>
           </View>
         </LinearGradient>
-
-        <Modal
-          onBackdropPress={() => {
-            this.setState({
-              planModal: false,
-            });
-          }}
-          onBackButtonPress={() => {
-            this.setState({ planModal: false });
-          }}
-          transparent={true}
-          isVisible={planModal}
-          style={{ margin: 0 }}
-        >
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <View style={Styles.modalContainer}>
-              <TouchableOpacity style={{ alignSelf: "flex-end" }}>
-                <Image
-                  source={require("../../assets/icons/Cancel.png")}
-                  style={styles.closeIcon}
-                />
-              </TouchableOpacity>
-              <View style={{ flex: 1, alignItems: "center" }}>
-                <Image
-                  source={require("../../assets/icons/togatherMainLogo.png")}
-                  style={styles.logo}
-                />
-                <Text
-                  style={{
-                    fontFamily: font.Regular,
-                    fontSize: 20,
-                    color: "#416181",
-                  }}
-                >
-                  PREMIUM
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: font.Regular,
-                    fontSize: 14,
-                    color: "#000",
-                    paddingVertical: 10,
-                  }}
-                >
-                  Risk free 30 days free trial
-                </Text>
-                <View style={[Styles.rowContainer, { width: "90%" }]}>
-                  <View style={styles.planContainer}></View>
-                  <View style={styles.planContainer}></View>
-                  <View style={styles.planContainer}></View>
-                </View>
-                <View
-                  style={{ width: "60%", position: "absolute", bottom: "10%" }}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        planModal: false,
-                        cardDetialModal: true,
-                      });
-                    }}
-                    style={[
-                      styles.buttonContainer,
-                      { backgroundColor: "#416181", height: 60 },
-                    ]}
-                  >
-                    <Text style={[styles.buttonText, { color: "#fff" }]}>
-                      Save
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View>
-        </Modal>
-        <Modal
-          onBackdropPress={() => {
-            this.setState({
-              cardDetialModal: false,
-            });
-          }}
-          onBackButtonPress={() => {
-            this.setState({ cardDetialModal: false });
-          }}
-          transparent={true}
-          isVisible={cardDetialModal}
-          style={{ margin: 0 }}
-        >
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <View style={Styles.modalContainer}>
-              <TouchableOpacity style={{ alignSelf: "flex-end" }}>
-                <Image
-                  source={require("../../assets/icons/Cancel.png")}
-                  style={styles.closeIcon}
-                />
-              </TouchableOpacity>
-              <View style={{ flex: 1, alignItems: "center" }}>
-                <Image
-                  source={require("../../assets/icons/togatherMainLogo.png")}
-                  style={styles.logo}
-                />
-                <Text
-                  style={{
-                    fontFamily: font.Regular,
-                    fontSize: 20,
-                    color: "#416181",
-                  }}
-                >
-                  PREMIUM
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: font.Regular,
-                    fontSize: 14,
-                    color: "#000",
-                    paddingVertical: 10,
-                  }}
-                >
-                  Risk free 30 days free trial
-                </Text>
-                <View
-                  style={{
-                    width: "100%",
-                    paddingVertical: 5,
-                    alignItems: "center",
-                  }}
-                >
-                  <TextInput
-                    placeholder="Name on card"
-                    placeholderTextColor="#000"
-                    style={styles.inputContainer}
-                  />
-                </View>
-                <View
-                  style={{
-                    width: "100%",
-                    paddingVertical: "5%",
-                    alignItems: "center",
-                  }}
-                >
-                  <TextInput
-                    keyboardType="number-pad"
-                    placeholder="Card Number"
-                    placeholderTextColor="#000"
-                    style={styles.inputContainer}
-                  />
-                </View>
-                <View
-                  style={[
-                    Styles.rowContainer,
-                    {
-                      paddingVertical: 5,
-                      justifyContent: "space-between",
-                      width: "95%",
-                      alignSelf: "center",
-                    },
-                  ]}
-                >
-                  <TextInput
-                    maxLength={3}
-                    keyboardType="number-pad"
-                    placeholder="CVV"
-                    placeholderTextColor="#000"
-                    style={[styles.inputContainer, { width: "45%" }]}
-                  />
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        cardDetialModal: false,
-                      });
-                      this.props.navigation.navigate("ChatScreen");
-                    }}
-                    style={[
-                      styles.buttonContainer,
-                      {
-                        backgroundColor: "#416181",
-                        height: 50,
-                        width: "45%",
-                        // marginRight: 15,
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.buttonText, { color: "#fff" }]}>
-                      PAY NOW
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View>
-        </Modal>
       </SafeAreaView>
     );
   }
@@ -349,5 +223,26 @@ const styles = StyleSheet.create({
     fontFamily: font.Regular,
     color: "#000",
   },
+  backButtonContainer: {
+    height: 30,
+    width: 30,
+    backgroundColor: "#C4C4C48F",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#fff",
+  },
 });
-export default UserMatchScreen;
+
+function mapStateToProps(state) {
+  console.log(state);
+  return {
+    Address: state.Data.address,
+    userListing: state.Data.userListing,
+    user: state.User.user,
+  };
+}
+
+export default connect(mapStateToProps)(UserMatchScreen);
+// export default UserMatchScreen;

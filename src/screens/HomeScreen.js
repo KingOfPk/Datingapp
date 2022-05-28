@@ -12,6 +12,7 @@ import {
   ScrollView,
   Dimensions,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import Button from "../components/Button2";
@@ -25,8 +26,10 @@ import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getUserDetail } from "../Store/Action/user.action.js";
+import { SetUserListing } from "../Store/Action/Data.action";
 import { Loader } from "../components/Loader";
 import moment from "moment";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import { getDistance, getPreciseDistance } from "geolib";
 const { width, height } = Dimensions.get("window");
 class HomeScreen extends Component {
@@ -43,11 +46,13 @@ class HomeScreen extends Component {
 
   componentDidMount = async () => {
     var token = await AsyncStorage.getItem("userToken");
-
+    this.setState({
+      isloading: true,
+    });
     var data = JSON.stringify({
       latitude: this.props.Address.position.lat,
       longitude: this.props.Address.position.lng,
-      page: this.state.page,
+      page: 1,
     });
     console.log(data);
     var config = {
@@ -65,15 +70,13 @@ class HomeScreen extends Component {
       .then((response) => {
         console.log(response);
         var res = response.data;
-
+        this.props.SetUserListing(res.data);
         this.setState({
           isloading: false,
           Post: res.data,
           totalCount: res.paginate.total_count,
           page: parseInt(this.state.page) + 1,
         });
-
-        console.log(JSON.stringify(response.data));
       })
       .catch((error) => {
         console.log(error);
@@ -84,6 +87,29 @@ class HomeScreen extends Component {
       });
 
     this.UserDetail();
+    this.checkMatch();
+  };
+
+  checkMatch = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/like_dislikes/like_unseen`,
+      headers: {
+        token: token,
+      },
+    };
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        console.log("UserMatchScreen", res);
+        if (res.data.length > 0) {
+          this.props.navigation.navigate("UserMatchScreen", {
+            data: res.data[0],
+          });
+        }
+      })
+      .catch((error) => {});
   };
 
   loadMoreData = async () => {
@@ -114,6 +140,7 @@ class HomeScreen extends Component {
         if (res.data.length > 0) {
           res.data.map((value) => {
             BlankArray.push(value);
+            this.props.SetUserListing(BlankArray);
             this.setState({
               Post: BlankArray,
             });
@@ -179,11 +206,13 @@ class HomeScreen extends Component {
     return layoutMeasurement.height + contentOffset.y >= contentSize.height - 1;
   };
 
+  refresh = () => {
+    this.componentDidMount();
+  };
+
   render() {
     console.log(this.props.user, "render page ");
-    return this.state.isloading ? (
-      <Loader />
-    ) : (
+    return (
       <View style={styles.container}>
         <SafeAreaView style={{ width: "100%" }}>
           <View
@@ -264,98 +293,159 @@ class HomeScreen extends Component {
                 this.loadMoreData();
               }
             }}
+            refreshControl={
+              <RefreshControl onRefresh={this.refresh} refreshing={false} />
+            }
             showsVerticalScrollIndicator={false}
           >
-            <View style={{ width: "100%" }}>
-              <Text style={{ fontSize: 16, fontFamily: font.Regular }}>
-                <Text style={{ fontFamily: font.Bold }}>
-                  We found {this.state.totalCount}
-                </Text>{" "}
-                persons as per your preference!
-              </Text>
-            </View>
-            <FlatList
-              data={this.state.Post}
-              style={{ flex: 1 }}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <ImageBackground
-                  source={
-                    item.profile_image?.images.url
-                      ? { uri: item.profile_image?.images.url }
-                      : require("../../assets/images/Rectangle1.png")
-                  }
+            {this.state.isloading ? (
+              <SkeletonPlaceholder>
+                <View
                   style={{
-                    width: "100%",
-                    height: 240,
-                    // backgroundColor: "#f00",
+                    flexDirection: "row",
+                    alignItems: "center",
                     marginTop: 10,
-                    borderRadius: 20,
-                    overflow: "hidden",
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={() =>
-                      this.props.navigation.navigate("UserProfile", {
-                        data: item,
-                      })
-                    }
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: 20,
-                      backgroundColor: "rgba(0,0,0,.5)",
-                      //   alignItems: 'flex-end',
-                      justifyContent: "flex-end",
-                      padding: 15,
-                    }}
-                  >
+                  <View style={{ width: "100%" }}>
                     <View
                       style={{
                         width: "100%",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
+                        height: 240,
+                        borderRadius: 10,
+                      }}
+                    />
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: 10,
+                  }}
+                >
+                  <View style={{ width: "100%" }}>
+                    <View
+                      style={{
+                        width: "100%",
+                        height: 240,
+                        borderRadius: 10,
+                      }}
+                    />
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: 10,
+                  }}
+                >
+                  <View style={{ width: "100%" }}>
+                    <View
+                      style={{
+                        width: "100%",
+                        height: 240,
+                        borderRadius: 10,
+                      }}
+                    />
+                  </View>
+                </View>
+              </SkeletonPlaceholder>
+            ) : (
+              <>
+                <View style={{ width: "100%" }}>
+                  <Text style={{ fontSize: 16, fontFamily: font.Regular }}>
+                    <Text style={{ fontFamily: font.Bold }}>
+                      We found {this.state.totalCount}
+                    </Text>{" "}
+                    persons as per your preference!
+                  </Text>
+                </View>
+                <FlatList
+                  data={this.props.userListing}
+                  style={{ flex: 1 }}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({ item }) => (
+                    <ImageBackground
+                      source={
+                        item.profile_image?.images.url
+                          ? { uri: item.profile_image?.images.url }
+                          : require("../../assets/images/Rectangle1.png")
+                      }
+                      style={{
+                        width: "100%",
+                        height: 240,
+                        // backgroundColor: "#f00",
+                        marginTop: 10,
+                        borderRadius: 20,
+                        overflow: "hidden",
                       }}
                     >
-                      <View style={{ flex: 1 }}>
-                        <Text
-                          style={{
-                            fontSize: 24,
-                            fontFamily: font.Bold,
-                            color: "#fff",
-                          }}
-                        >
-                          {item.name}, {this.age(item.dob)}
-                        </Text>
-
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            fontFamily: font.Regular,
-                            color: "#fff",
-                          }}
-                        >
-                          {item.preference_list
-                            .slice(0, 2)
-                            .map((value, index) => {
-                              return index == 1 ? value : value + ", ";
-                            })}
-                        </Text>
-                      </View>
-                      <Text
+                      <TouchableOpacity
+                        onPress={() =>
+                          this.props.navigation.navigate("UserProfile", {
+                            data: item,
+                          })
+                        }
                         style={{
-                          fontSize: 18,
-                          fontFamily: font.Medium,
-                          color: "#fff",
+                          width: "100%",
+                          height: "100%",
+                          borderRadius: 20,
+                          backgroundColor: "rgba(0,0,0,.5)",
+                          //   alignItems: 'flex-end',
+                          justifyContent: "flex-end",
+                          padding: 15,
                         }}
                       >
-                        {this.distance(item)} Miles
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </ImageBackground>
-              )}
-            />
+                        <View
+                          style={{
+                            width: "100%",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <View style={{ flex: 1 }}>
+                            <Text
+                              style={{
+                                fontSize: 24,
+                                fontFamily: font.Bold,
+                                color: "#fff",
+                              }}
+                            >
+                              {item.name}, {this.age(item.dob)}
+                            </Text>
+
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                fontFamily: font.Regular,
+                                color: "#fff",
+                              }}
+                            >
+                              {item.preference_list
+                                .slice(0, 2)
+                                .map((value, index) => {
+                                  return index == 1 ? value : value + ", ";
+                                })}
+                            </Text>
+                          </View>
+                          <Text
+                            style={{
+                              fontSize: 18,
+                              fontFamily: font.Medium,
+                              color: "#fff",
+                            }}
+                          >
+                            {this.distance(item)} Miles
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </ImageBackground>
+                  )}
+                />
+              </>
+            )}
           </ScrollView>
         </View>
         <Footer
@@ -418,6 +508,7 @@ function mapStateToProps(state) {
   console.log(state);
   return {
     Address: state.Data.address,
+    userListing: state.Data.userListing,
     user: state.User.user,
   };
 }
@@ -426,6 +517,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       getUserDetail,
+      SetUserListing,
     },
     dispatch
   );

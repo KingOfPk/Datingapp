@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import Button from "../components/Button";
 import { font } from "../components/fonts";
+import LottieView from "lottie-react-native";
 import RangeSliderRN from "rn-range-slider";
 import { baseurl } from "../utils/index";
 import axios from "axios";
@@ -43,6 +44,7 @@ class ChooseAgeOrDistance extends Component {
       minDistance: 20,
       maxDistance: 60,
       isloading: false,
+      isComplete: false,
     };
   }
 
@@ -94,9 +96,17 @@ class ChooseAgeOrDistance extends Component {
             var res = response.data;
             this.setState({
               isloading: false,
+              isComplete: true,
             });
+
+            setTimeout(() => {
+              this.setState({
+                isComplete: false,
+              });
+              this.props.navigation.navigate("HomeScreen");
+            }, 1500);
             await AsyncStorage.removeItem("isComplete");
-            this.props.navigation.navigate("HomeScreen");
+
             // this.props.navigation.navigate("ChooseInterest");
           })
           .catch(function (error) {
@@ -110,8 +120,14 @@ class ChooseAgeOrDistance extends Component {
   };
 
   render() {
-    const { LowAge, heighAge, minDistance, maxDistance, isloading } =
-      this.state;
+    const {
+      LowAge,
+      heighAge,
+      minDistance,
+      maxDistance,
+      isloading,
+      isComplete,
+    } = this.state;
 
     const left = (this.state.LowAge * (width - 60)) / 100 - 15;
     const right = (this.state.heighAge * (width - 60)) / 100 - 15;
@@ -121,6 +137,32 @@ class ChooseAgeOrDistance extends Component {
       <Loader />
     ) : (
       <View style={styles.container}>
+        {isComplete && (
+          <View
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              backgroundColor: "#fff",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 100,
+            }}
+          >
+            <View
+              style={{
+                height: "100%",
+                width: "100%",
+              }}
+            >
+              <LottieView
+                source={require("../../assets/lottie/burst.json")}
+                autoPlay={true}
+                loop={false}
+              />
+            </View>
+          </View>
+        )}
         {/* <ScrollView style={{ width: "100%", height: "100%" }}> */}
         <View
           style={{

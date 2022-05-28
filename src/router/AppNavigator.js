@@ -84,6 +84,7 @@ export default class Appnavigator extends Component {
             <Stack.Screen name="LikeScreen" component={LikeScreen} />
             <Stack.Screen name="ChatScreen" component={ChatScreen} />
             <Stack.Screen name="UserMatchScreen" component={UserMatchScreen} />
+            {/* <Stack.Screen name="UserMatchScreen" component={UserMatchScreen} /> */}
           </Stack.Navigator>
         </PubNubProvider>
       </NavigationContainer>

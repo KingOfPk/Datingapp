@@ -9,6 +9,8 @@ import {
   ImageBackground,
   TouchableOpacity,
   Platform,
+  Linking,
+  Alert,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import Button from "../components/Button";
@@ -48,6 +50,7 @@ class AllowLocation extends Component {
               break;
             case RESULTS.DENIED:
               console.log("DENIED");
+
               this.setState({
                 isloading: false,
               });
@@ -101,12 +104,26 @@ class AllowLocation extends Component {
     }
   };
 
-  AllowLocation = () => {
+  AllowLocation = async () => {
     if (Platform.OS == "ios") {
-      request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((result) => {
-        console.log(result);
+      // try {
+      //   Geolocation.requestAuthorization();
+      //   this.SetLocation();
+      // } catch (error) {
+      //   Linking.openURL("app-settings:");
+      // }
+      const granted = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then(
+        (result) => {
+          console.log(result);
+          this.SetLocation();
+        }
+      );
+      console.log(granted);
+      if (granted === RESULTS.DENIED || granted === RESULTS.BLOCKED) {
+        Linking.openURL("app-settings:");
+      } else {
         this.SetLocation();
-      });
+      }
     } else {
       request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION).then((result) => {
         console.log(result);

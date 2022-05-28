@@ -27,6 +27,7 @@ import Toast from "react-native-simple-toast";
 import Modal from "react-native-modal";
 import Styles from "../components/CommanStyle";
 import { getUserDetail } from "../Store/Action/user.action.js";
+import { transformFileAsync } from "@babel/core";
 class OtpScreen extends Component {
   constructor(props) {
     super(props);
@@ -42,10 +43,12 @@ class OtpScreen extends Component {
 
   componentDidMount = () => {};
 
-  CheckOtp = () => {
+  CheckOtp = async () => {
+    var deviceToken = await AsyncStorage.getItem("token");
     var data = JSON.stringify({
       otp: this.state.code,
       phone: this.props.route.params.data,
+      devise_token: deviceToken,
     });
 
     this.setState({

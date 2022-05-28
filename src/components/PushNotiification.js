@@ -9,13 +9,13 @@ const PushNotification = (token, message, title) => {
       priority: "high",
     },
   });
-
+  console.log(data);
   var config = {
     method: "post",
     url: "https://fcm.googleapis.com/fcm/send",
     headers: {
       Authorization:
-        "key=AAAAkWtpYlI:APA91bHpNAFNGnetjkO-8ZnTHaTQM4Z0D-M2RsrcHDHgk6jgiZhAHizDpWYghzO9YnkfvvYiBiyNFV2PbUEx5KIYkTQcxjHjLPT9zsCsiac2bJvR8sTjq0LKW2FzLOAEFCEHfy777Shh",
+        "key=AAAAXwOL6BI:APA91bFyDJdvRCejfUO-A7n4M_uiONakQys-Ak8LKKZItxE3IGWcEtmkn4_dSlokibK78yudQOQRAs1yTZJ8w8Z2nEQhzpzs-WZHfE6PdBF6Kx9SoNpC2QWu_NPyE6VLp5cxLsJMi9oJ",
       "Content-Type": "application/json",
     },
     data: data,
