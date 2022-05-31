@@ -145,7 +145,7 @@ class RecordBio extends Component {
       startAudio: false,
       timer: 30,
       isEndRecord: true,
-      audioFile,
+      audioFile: audioFile,
       isPlayedAudio: true,
     });
     clearInterval(this.interval);
@@ -219,6 +219,7 @@ class RecordBio extends Component {
   };
 
   render() {
+    // console.log(this.state.AudioUri, "pppppppppppppp");
     return this.state.isloading ? (
       <Loader />
     ) : (

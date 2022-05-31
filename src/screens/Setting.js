@@ -44,7 +44,7 @@ class Setting extends Component {
         await AsyncStorage.removeItem("userToken");
         // this.props.getUserDetail({});
         Toast.show("Sign out succussfully", Toast.LONG);
-        this.props.navigation.navigate("SplashScreen");
+        this.props.navigation.navigate("AllowLocation");
       })
       .catch(function (error) {
         console.log(error);

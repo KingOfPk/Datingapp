@@ -55,6 +55,7 @@ class Preference extends Component {
       connectionArray: [],
       interestArray: [],
       LookingArray: [],
+      needDataSave: false,
     };
   }
 
@@ -171,6 +172,9 @@ class Preference extends Component {
   };
 
   selectConnectType = (item) => {
+    this.setState({
+      needDataSave: true,
+    });
     if (
       this.state.selectedConnectionType.some((value) => value.id == item.id)
     ) {
@@ -216,6 +220,9 @@ class Preference extends Component {
   };
 
   selectLookingType = (item) => {
+    this.setState({
+      needDataSave: true,
+    });
     if (this.state.selectedLookingType.some((value) => value.id == item.id)) {
       var connection = this.state.selectedLookingType.filter(
         (value) => value.id !== item.id
@@ -345,13 +352,18 @@ class Preference extends Component {
         var res = response.data;
         this.setState({
           isloading: false,
+          needDataSave: false,
         });
         if (res.status) {
           this.props.getUserDetail(res.data);
-          this.props.navigation.navigate("HomeScreen");
+          this.props.navigation.navigate("AllowLocation");
         }
       })
-      .catch((error) => {});
+      .catch((error) => {
+        this.setState({
+          needDataSave: true,
+        });
+      });
   };
 
   render() {
@@ -367,6 +379,7 @@ class Preference extends Component {
       selectedIntrestType,
       selectedLookingType,
     } = this.state;
+    console.log(this.state.needDataSave, "needDataSave");
 
     console.log(
       this.state.connectionArray,
@@ -478,7 +491,11 @@ class Preference extends Component {
                   renderLabel={renderLabel}
                   renderNotch={renderNotch}
                   onValueChanged={(low, high, fromUser) => {
-                    this.setState({ LowAge: low, heighAge: high });
+                    this.setState({
+                      LowAge: low,
+                      heighAge: high,
+                      needDataSave: true,
+                    });
                   }}
                 />
                 <View
@@ -518,7 +535,11 @@ class Preference extends Component {
                   selectionColor="#5FAEB6"
                   blankColor="#E5E5E5"
                   onValueChanged={(low, high, fromUser) => {
-                    this.setState({ minDistance: low, maxDistance: high });
+                    this.setState({
+                      minDistance: low,
+                      maxDistance: high,
+                      needDataSave: true,
+                    });
                   }}
                 />
                 <View
@@ -540,6 +561,7 @@ class Preference extends Component {
                   style={{ width: "70%", alignSelf: "center", marginTop: 50 }}
                 >
                   <Button
+                    disabled={!this.state.needDataSave ? true : false}
                     text="Save"
                     backgroundColor="#5FAEB6"
                     Pressed={() => this.EditValue()}

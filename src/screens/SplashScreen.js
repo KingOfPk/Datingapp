@@ -31,7 +31,11 @@ class SplashScreen extends Component {
     };
     this.timeout = null;
   }
-  componentDidMount = () => {};
+  componentDidMount = () => {
+    setTimeout(() => {
+      this.MoveToLogin();
+    }, 2000);
+  };
 
   MoveToLogin = async () => {
     var token = await AsyncStorage.getItem("userToken");
@@ -133,13 +137,13 @@ class SplashScreen extends Component {
               alignItems: "center",
             }}
           >
-            <View style={{ width: "75%" }}>
+            {/* <View style={{ width: "75%" }}>
               <Button
                 icon={require("../../assets/icons/Mobile.png")}
                 text="CONTINUE"
                 Pressed={() => this.MoveToLogin()}
               />
-            </View>
+            </View> */}
           </View>
         </ImageBackground>
       </View>

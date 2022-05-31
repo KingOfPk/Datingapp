@@ -56,6 +56,7 @@ class EditProfile extends Component {
       lastName: "",
       updateDob: false,
       isSoundPlaying: false,
+      newImageUploded: false,
     };
   }
 
@@ -174,6 +175,7 @@ class EditProfile extends Component {
                 newUpload: true,
               },
             ],
+            newImageUploded: true,
           });
         });
       });
@@ -189,6 +191,7 @@ class EditProfile extends Component {
   };
 
   submitEdit = async () => {
+    console.log("pressed ");
     var token = await AsyncStorage.getItem("userToken");
     this.setState({
       isloading: true,
@@ -199,7 +202,7 @@ class EditProfile extends Component {
         blankArray.push(value.image);
       }
     });
-    console.log(blankArray);
+    // console.log(blankArray);
     var data = JSON.stringify({
       images: blankArray,
     });
@@ -213,14 +216,15 @@ class EditProfile extends Component {
       },
       data: data,
     };
-    console.log(config);
+    // console.log(config);
 
     axios(config)
       .then((response) => {
-        // console.log(response, "image send successfully");
+        console.log(response, "image send successfully");
         var res = response.data;
         this.setState({
           isloading: false,
+          newImageUploded: false,
         });
         this.setProfile();
         Toast.show("Image upload succussfully", Toast.LONG);
@@ -492,7 +496,7 @@ class EditProfile extends Component {
       updateDob,
       lastName,
     } = this.state;
-    console.log(this.props.user, "render section");
+    console.log(this.state.galleryImages, "render section");
     return isloading ? (
       <Loader />
     ) : (
@@ -877,6 +881,7 @@ class EditProfile extends Component {
                   style={{ width: "85%", alignSelf: "center", marginTop: 50 }}
                 >
                   <Button
+                    disabled={this.state.newImageUploded ? false : true}
                     text="Save"
                     backgroundColor="#5FAEB6"
                     Pressed={() => this.submitEdit()}
