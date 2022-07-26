@@ -21,7 +21,7 @@ import { getUserDetail } from "../Store/Action/user.action.js";
 import { Loader } from "../components/Loader";
 import moment from "moment";
 const { height, width } = Dimensions.get("window");
-
+import Toast from "react-native-simple-toast";
 import Label from "./RangeSlider/Label";
 import Notch from "./RangeSlider/Notch";
 import Rail from "./RangeSlider/Rail";
@@ -31,7 +31,7 @@ import RangeSlider from "./RangeSlider";
 import Button from "../components/Button";
 import SettingHeader from "../components/SettingHeader";
 import Styles from "../components/CommanStyle";
-
+import Modal from "react-native-modal";
 const renderThumb = () => <Thumb />;
 const renderRail = () => <Rail />;
 const renderRailSelected = () => <RailSelected />;
@@ -56,6 +56,7 @@ class Preference extends Component {
       interestArray: [],
       LookingArray: [],
       needDataSave: false,
+      planModal: false,
     };
   }
 
@@ -216,6 +217,7 @@ class Preference extends Component {
     // }
     this.setState({
       interestArray: [item.id],
+      needDataSave: true,
     });
   };
 
@@ -356,7 +358,17 @@ class Preference extends Component {
         });
         if (res.status) {
           this.props.getUserDetail(res.data);
-          this.props.navigation.navigate("AllowLocation");
+          // this.props.navigation.navigate("AllowLocation");
+          this.setState({
+            needDataSave: false,
+            planModal: true,
+          });
+
+          setTimeout(() => {
+            this.setState({
+              planModal: false,
+            });
+          }, 2000);
         }
       })
       .catch((error) => {
@@ -379,13 +391,6 @@ class Preference extends Component {
       selectedIntrestType,
       selectedLookingType,
     } = this.state;
-    console.log(this.state.needDataSave, "needDataSave");
-
-    console.log(
-      this.state.connectionArray,
-      this.state.interestArray,
-      this.state.LookingArray
-    );
 
     return this.state.isloading ? (
       <Loader />
@@ -479,8 +484,8 @@ class Preference extends Component {
                   blankColor="#E5E5E5"
                   min={20}
                   max={60}
-                  initialLowValue={this.state.LowAge}
-                  initialHighValue={this.state.heighAge}
+                  initialLowValue={this.props.user.user_age.min_age}
+                  initialHighValue={this.props.user.user_age.max_age}
                   step={5}
                   floatingLabel
                   selectionColor="#5FAEB6"
@@ -490,11 +495,15 @@ class Preference extends Component {
                   renderRailSelected={renderRailSelected}
                   renderLabel={renderLabel}
                   renderNotch={renderNotch}
+                  onTouchEnd={(low, high) => {
+                    this.setState({
+                      needDataSave: true,
+                    });
+                  }}
                   onValueChanged={(low, high, fromUser) => {
                     this.setState({
                       LowAge: low,
                       heighAge: high,
-                      needDataSave: true,
                     });
                   }}
                 />
@@ -534,12 +543,24 @@ class Preference extends Component {
                   step={5}
                   selectionColor="#5FAEB6"
                   blankColor="#E5E5E5"
+                  onTouchEnd={(low, high) => {
+                    this.setState({
+                      needDataSave: true,
+                    });
+                  }}
                   onValueChanged={(low, high, fromUser) => {
                     this.setState({
                       minDistance: low,
                       maxDistance: high,
-                      needDataSave: true,
                     });
+                    // if (
+                    //   low !== this.props.user.user_distance.min_distance ||
+                    //   high !== this.props.user.user_distance.max_distance
+                    // ) {
+                    //   this.setState({
+                    //     needDataSave: true,
+                    //   });
+                    // }
                   }}
                 />
                 <View
@@ -563,12 +584,107 @@ class Preference extends Component {
                   <Button
                     disabled={!this.state.needDataSave ? true : false}
                     text="Save"
-                    backgroundColor="#5FAEB6"
+                    backgroundColor={
+                      !this.state.needDataSave ? "#717171" : "#5FAEB6"
+                    }
                     Pressed={() => this.EditValue()}
                   />
                 </View>
               </View>
             </ScrollView>
+            <Modal
+              onBackdropPress={() => {
+                this.setState({
+                  planModal: false,
+                });
+              }}
+              onBackButtonPress={() => {
+                this.setState({ planModal: false });
+              }}
+              transparent={true}
+              isVisible={this.state.planModal}
+              style={{ margin: 0 }}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <View
+                  style={[
+                    Styles.modalContainer,
+                    { height: 300, backgroundColor: "#fff" },
+                  ]}
+                >
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.setState({
+                        planModal: false,
+                      })
+                    }
+                    style={{ alignSelf: "flex-end" }}
+                  >
+                    <Image
+                      source={require("../../assets/icons/Cancel.png")}
+                      style={styles.closeIcon}
+                    />
+                  </TouchableOpacity>
+                  <Image
+                    source={require("../../assets/icons/togatherMainLogo.png")}
+                    style={styles.logo}
+                  />
+                  <View
+                    style={{
+                      flex: 1,
+                      // backgroundColor: "#f00",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#000",
+                        fontFamily: font.Medium,
+                        textAlign: "center",
+                        fontSize: 18,
+                      }}
+                    >
+                      Update Succussfully
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: "100%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.setState({
+                          planModal: false,
+                        });
+                      }}
+                      style={[
+                        styles.buttonContainer,
+                        {
+                          backgroundColor: "#416181",
+                          height: 50,
+                          width: "45%",
+                          // marginRight: 15,
+                        },
+                      ]}
+                    >
+                      <Text style={[styles.buttonText, { color: "#fff" }]}>
+                        OK
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
           </View>
           <Footer
             selectedIcon="Preference"
@@ -608,6 +724,37 @@ const styles = StyleSheet.create({
     height: 25,
     borderRadius: 10,
     backgroundColor: "#C4C4C4",
+  },
+  planContainer: {
+    width: "28%",
+    height: 100,
+    backgroundColor: "#c4c4c4c4",
+    borderRadius: 10,
+    marginTop: "10%",
+  },
+  buttonContainer: {
+    padding: 10,
+    borderRadius: 10,
+    height: 50,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    fontFamily: font.Bold,
+    color: "#416181",
+    fontSize: 20,
+  },
+  closeIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
+  },
+  logo: {
+    width: "100%",
+    height: 100,
+    resizeMode: "contain",
+    alignSelf: "center",
   },
 });
 

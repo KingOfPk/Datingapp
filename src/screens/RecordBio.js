@@ -45,11 +45,11 @@ class RecordBio extends Component {
   }
 
   componentDidMount = async () => {
-    if (Platform.OS == "ios") {
-      request(PERMISSIONS.IOS.MICROPHONE).then((result) => {
-        console.log(result);
-      });
-    }
+    // if (Platform.OS == "ios") {
+    //   request(PERMISSIONS.IOS.MICROPHONE).then((result) => {
+    //     console.log(result);
+    //   });
+    // }
     const options = {
       sampleRate: 16000, // default 44100
       channels: 1, // 1 or 2, default 1
@@ -64,6 +64,12 @@ class RecordBio extends Component {
       // base64-encoded audio data chunks
       console.log(data);
     });
+
+    if (this.props.user?.bio_description) {
+      this.setState({
+        bio_description: this.props.user?.bio_description,
+      });
+    }
     this.keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
       this._keyboardDidShow
@@ -195,7 +201,7 @@ class RecordBio extends Component {
         });
         // this.props.navigation.navigate("ChooseConnections");
         if (this.props.route.params.isGoback) {
-          this.props.navigation.navigate("HomeScreen");
+          this.UserDetail();
         } else {
           this.props.navigation.navigate("ChooseConnections");
         }
@@ -204,6 +210,29 @@ class RecordBio extends Component {
       .catch(function (error) {
         console.log(error);
       });
+  };
+
+  UserDetail = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/profile`,
+      headers: {
+        token: token,
+      },
+    };
+    axios(config)
+      .then((response) => {
+        console.log(response, "user detail here");
+        console.log(JSON.stringify(response.data));
+        var res = response.data;
+        if (res.status) {
+          // this.setState({ galleryImages: res.data.galleries });
+          this.props.getUserDetail(res.data);
+          this.props.navigation.navigate("EditProfile");
+        }
+      })
+      .catch((error) => {});
   };
 
   _keyboardDidShow = () => {
@@ -243,7 +272,7 @@ class RecordBio extends Component {
                 source={
                   this.props.user.profile_image?.images.url
                     ? { uri: this.props.user.profile_image?.images.url }
-                    : require("../../assets/images/DummyUser.png")
+                    : require("../../assets/images/dummyUser.png")
                 }
                 style={styles.userImage}
               /> */}
@@ -251,7 +280,7 @@ class RecordBio extends Component {
                 source={
                   this.props.user.profile_image?.images.url
                     ? { uri: this.props.user.profile_image?.images.url }
-                    : require("../../assets/images/DummyUser.png")
+                    : require("../../assets/images/dummyUser.png")
                 }
                 style={styles.userImage}
               />
@@ -268,136 +297,6 @@ class RecordBio extends Component {
               alignItems: "center",
             }}
           >
-            {this.state.startAudio ? (
-              <View
-                style={{
-                  width: "100%",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <View style={{ height: 100, width: 200 }}>
-                  <LottieView
-                    source={require("../../assets/lottie/Wave.json")}
-                    autoPlay={true}
-                    loop={true}
-                  />
-                </View>
-                <TouchableOpacity
-                  onPress={() => this.stopRecording()}
-                  style={{
-                    backgroundColor: "#efefef",
-                    height: 80,
-                    width: 80,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 40,
-                    shadowColor: "#000",
-                    shadowOffset: {
-                      width: 0,
-                      height: 0.5,
-                    },
-                    shadowOpacity: 0.22,
-                    shadowRadius: 2.22,
-
-                    elevation: 3,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontFamily: font.Bold,
-                      color: "#000",
-                      textAlign: "center",
-                    }}
-                  >
-                    {this.state.timer}
-                  </Text>
-                  <Image source={require("../../assets/icons/Play.png")} />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <TouchableOpacity
-                onPress={() =>
-                  this.state.startAudio
-                    ? this.stopRecording()
-                    : this.StartAudio()
-                }
-                style={{
-                  backgroundColor: "#efefef",
-                  height: 80,
-                  width: 80,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: 40,
-                  shadowColor: "#000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 0.5,
-                  },
-                  shadowOpacity: 0.22,
-                  shadowRadius: 2.22,
-
-                  elevation: 3,
-                }}
-              >
-                <Image
-                  source={require("../../assets/images/recordAudio.png")}
-                  style={{ width: 35, height: 35, resizeMode: "contain" }}
-                />
-                {this.state.isEndRecord && (
-                  <Image
-                    source={require("../../assets/icons/Checked.png")}
-                    style={{
-                      width: 20,
-                      height: 20,
-                      resizeMode: "contain",
-                      position: "absolute",
-                      top: 0,
-                      right: 5,
-                    }}
-                  />
-                )}
-              </TouchableOpacity>
-            )}
-
-            {this.state.isEndRecord && (
-              <View
-                style={{
-                  width: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: 20,
-                }}
-              >
-                <Icon
-                  onPress={this.state.isPlayedAudio ? this.Pause : this.Play}
-                  name={
-                    this.state.isPlayedAudio ? "pause-circle" : "play-circle"
-                  }
-                  size={45}
-                  color="#5FAEB6"
-                />
-              </View>
-            )}
-
-            <Text
-              style={{
-                paddingVertical: "5%",
-                fontFamily: font.Medium,
-                color: "#ACABB4",
-              }}
-            >
-              Press and record your bio for 30 secs
-            </Text>
-            <Text
-              style={[
-                styles.headingText,
-                { paddingVertical: 10, fontSize: 16 },
-              ]}
-            >
-              OR
-            </Text>
             <TextInput
               maxLength={100}
               multiline={true}
@@ -412,6 +311,7 @@ class RecordBio extends Component {
                 textAlignVertical: "top",
                 color: "#000",
               }}
+              value={this.state.bio_description}
               onChangeText={(text) =>
                 this.setState({
                   bio_description: text,
@@ -428,7 +328,7 @@ class RecordBio extends Component {
               <Button
                 text="Save"
                 disabled={!this.state.isEndRecord}
-                backgroundColor={this.state.isEndRecord ? "#5FAEB6" : "#ccc"}
+                backgroundColor={this.state.isEndRecord ? "#5FAEB6" : "#717171"}
                 Pressed={() => this.SendFile()}
               />
             </View>

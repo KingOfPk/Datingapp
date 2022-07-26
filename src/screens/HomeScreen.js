@@ -114,7 +114,9 @@ class HomeScreen extends Component {
 
   loadMoreData = async () => {
     var token = await AsyncStorage.getItem("userToken");
-
+    this.setState({
+      isLaodMore: true,
+    });
     var data = JSON.stringify({
       latitude: this.props.Address.position.lat,
       longitude: this.props.Address.position.lng,
@@ -148,6 +150,12 @@ class HomeScreen extends Component {
           this.setState({
             isloading: false,
             page: parseInt(this.state.page) + 1,
+            isLaodMore: false,
+          });
+        } else {
+          this.setState({
+            isloading: false,
+            isLaodMore: false,
           });
         }
         console.log(JSON.stringify(response.data));
@@ -156,6 +164,7 @@ class HomeScreen extends Component {
         console.log(error);
         this.setState({
           isloading: false,
+          isLaodMore: false,
         });
       });
   };
@@ -241,7 +250,7 @@ class HomeScreen extends Component {
                   source={
                     this.props.user.profile_image?.images
                       ? { uri: this.props.user.profile_image?.images.url }
-                      : require("../../assets/images/DummyUser.png")
+                      : require("../../assets/images/dummyUser.png")
                   }
                   style={{ width: 50, height: 50, borderRadius: 25 }}
                 />
@@ -445,6 +454,17 @@ class HomeScreen extends Component {
                   )}
                 />
               </>
+            )}
+            {this.state.isLaodMore && (
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ActivityIndicator size="large" color="#5FAEB6" />
+              </View>
             )}
           </ScrollView>
         </View>

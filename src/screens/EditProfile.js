@@ -11,6 +11,7 @@ import {
   FlatList,
   AsyncStorage,
   ImageBackground,
+  ActivityIndicator,
 } from "react-native";
 import { font } from "../components/fonts";
 import Footer from "../components/Footer";
@@ -75,7 +76,6 @@ class EditProfile extends Component {
         console.log("finished playing", success);
         this.setState({
           isSoundPlaying: false,
-          soundPlayed: false,
         });
       }
     );
@@ -95,6 +95,12 @@ class EditProfile extends Component {
       "FinishedLoadingURL",
       ({ success, url }) => {
         console.log("finished loading url", success, url);
+        this.setState({
+          isSoundPlaying: true,
+          buffer: false,
+          // soundPlayed: true,
+        });
+        SoundPlayer.play();
       }
     );
   };
@@ -106,30 +112,42 @@ class EditProfile extends Component {
     this._onFinishedLoadingFileSubscription.remove();
   }
 
-  PlaySound = () => {
+  // PlaySound = () => {
+  //   try {
+
+  //     SoundPlayer.playUrl(this.props.user?.bio?.bio_audio?.url);
+  //     this.setState({
+  //       isSoundPlaying: true,
+  //       soundPlayed: true,
+  //     });
+  //   } catch (e) {
+  //     console.log("error", e);
+  //   }
+  // };
+
+  PlaySound = async () => {
     try {
+      this.setState({
+        buffer: true,
+      });
       console.log(this.props.user?.bio?.bio_audio?.url);
       SoundPlayer.playUrl(this.props.user?.bio?.bio_audio?.url);
-      this.setState({
-        isSoundPlaying: true,
-        soundPlayed: true,
-      });
     } catch (e) {
       console.log("error", e);
     }
   };
 
-  Play = () => {
-    SoundPlayer.play();
-    this.setState({
-      // isSoundPlaying: true,
-      soundPlayed: true,
-    });
-  };
+  // Play = () => {
+  //   SoundPlayer.play();
+  //   this.setState({
+  //     // isSoundPlaying: true,
+  //     soundPlayed: true,
+  //   });
+  // };
   Pause = () => {
     SoundPlayer.pause();
     this.setState({
-      soundPlayed: false,
+      isSoundPlaying: false,
     });
   };
 
@@ -277,7 +295,10 @@ class EditProfile extends Component {
         this.setState({
           maxFiles: parseInt(this.state.maxFiles) + 1,
           isloading: false,
+          errorModal: true,
+          message: "Image delete succussfully",
         });
+
         this.UserDetail();
       })
       .catch((error) => {
@@ -309,6 +330,7 @@ class EditProfile extends Component {
         });
         if (res.status) {
           this.props.getUserDetail(res.data);
+          this.loadGalleryImages();
           // this.props.navigation.navigate("HomeScreen");
         }
       })
@@ -513,7 +535,7 @@ class EditProfile extends Component {
               style={{ flex: 1 }}
               showsVerticalScrollIndicator={false}
             >
-              {this.props.user.galleries.map((value) => {
+              {this.props.user.galleries?.map((value) => {
                 return value.profile_pic ? (
                   <Image
                     resizeMode="cover"
@@ -638,7 +660,7 @@ class EditProfile extends Component {
                   >
                     <View
                       style={{
-                        width: "90%",
+                        width: "100%",
                         backgroundColor: "#C4C4C445",
                         height: 120,
                         padding: 10,
@@ -654,7 +676,7 @@ class EditProfile extends Component {
                       >
                         {this.props.user?.bio_description}
                       </Text>
-                      {this.props.user.bio && (
+                      {/* {this.props.user.bio && (
                         <ImageBackground
                           source={require("../../assets/icons/Ellipse.png")}
                           style={{
@@ -669,16 +691,8 @@ class EditProfile extends Component {
                         >
                           {this.state.isSoundPlaying ? (
                             <Icon
-                              onPress={() =>
-                                this.state.soundPlayed
-                                  ? this.Pause()
-                                  : this.Play()
-                              }
-                              name={
-                                this.state.soundPlayed
-                                  ? "pause-circle"
-                                  : "play-circle"
-                              }
+                              onPress={() => this.Pause()}
+                              name={"pause-circle"}
                               color="#5FAEB6"
                               size={40}
                               style={{ marginBottom: 8 }}
@@ -693,7 +707,41 @@ class EditProfile extends Component {
                             />
                           )}
                         </ImageBackground>
-                      )}
+                      )} */}
+                      {/* {this.props.user.bio && (
+                        <ImageBackground
+                          source={require("../../assets/icons/Ellipse.png")}
+                          style={{
+                            width: 60,
+                            height: 60,
+                            position: "absolute",
+                            right: -30,
+                            top: 30,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          {this.state.buffer ? (
+                            <ActivityIndicator size={"large"} color="#5FAEB6" />
+                          ) : this.state.isSoundPlaying ? (
+                            <Icon
+                              onPress={() => this.Pause()}
+                              name={"pause-circle"}
+                              color="#5FAEB6"
+                              size={40}
+                              style={{ marginBottom: 8 }}
+                            />
+                          ) : (
+                            <Icon
+                              onPress={() => this.PlaySound()}
+                              name="play-circle"
+                              color="#5FAEB6"
+                              size={40}
+                              style={{ marginBottom: 8 }}
+                            />
+                          )}
+                        </ImageBackground>
+                      )} */}
                     </View>
                   </View>
                 </View>
@@ -831,8 +879,15 @@ class EditProfile extends Component {
                                   </Text>
                                 ) : null}
                                 <TouchableOpacity
-                                  disabled={item.profile_pic ? true : false}
-                                  onPress={() => this.RemoveItem(item.id)}
+                                  onPress={() =>
+                                    item.profile_pic
+                                      ? this.setState({
+                                          errorModal: true,
+                                          message:
+                                            "You can't delete your profile picture",
+                                        })
+                                      : this.RemoveItem(item.id)
+                                  }
                                   style={{
                                     width: 30,
                                     height: 30,
@@ -849,25 +904,6 @@ class EditProfile extends Component {
                                     style={{ width: 30, height: 30 }}
                                   />
                                 </TouchableOpacity>
-                                {/* <View
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                backgroundColor: "rgba(0,0,0,.5)",
-                                borderRadius: 15,
-                                position: "absolute",
-                                alignItems: "flex-end",
-                                padding: 10,
-                              }}
-                            >
-                              <Icon
-                              
-                                name="times"
-                                size={20}
-                                color="#fff"
-                              />
-                              
-                            </View> */}
                               </TouchableOpacity>
                             )}
                           </View>
@@ -883,7 +919,9 @@ class EditProfile extends Component {
                   <Button
                     disabled={this.state.newImageUploded ? false : true}
                     text="Save"
-                    backgroundColor="#5FAEB6"
+                    backgroundColor={
+                      this.state.newImageUploded ? "#5FAEB6" : "#717171"
+                    }
                     Pressed={() => this.submitEdit()}
                   />
                 </View>

@@ -61,6 +61,7 @@ class UserProfile extends Component {
       disLiked: false,
       soundPlayed: false,
       isSoundPlaying: false,
+      buffer: false,
     };
     this.timeout = null;
     this._onFinishedPlayingSubscription = null;
@@ -108,10 +109,8 @@ class UserProfile extends Component {
       "FinishedPlaying",
       ({ success }) => {
         console.log("finished playing", success);
-        SoundPlayer.stop();
         this.setState({
           isSoundPlaying: false,
-          // soundPlayed: false,
         });
       }
     );
@@ -131,26 +130,31 @@ class UserProfile extends Component {
       "FinishedLoadingURL",
       ({ success, url }) => {
         console.log("finished loading url", success, url);
+        this.setState({
+          isSoundPlaying: true,
+          buffer: false,
+          // soundPlayed: true,
+        });
+        SoundPlayer.play();
       }
     );
   };
 
-  componentWillUnmount() {
-    this._onFinishedPlayingSubscription.remove();
-    this._onFinishedLoadingSubscription.remove();
-    this._onFinishedLoadingURLSubscription.remove();
-    this._onFinishedLoadingFileSubscription.remove();
-  }
+  // componentWillUnmount() {
+  //   this._onFinishedPlayingSubscription.remove();
+  //   this._onFinishedLoadingSubscription.remove();
+  //   this._onFinishedLoadingURLSubscription.remove();
+  //   this._onFinishedLoadingFileSubscription.remove();
+  // }
 
   PlaySound = async () => {
     try {
-      await SoundPlayer.stop();
+      this.setState({
+        buffer: true,
+      });
+      SoundPlayer.stop();
       console.log(this.state.userData?.bio?.bio_audio?.url);
       SoundPlayer.playUrl(this.state.userData?.bio?.bio_audio?.url);
-      this.setState({
-        isSoundPlaying: true,
-        // soundPlayed: true,
-      });
     } catch (e) {
       console.log("error", e);
     }
@@ -683,7 +687,7 @@ class UserProfile extends Component {
               >
                 <View
                   style={{
-                    width: "90%",
+                    width: "100%",
                     backgroundColor: "#C4C4C445",
                     height: 120,
                     padding: 10,
@@ -699,7 +703,7 @@ class UserProfile extends Component {
                   >
                     {userData.bio_description ? userData.bio_description : ""}
                   </Text>
-                  {this.state.userData.bio && (
+                  {/* {this.state.userData.bio && (
                     <ImageBackground
                       source={require("../../assets/icons/Ellipse.png")}
                       style={{
@@ -712,7 +716,9 @@ class UserProfile extends Component {
                         alignItems: "center",
                       }}
                     >
-                      {this.state.isSoundPlaying ? (
+                      {this.state.buffer ? (
+                        <ActivityIndicator size={"large"} color="#5FAEB6" />
+                      ) : this.state.isSoundPlaying ? (
                         <Icon
                           onPress={() => this.Pause()}
                           name={"pause-circle"}
@@ -730,7 +736,7 @@ class UserProfile extends Component {
                         />
                       )}
                     </ImageBackground>
-                  )}
+                  )} */}
                 </View>
               </View>
               <View style={{ width: "100%", marginTop: 10 }}>

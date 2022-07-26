@@ -17,12 +17,12 @@
     "@react-native-community/checkbox": "^0.5.9",
     "@react-native-community/datetimepicker": "^6.1.2",
     "@react-native-community/geolocation": "^2.0.2",
-    "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/netinfo": "^5.9.10",
     "@react-native-community/picker": "^1.8.1",
     "@react-native-community/push-notification-ios": "^1.10.1",
     "@react-native-firebase/app": "^14.7.0",
     "@react-native-firebase/messaging": "^14.7.0",
+    "@react-native-masked-view/masked-view": "^0.2.6",
     "@react-navigation/material-top-tabs": "^5.3.19",
     "@react-navigation/native": "^6.0.4",
     "@react-navigation/stack": "^6.0.9",
@@ -82,5 +82,8 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "resolutions": {
+    "@react-native-community/cli-debugger-ui": "4.7.0"
   }
 }

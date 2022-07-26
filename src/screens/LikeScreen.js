@@ -51,7 +51,7 @@ class LikeScreen extends Component {
                   source={
                     this.props.user.profile_image?.images.url
                       ? { uri: this.props.user.profile_image?.images.url }
-                      : require("../../assets/images/DummyUser.png")
+                      : require("../../assets/images/dummyUser.png")
                   }
                   style={{ width: 50, height: 50, borderRadius: 25 }}
                 />

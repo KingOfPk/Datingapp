@@ -9,6 +9,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   TextInput,
+  BackHandler,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import Button from "../components/Button";
@@ -53,7 +54,15 @@ class LoginScreen extends Component {
 
   componentDidMount = () => {
     console.log(baseurl);
+    // this.backHandler = BackHandler.addEventListener(
+    //   "hardwareBackPress",
+    //   this.backAction
+    // );
   };
+
+  // componentWillUnmount() {
+  //   this.backHandler.remove();
+  // }
 
   Login = () => {
     if (this.state.number == "") {
@@ -108,12 +117,12 @@ class LoginScreen extends Component {
               justifyContent: "center",
             }}
           >
-            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+            {/* <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
               <Image
                 source={require("../../assets/icons/back.png")}
                 style={{ height: 30, width: 30 }}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </SafeAreaView>
         <KeyboardAwareScrollView

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   AsyncStorage,
 } from "react-native";
+import { StackActions } from "@react-navigation/native";
 import Styles from "../components/CommanStyle";
 import { font } from "../components/fonts";
 import Footer from "../components/Footer";
@@ -44,7 +45,12 @@ class Setting extends Component {
         await AsyncStorage.removeItem("userToken");
         // this.props.getUserDetail({});
         Toast.show("Sign out succussfully", Toast.LONG);
-        this.props.navigation.navigate("AllowLocation");
+        // this.props.navigation.navigate("LoginScreen");
+        this.props.navigation.dispatch(
+          StackActions.replace("LoginScreen", {
+            user: "jane",
+          })
+        );
       })
       .catch(function (error) {
         console.log(error);
@@ -77,7 +83,7 @@ class Setting extends Component {
                     source={
                       this.props.user.profile_image?.images.url
                         ? { uri: this.props.user.profile_image?.images.url }
-                        : require("../../assets/images/DummyUser.png")
+                        : require("../../assets/images/dummyUser.png")
                     }
                     borderRadius={45}
                     style={styles.profileImage}
