@@ -34,6 +34,7 @@ import ChatScreen from "../screens/ChatScreen";
 import UserMatchScreen from "../screens/UserMatchScreen";
 import PubNub from "pubnub";
 import { PubNubProvider } from "pubnub-react";
+import BlockedUser from "../screens/BlockedUser";
 
 const Stack = createStackNavigator();
 
@@ -84,6 +85,7 @@ export default class Appnavigator extends Component {
             <Stack.Screen name="LikeScreen" component={LikeScreen} />
             <Stack.Screen name="ChatScreen" component={ChatScreen} />
             <Stack.Screen name="UserMatchScreen" component={UserMatchScreen} />
+            <Stack.Screen name="BlockedUser" component={BlockedUser} />
             {/* <Stack.Screen name="UserMatchScreen" component={UserMatchScreen} /> */}
           </Stack.Navigator>
         </PubNubProvider>

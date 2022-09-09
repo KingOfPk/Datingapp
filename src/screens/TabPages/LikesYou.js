@@ -29,6 +29,7 @@ class LikesYou extends Component {
 
   componentDidMount = async () => {
     var token = await AsyncStorage.getItem("userToken");
+    this.checkItsMatch();
     var config = {
       method: "get",
       url: `${baseurl}/api/v1/like_dislikes/likes_you`,
@@ -50,6 +51,33 @@ class LikesYou extends Component {
       .catch(function (error) {
         console.log(error);
       });
+  };
+
+  checkItsMatch = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/matches`,
+      headers: {
+        token: token,
+      },
+    };
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        console.log("UserMatchScreen", res);
+        if (res.data.length > 0) {
+          // this.props.setUnreadLike(true);
+          var filter = res.data.filter((value) => !value.match_updated);
+          console.log(filter);
+          if (filter.length > 0) {
+            this.props.navigation.navigate("UserMatchScreen", {
+              data: filter[0],
+            });
+          }
+        }
+      })
+      .catch((error) => {});
   };
 
   async componentWillReceiveProps(nextProp) {

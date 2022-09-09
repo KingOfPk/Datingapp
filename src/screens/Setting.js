@@ -163,6 +163,12 @@ class Setting extends Component {
                 <TouchableOpacity style={styles.settingLinksContainer}>
                   <Text style={[styles.normalText]}>Privacy </Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.navigate("BlockedUser")}
+                  style={styles.settingLinksContainer}
+                >
+                  <Text style={[styles.normalText]}>Blocked users </Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.settingLinksContainer}>
                   <Text style={[styles.normalText]}>Disable Account </Text>
                 </TouchableOpacity>

@@ -23,7 +23,7 @@ import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getUserDetail } from "../Store/Action/user.action.js";
-import { DeleteUser } from "../Store/Action/Data.action";
+import { DeleteUser, setBlockList } from "../Store/Action/Data.action";
 import { Loader } from "../components/Loader";
 import { Picker } from "react-native-ui-lib";
 import Footer from "../components/Footer";
@@ -62,6 +62,8 @@ class UserProfile extends Component {
       soundPlayed: false,
       isSoundPlaying: false,
       buffer: false,
+      message: "",
+      blockModal: false,
     };
     this.timeout = null;
     this._onFinishedPlayingSubscription = null;
@@ -289,6 +291,7 @@ class UserProfile extends Component {
     axios(config)
       .then((response) => {
         var res = response.data;
+        console.log(res);
         if (res.status) {
           this.setState({
             liked: true,
@@ -300,11 +303,19 @@ class UserProfile extends Component {
           this.setState({
             isLiked: false,
           });
-          PushNotification(
-            this.state.userData.devise_token,
-            `${this.props.user.name} like your profile`,
-            "New Like"
-          );
+          if (res.match) {
+            PushNotification(
+              this.state.userData.devise_token,
+              `${this.props.user.name} like back your profile`,
+              "New Like"
+            );
+          } else {
+            PushNotification(
+              this.state.userData.devise_token,
+              `${this.props.user.name} like your profile`,
+              "New Like"
+            );
+          }
           this.props.navigation.navigate("HomeScreen");
         }, 1500);
 
@@ -365,6 +376,80 @@ class UserProfile extends Component {
           isloading: false,
           Post: [],
         });
+      });
+  };
+
+  blockUser = async () => {
+    this.setState({
+      reportModal: false,
+    });
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/blocks/block_user?id=${this.props.route.params.data.id}`,
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+    };
+    console.log(config);
+
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        // if (res.status) {
+        //   this.setState({
+        //     dislike: true,
+        //     disLiked: true,
+        //   });
+        // }
+        this.props.DeleteUser(this.props.route.params.data.id);
+        if (this.state.reportUserType == "block") {
+          this.setState({
+            blockModal: true,
+            message: "User blocked successfully",
+          });
+        } else {
+          this.setState({
+            blockModal: true,
+            message: "User reported successfully",
+          });
+        }
+        this.getBlockList();
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({
+          isloading: false,
+          Post: [],
+        });
+      });
+  };
+
+  getBlockList = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/blocks`,
+      headers: {
+        token: token,
+      },
+    };
+    console.log(config);
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        if (res.status) {
+          this.props.setBlockList(res.data);
+          this.setState({
+            blockModal: false,
+          });
+          this.props.navigation.navigate("HomeScreen");
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
       });
   };
 
@@ -525,26 +610,34 @@ class UserProfile extends Component {
                         style={{ width: 20, height: 20 }}
                       />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() =>
-                        this.setState({
-                          reportModal: true,
-                        })
-                      }
-                      style={{
-                        height: 30,
-                        width: 30,
-                        // backgroundColor: "#666",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: 10,
-                      }}
-                    >
-                      <Image
-                        source={require("../../assets/icons/info.png")}
-                        style={{ width: 10, height: 25, resizeMode: "contain" }}
-                      />
-                    </TouchableOpacity>
+                    {!this.props.blockList.some(
+                      (value) => value.block_to_id === userData.id
+                    ) && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          this.setState({
+                            reportModal: true,
+                          })
+                        }
+                        style={{
+                          height: 30,
+                          width: 30,
+                          // backgroundColor: "#666",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: 10,
+                        }}
+                      >
+                        <Image
+                          source={require("../../assets/icons/info.png")}
+                          style={{
+                            width: 10,
+                            height: 25,
+                            resizeMode: "contain",
+                          }}
+                        />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
 
@@ -777,90 +870,94 @@ class UserProfile extends Component {
             </View>
           </ScrollView>
         </View>
-        <View
-          style={{
-            height: 70,
-            width: "100%",
-            // backgroundColor: '#f00',
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <TouchableOpacity
-            onPress={this.disLikeUser}
-            style={{
-              width: "33%",
-              padding: 5,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Image
-              source={require("../../assets/icons/Unlike.png")}
-              style={{ width: 50, height: 50 }}
-            />
-          </TouchableOpacity>
+        {!this.props.blockList.some(
+          (value) => value.block_to_id === userData.id
+        ) && (
           <View
             style={{
-              width: "33%",
-              padding: 5,
-              justifyContent: "center",
+              height: 70,
+              width: "100%",
+              // backgroundColor: '#f00',
+              flexDirection: "row",
+              justifyContent: "space-between",
               alignItems: "center",
             }}
           >
             <TouchableOpacity
-              onPress={this.likeUser}
-              disabled={this.state.liked}
-              style={[
-                styles.shodow,
-                {
-                  height: 70,
-                  width: 70,
-                  borderRadius: 35,
-                  backgroundColor: this.state.liked ? "#416181" : "#E5E5E5",
-                  margin: 5,
-                  justifyContent: "center",
-                  alignItems: "center",
-                },
-              ]}
+              onPress={this.disLikeUser}
+              style={{
+                width: "33%",
+                padding: 5,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <Image
-                source={require("../../assets/icons/Heart.png")}
+                source={require("../../assets/icons/Unlike.png")}
                 style={{ width: 50, height: 50 }}
               />
             </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              width: "33%",
-              padding: 5,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              onPress={this.createChat}
-              style={[
-                styles.shodow,
-                {
-                  height: 50,
-                  width: 50,
-                  borderRadius: 35,
-                  backgroundColor: "#E5E5E5",
-                  margin: 5,
-                  justifyContent: "center",
-                  alignItems: "center",
-                },
-              ]}
+            <View
+              style={{
+                width: "33%",
+                padding: 5,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <Image
-                source={require("../../assets/icons/Chat.png")}
-                style={{ width: 40, height: 40 }}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this.likeUser}
+                disabled={this.state.liked}
+                style={[
+                  styles.shodow,
+                  {
+                    height: 70,
+                    width: 70,
+                    borderRadius: 35,
+                    backgroundColor: this.state.liked ? "#416181" : "#E5E5E5",
+                    margin: 5,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  },
+                ]}
+              >
+                <Image
+                  source={require("../../assets/icons/Heart.png")}
+                  style={{ width: 50, height: 50 }}
+                />
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                width: "33%",
+                padding: 5,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity
+                onPress={this.createChat}
+                style={[
+                  styles.shodow,
+                  {
+                    height: 50,
+                    width: 50,
+                    borderRadius: 35,
+                    backgroundColor: "#E5E5E5",
+                    margin: 5,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  },
+                ]}
+              >
+                <Image
+                  source={require("../../assets/icons/Chat.png")}
+                  style={{ width: 40, height: 40 }}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        )}
         <SafeAreaView></SafeAreaView>
         <Modal
           onBackdropPress={() => {
@@ -1036,7 +1133,8 @@ class UserProfile extends Component {
                 alignItems: "center",
               }}
             >
-              <View
+              <TouchableOpacity
+                onPress={() => this.blockUser()}
                 style={{
                   paddingHorizontal: 10,
                   paddingVertical: 5,
@@ -1056,6 +1154,94 @@ class UserProfile extends Component {
                 >
                   SUBMIT
                 </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          onBackdropPress={() => {
+            this.setState({
+              blockModal: false,
+            });
+          }}
+          onBackButtonPress={() => {
+            this.setState({ blockModal: false });
+          }}
+          transparent={true}
+          isVisible={this.state.blockModal}
+          style={{ margin: 0 }}
+        >
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <View
+              style={[
+                Styles.modalContainer,
+                { height: 300, backgroundColor: "#fff" },
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  this.setState({ blockModal: false });
+                  this.props.navigation.navigate("HomeScreen");
+                }}
+                style={{ alignSelf: "flex-end" }}
+              >
+                <Image
+                  source={require("../../assets/icons/Cancel.png")}
+                  style={styles.closeIcon}
+                />
+              </TouchableOpacity>
+              <Image
+                source={require("../../assets/icons/togatherMainLogo.png")}
+                style={styles.logo}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  // backgroundColor: "#f00",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#000",
+                    fontFamily: font.Medium,
+                    textAlign: "center",
+                    fontSize: 18,
+                  }}
+                >
+                  {this.state.message}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    this.setState({
+                      blockModal: false,
+                    });
+                    this.props.navigation.navigate("HomeScreen");
+                  }}
+                  style={[
+                    styles.buttonContainer,
+                    {
+                      backgroundColor: "#416181",
+                      height: 50,
+                      width: "45%",
+                      // marginRight: 15,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.buttonText, { color: "#fff" }]}>OK</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -1140,12 +1326,37 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     margin: 0,
   },
+  buttonContainer: {
+    padding: 10,
+    borderRadius: 10,
+    height: 50,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    fontFamily: font.Bold,
+    color: "#416181",
+    fontSize: 20,
+  },
+  closeIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
+  },
+  logo: {
+    width: "100%",
+    height: 100,
+    resizeMode: "contain",
+    alignSelf: "center",
+  },
 });
 
 function mapStateToProps(state) {
   console.log(state);
   return {
     Address: state.Data.address,
+    blockList: state.Data.blockList,
     user: state.User.user,
   };
 }
@@ -1155,6 +1366,7 @@ function mapDispatchToProps(dispatch) {
     {
       getUserDetail,
       DeleteUser,
+      setBlockList,
     },
     dispatch
   );

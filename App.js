@@ -82,6 +82,17 @@ class App extends Component {
       });
     }
     this.requestUserPermission();
+
+    messaging().onNotificationOpenedApp(async (remoteMessage) => {
+      if (remoteMessage) {
+        console.log(remoteMessage.notification);
+        if (remoteMessage.notification.title == "New Message") {
+          Nav1.navigate("ChatUserList", {});
+        } else if (remoteMessage.notification.title == "New Like") {
+          Nav1.navigate("LikeScreen", {});
+        }
+      }
+    });
   };
   requestUserPermission = async () => {
     const authStatus = await messaging().requestPermission();

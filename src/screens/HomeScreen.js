@@ -26,7 +26,11 @@ import axios from "axios";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { getUserDetail } from "../Store/Action/user.action.js";
-import { SetUserListing } from "../Store/Action/Data.action";
+import {
+  SetUserListing,
+  setUnreadLike,
+  setBlockList,
+} from "../Store/Action/Data.action";
 import { Loader } from "../components/Loader";
 import moment from "moment";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
@@ -88,6 +92,30 @@ class HomeScreen extends Component {
 
     this.UserDetail();
     this.checkMatch();
+    this.checkItsMatch();
+    this.getBlockList();
+  };
+
+  getBlockList = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/blocks`,
+      headers: {
+        token: token,
+      },
+    };
+    console.log(config);
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        if (res.status) {
+          this.props.setBlockList(res.data);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   checkMatch = async () => {
@@ -104,9 +132,37 @@ class HomeScreen extends Component {
         var res = response.data;
         console.log("UserMatchScreen", res);
         if (res.data.length > 0) {
-          this.props.navigation.navigate("UserMatchScreen", {
-            data: res.data[0],
-          });
+          this.props.setUnreadLike(true);
+          // this.props.navigation.navigate("UserMatchScreen", {
+          //   data: res.data[0],
+          // });
+        }
+      })
+      .catch((error) => {});
+  };
+
+  checkItsMatch = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "get",
+      url: `${baseurl}/api/v1/matches`,
+      headers: {
+        token: token,
+      },
+    };
+    axios(config)
+      .then((response) => {
+        var res = response.data;
+        console.log("UserMatchScreen", res);
+        if (res.data.length > 0) {
+          // this.props.setUnreadLike(true);
+          var filter = res.data.filter((value) => !value.match_updated);
+          console.log(filter);
+          if (filter.length > 0) {
+            this.props.navigation.navigate("UserMatchScreen", {
+              data: filter[0],
+            });
+          }
         }
       })
       .catch((error) => {});
@@ -471,7 +527,10 @@ class HomeScreen extends Component {
         <Footer
           selectedIcon="Home"
           homePress={() => this.props.navigation.navigate("HomeScreen")}
-          likePress={() => this.props.navigation.navigate("LikeScreen")}
+          likePress={() => {
+            this.props.setUnreadLike(false);
+            this.props.navigation.navigate("LikeScreen");
+          }}
           preferencePress={() => this.props.navigation.navigate("Preference")}
           settingPress={() => this.props.navigation.navigate("Setting")}
         />
@@ -538,6 +597,8 @@ function mapDispatchToProps(dispatch) {
     {
       getUserDetail,
       SetUserListing,
+      setUnreadLike,
+      setBlockList,
     },
     dispatch
   );

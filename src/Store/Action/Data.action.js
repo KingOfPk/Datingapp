@@ -28,3 +28,18 @@ export function setUnreadMessage(data) {
     payload: data,
   };
 }
+
+export function setUnreadLike(data) {
+  console.log(data);
+  return {
+    type: "SET_UNREAD_LIKE",
+    payload: data,
+  };
+}
+export function setBlockList(data) {
+  console.log(data);
+  return {
+    type: "SET_BLOCK_LIST",
+    payload: data,
+  };
+}

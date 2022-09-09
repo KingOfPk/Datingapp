@@ -35,7 +35,13 @@ import {
   usePresence,
 } from "@pubnub/react-chat-components";
 import { setUnreadMessage } from "../Store/Action/Data.action";
-const ChatScreen = ({ user, navigation, route, setUnreadMessage }) => {
+const ChatScreen = ({
+  user,
+  navigation,
+  route,
+  setUnreadMessage,
+  blockList,
+}) => {
   const Messages = [
     {
       id: 0,
@@ -67,7 +73,10 @@ const ChatScreen = ({ user, navigation, route, setUnreadMessage }) => {
   const pubnub = usePubNub();
 
   useEffect(() => {
-    console.log(route.params, "params data");
+    console.log(
+      blockList.some((value) => value.block_to_id === userData.id),
+      "params data"
+    );
     console.log(pubnub);
     fatchMessage();
     // We need to make sure that PubNub is defined
@@ -332,53 +341,47 @@ const ChatScreen = ({ user, navigation, route, setUnreadMessage }) => {
             keyboardVerticalOffset={45}
             behavior={Platform.OS == "android" ? "height" : "padding"}
           >
-            <View
-              style={{
-                width: "100%",
-                height: 60,
-                backgroundColor: "#fff",
-                paddingHorizontal: 10,
-
-                borderBottomWidth: 0.5,
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              {/* <MessageInput typingIndicator fileUpload="all" /> */}
-              <TextInput
+            {!blockList.some((value) => value.block_to_id === userData.id) && (
+              <View
                 style={{
-                  flex: 1,
-                  fontSize: 16,
-                  fontFamily: font.Regular,
-                  color: "#000",
-                }}
-                placeholder="Type the message"
-                onChangeText={setInput}
-                value={input}
-                onFocus={() => {
-                  console.log("typing...");
-                }}
-                onSubmitEditing={handleSubmit}
-                placeholderTextColor={"#ACABB4"}
-              />
+                  width: "100%",
+                  height: 60,
+                  backgroundColor: "#fff",
+                  paddingHorizontal: 10,
 
-              <TouchableOpacity
-                onPress={handleSubmit}
-                style={{ marginRight: 10 }}
+                  borderBottomWidth: 0.5,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
               >
-                <Image
-                  source={require("../../assets/icons/Send.png")}
-                  style={{ width: 35, height: 35, resizeMode: "contain" }}
+                <TextInput
+                  style={{
+                    flex: 1,
+                    fontSize: 16,
+                    fontFamily: font.Regular,
+                    color: "#000",
+                  }}
+                  placeholder="Type the message"
+                  onChangeText={setInput}
+                  value={input}
+                  onFocus={() => {
+                    console.log("typing...");
+                  }}
+                  onSubmitEditing={handleSubmit}
+                  placeholderTextColor={"#ACABB4"}
                 />
-              </TouchableOpacity>
 
-              {/* <TouchableOpacity>
-                <Image
-                  source={require("../../assets/icons/Microphone.png")}
-                  style={{ width: 35, height: 35, resizeMode: "contain" }}
-                />
-              </TouchableOpacity> */}
-            </View>
+                <TouchableOpacity
+                  onPress={handleSubmit}
+                  style={{ marginRight: 10 }}
+                >
+                  <Image
+                    source={require("../../assets/icons/Send.png")}
+                    style={{ width: 35, height: 35, resizeMode: "contain" }}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
           </KeyboardAvoidingView>
         </ImageBackground>
         {/* <Footer
@@ -397,6 +400,7 @@ function mapStateToProps(state) {
   console.log(state);
   return {
     Address: state.Data.address,
+    blockList: state.Data.blockList,
     user: state.User.user,
   };
 }

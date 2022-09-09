@@ -8,15 +8,18 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
+import { useSelector } from "react-redux";
 // https://youtu.be/6-r9PVI94hE?list=RDB8G3zCnZvMU
 // https://youtu.be/6-r9PVI94hE
-export default Footer = ({
+const Footer = ({
   selectedIcon,
   settingPress,
   preferencePress,
   likePress,
   homePress,
 }) => {
+  const { unreadLike } = useSelector((state) => state.Data);
+
   return (
     <SafeAreaView style={{ width: "100%" }}>
       <View
@@ -52,6 +55,19 @@ export default Footer = ({
               source={require("../../assets/icons/Hand.png")}
               style={{ width: 30, height: 30 }}
             />
+            {unreadLike && (
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  backgroundColor: "#f00",
+                  borderRadius: 5,
+                  position: "absolute",
+                  top: 5,
+                  right: 5,
+                }}
+              ></View>
+            )}
           </TouchableOpacity>
         </View>
         <View
@@ -109,3 +125,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+export default Footer;

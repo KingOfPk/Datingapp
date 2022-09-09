@@ -87,6 +87,9 @@ class LoginScreen extends Component {
       axios(config)
         .then((response) => {
           console.log(response);
+          this.setState({
+            isDisable: false,
+          });
           this.props.navigation.navigate("OtpScreen", {
             data: this.state.number,
           });

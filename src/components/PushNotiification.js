@@ -1,4 +1,4 @@
-const PushNotification = (token, message, title, type) => {
+const PushNotification = (token, message, title, user) => {
   var axios = require("axios");
   var data = JSON.stringify({
     registration_ids: [token],

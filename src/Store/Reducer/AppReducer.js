@@ -3,6 +3,8 @@ const initialState = {
   address: {},
   unreadMessage: [],
   isUpdate: false,
+  unreadLike: false,
+  blockList: [],
 };
 
 export default function (state = initialState, action) {
@@ -16,6 +18,18 @@ export default function (state = initialState, action) {
       return {
         ...state,
         unreadMessage: action.payload,
+        isUpdate: !state.isUpdate,
+      };
+    case "SET_UNREAD_LIKE":
+      return {
+        ...state,
+        unreadLike: action.payload,
+        isUpdate: !state.isUpdate,
+      };
+    case "SET_BLOCK_LIST":
+      return {
+        ...state,
+        blockList: action.payload,
         isUpdate: !state.isUpdate,
       };
     case "USER_DELETE":

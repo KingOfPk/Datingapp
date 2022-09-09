@@ -324,7 +324,59 @@ class Preference extends Component {
             axios(config3)
               .then((response) => {
                 console.log(JSON.stringify(response.data));
-                this.setProfile();
+
+                var ageData = JSON.stringify({
+                  min_age: this.state.LowAge,
+                  max_age: this.state.heighAge,
+                });
+
+                var ageConfig = {
+                  method: "put",
+                  url: `${baseurl}/api/v1/preferences/update_user_age`,
+                  headers: {
+                    "Content-Type": "application/json",
+                    token: token,
+                  },
+                  data: ageData,
+                };
+
+                axios(ageConfig)
+                  .then((response) => {
+                    console.log(JSON.stringify(response.data));
+                    var res = response.data;
+
+                    var distanceData = JSON.stringify({
+                      min_distance: this.state.minDistance,
+                      max_distance: this.state.maxDistance,
+                    });
+
+                    var distanceConfig = {
+                      method: "put",
+                      url: `${baseurl}/api/v1/preferences/update_user_distance`,
+                      headers: {
+                        "Content-Type": "application/json",
+                        token: token,
+                      },
+                      data: distanceData,
+                    };
+
+                    axios(distanceConfig)
+                      .then(async (response) => {
+                        console.log(JSON.stringify(response.data));
+                        var res = response.data;
+
+                        this.setProfile();
+
+                        // this.props.navigation.navigate("ChooseInterest");
+                      })
+                      .catch(function (error) {
+                        console.log(error);
+                      });
+                    // this.props.navigation.navigate("ChooseInterest");
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
               })
               .catch(function (error) {
                 console.log(error);
@@ -488,8 +540,6 @@ class Preference extends Component {
                   initialHighValue={this.props.user.user_age.max_age}
                   step={5}
                   floatingLabel
-                  selectionColor="#5FAEB6"
-                  blankColor="#E5E5E5"
                   renderThumb={renderThumb()}
                   renderRail={renderRail}
                   renderRailSelected={renderRailSelected}
@@ -531,8 +581,6 @@ class Preference extends Component {
                   // gravity={"center"}
                   thumbRadius={15}
                   thumbColor={"#416181"}
-                  selectionColor="#5FAEB6"
-                  blankColor="#E5E5E5"
                   lineWidth={8}
                   textSize={8}
                   floatingLabel

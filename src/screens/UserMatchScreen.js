@@ -30,6 +30,7 @@ class UserMatchScreen extends Component {
   }
 
   componentDidMount = async () => {
+    this.updateMtach();
     var token = await AsyncStorage.getItem("userToken");
     var config = {
       method: "get",
@@ -46,15 +47,38 @@ class UserMatchScreen extends Component {
       .catch((error) => {});
   };
 
+  updateMtach = async () => {
+    var token = await AsyncStorage.getItem("userToken");
+    var config = {
+      method: "put",
+      url: `${baseurl}/api/v1/matches/match_update?id=${this.state.userData.id}`,
+      headers: {
+        token: token,
+      },
+    };
+
+    console.log(
+      `${baseurl}/api/v1/matches/match_update?id=${this.state.userData.id}`
+    );
+
+    axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   createChat = async () => {
     var token = await AsyncStorage.getItem("userToken");
     var data = JSON.stringify({
-      chat_to: this.state.userData.like_from.id,
+      chat_to: this.state.userData.like_to.id,
     });
     console.log(data);
     var config = {
       method: "post",
-      url: `${baseurl}/api/v1/channels?chat_to=${this.state.userData.like_from.id}`,
+      url: `${baseurl}/api/v1/channels?chat_to=${this.state.userData.like_to.id}`,
       headers: {
         "Content-Type": "application/json",
         token: token,
@@ -70,7 +94,7 @@ class UserMatchScreen extends Component {
         if (res.status) {
           this.props.navigation.navigate("ChatScreen", {
             channnelName: res.data.channel_name,
-            data: res.data.chat_to_user,
+            data: this.state.userData.like_to,
             from: res.data.chat_from_user,
           });
         }
@@ -155,7 +179,7 @@ class UserMatchScreen extends Component {
               borderColor="#406284"
             />
             <Image
-              source={{ uri: userData.like_from.profile_image.images.url }}
+              source={{ uri: userData.like_to.profile_image.images.url }}
               style={{
                 width: 150,
                 height: 150,

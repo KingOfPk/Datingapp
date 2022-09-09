@@ -231,8 +231,6 @@ class ChooseAgeOrDistance extends Component {
             max={60}
             step={5}
             floatingLabel
-            selectionColor="#5FAEB6"
-            blankColor="#E5E5E5"
             renderThumb={renderThumb()}
             renderRail={renderRail}
             renderRailSelected={renderRailSelected}
@@ -286,8 +284,6 @@ class ChooseAgeOrDistance extends Component {
             min={20}
             max={60}
             step={5}
-            selectionColor="#5FAEB6"
-            blankColor="#E5E5E5"
             onValueChanged={(low, high, fromUser) => {
               this.setState({ minDistance: low, maxDistance: high });
             }}
